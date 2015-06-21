@@ -12,22 +12,25 @@ var tempart = {
 		}
 
 		var searches = templateContent.split(/{{/);
-		return this.parseBlocks(searches);
+		return this.parseBlocks(searches).content;
 	},
 	parseBlocks: function(blocks) {
-		var id = 0;
+		var id     = 0;
 		var result = [];
+		var end    = null;
 		while(blocks.length) {
 			var block = this.parseBlock(blocks);
-			if(block) {
+			if(block == 'end' || block == 'else') { // @TODO improve!
+				end = block;
+				// debugger;
+				break;
+			} else if(block) {
 				block.id = id;
 				result.push(block);
-			} else {
-				break;
 			}
 			id++;
 		}
-		return result;
+		return {content: result, end: end};
 	},
 	parseBlock: function(blocks) {
 		var block = blocks[0];
@@ -35,11 +38,14 @@ var tempart = {
 		var end = this.getEnd(block);
 		var type = block.slice(0, end).split(' ');
 		if(type[0][0] == '/') {
-			// @TODO add close-logic
+			blocks.shift();
+			return 'end';
+		} else if(type[0] == 'else') {
+			blocks.shift();
+			return 'else';
 		} else if(this.defined.indexOf(type[0]) == -1) {
 			result.type = 'variable';
 			result.depending = [type[0]];
-			
 		} else {
 			result.type = type[0];
 			type.shift();
@@ -47,14 +53,17 @@ var tempart = {
 		}
 		blocks.shift();
 		if(this.needsEnd.indexOf(result.type) != -1) {
-			var contains = this.parseBlocks(blocks);
-			if(contains) {
-				result.contains = contains;
-			}
+			// var contains = this.parseBlocks(blocks);
+			// if(contains) {
+			// 	result.contains = contains.content;
+			// 	if(contains.end == 'else') {
+			// 		// result.elseContains = this.parseBlocks(blocks);
+			// 	}
+			// }
 		}
 
-		if(block.length > end + 2) {
-			// blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
+		if(block.length > end + 2 && result.type != 'echo') {
+			blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
 		}
 		return result;
 	},
