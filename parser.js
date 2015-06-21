@@ -47,24 +47,31 @@ var tempart = {
 			result.type = 'variable';
 			result.depending = [type[0]];
 		} else {
-			result.type = type[0];
+			result.type    = type[0];
 			type.shift();
 			result.depending = type;
+			if(result.type == 'echo') {
+				result.content = block.slice(end + 2, block.length);
+			}
 		}
 		blocks.shift();
-		if(this.needsEnd.indexOf(result.type) != -1) {
-			// var contains = this.parseBlocks(blocks);
-			// if(contains) {
-			// 	result.contains = contains.content;
-			// 	if(contains.end == 'else') {
-			// 		// result.elseContains = this.parseBlocks(blocks);
-			// 	}
-			// }
-		}
 
 		if(block.length > end + 2 && result.type != 'echo') {
 			blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
 		}
+
+		if(this.needsEnd.indexOf(result.type) != -1) {
+			// debugger;
+			var contains = this.parseBlocks(blocks);
+			if(contains) {
+				result.contains = contains.content;
+			// 	if(contains.end == 'else') {
+			// 		// result.elseContains = this.parseBlocks(blocks);
+			// 	}
+			}
+		}
+
+
 		return result;
 	},
 	addEcho: function(echo) {
