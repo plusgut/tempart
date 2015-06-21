@@ -1,0 +1,8 @@
+{{mep}} <div></div><span>{{echotext}}</span>
+{{if checkText}}
+
+{{/if}}
+
+{{each arr as entity}}
+	{{entity}}
+{{/each}}
