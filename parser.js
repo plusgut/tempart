@@ -8,9 +8,7 @@ var tempart = {
 		if(templateContent[0] == '{' && templateContent[1] == '{') {
 			templateContent = templateContent.slice(2, templateContent.length);
 		} else {
-			templateContent = "echo}}" + templateContent;
-			var position = templateContent.indexOf('{{');
-			templateContent[position] = '{{/echo}}{{';
+			templateContent = this.addEcho(templateContent);
 		}
 
 		var searches = templateContent.split(/{{/);
@@ -19,13 +17,20 @@ var tempart = {
 	parseBlocks: function(blocks) {
 		var id = 0;
 		var result = [];
-		for(var i = 0; i < blocks.length; i++) {
-			result = result.concat(this.parseBlock(blocks[i]));
+		while(blocks.length) {
+			var block = this.parseBlock(blocks);
+			if(block) {
+				block.id = id;
+				result.push(block);
+			} else {
+				break;
+			}
+			id++;
 		}
 		return result;
 	},
-	parseBlock: function(block) {
-		var blocks = [];
+	parseBlock: function(blocks) {
+		var block = blocks[0];
 		var result = {};
 		var end = this.getEnd(block);
 		var type = block.slice(0, end).split(' ');
@@ -34,24 +39,27 @@ var tempart = {
 		} else if(this.defined.indexOf(type[0]) == -1) {
 			result.type = 'variable';
 			result.depending = [type[0]];
-			blocks.push(result);
+			
 		} else {
 			result.type = type[0];
 			type.shift();
 			result.depending = type;
-			blocks.push(result);
+		}
+		blocks.shift();
+		if(this.needsEnd.indexOf(result.type) != -1) {
+			var contains = this.parseBlocks(blocks);
+			if(contains) {
+				result.contains = contains;
+			}
 		}
 
 		if(block.length > end + 2) {
-			blocks.push(this.addEcho(block.slice(end + 2, block.length)));
+			// blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
 		}
-		return blocks;
+		return result;
 	},
 	addEcho: function(echo) {
-		return {
-			type: 'echo',
-			content: echo
-		};
+		return 'echo}}' +  echo;
 	},
 	getEnd: function(block) {
 		return block.indexOf('}}');
