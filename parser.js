@@ -2,7 +2,6 @@ var tempart = {
 	defined: ['if', 'each', 'variable', 'echo'],
 	needsEnd: ['if', 'each'],
 	parse: function(templateContent) {
-		// escaping backslashes, single quotes, and newlines
 		templateContent = this.escapeSpecials(templateContent);
 
 		if(templateContent[0] == '{' && templateContent[1] == '{') {
@@ -15,14 +14,13 @@ var tempart = {
 		return this.parseBlocks(searches).content;
 	},
 	parseBlocks: function(blocks) {
-		var id     = 0;
+		var id     = 0; // Has to be global or reference
 		var result = [];
 		var end    = null;
 		while(blocks.length) {
 			var block = this.parseBlock(blocks);
 			if(block == 'end' || block == 'else') { // @TODO improve!
 				end = block;
-				// debugger;
 				break;
 			} else if(block) {
 				block.id = id;
@@ -56,18 +54,17 @@ var tempart = {
 		}
 		blocks.shift();
 
-		if(block.length > end + 2 && result.type != 'echo') {
+		if(block.length > end + 2 && result.type != 'echo') { // Handling of not-variable stuff
 			blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
 		}
 
 		if(this.needsEnd.indexOf(result.type) != -1) {
-			// debugger;
 			var contains = this.parseBlocks(blocks);
 			if(contains) {
 				result.contains = contains.content;
-			// 	if(contains.end == 'else') {
-			// 		// result.elseContains = this.parseBlocks(blocks);
-			// 	}
+				if(contains.end == 'else') {
+					result.elseContains = this.parseBlocks(blocks).content;
+				}
 			}
 		}
 
@@ -81,6 +78,7 @@ var tempart = {
 		return block.indexOf('}}');
 	},
 	escapeSpecials: function(templateContent) {
+		// escaping backslashes, single quotes, and newlines
 		return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\n/g, '\\n').replace(/\r/g, '');
 	}
 };
