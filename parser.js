@@ -1,24 +1,32 @@
 var tempart = {
+	////-----------------------------------------------------------------------------------------
+	// which things are reserved words
 	defined: ['if', 'each', 'variable', 'echo'],
+	////-----------------------------------------------------------------------------------------
+	// defines what commands need an {{/if}}
 	needsEnd: ['if', 'each'],
+	////-----------------------------------------------------------------------------------------
+	// Precompiles the html and generates json-arrays
 	parse: function(templateContent) {
-		templateContent = this.escapeSpecials(templateContent);
+		templateContent = this._escapeSpecials(templateContent);
 
 		if(templateContent[0] == '{' && templateContent[1] == '{') {
 			templateContent = templateContent.slice(2, templateContent.length);
 		} else {
-			templateContent = this.addEcho(templateContent);
+			templateContent = this._addEcho(templateContent);
 		}
 
 		var searches = templateContent.split(/{{/);
-		return this.parseBlocks(searches).content;
+		return this._parseBlocks(searches).content;
 	},
-	parseBlocks: function(blocks) {
+	////-----------------------------------------------------------------------------------------
+	// takes an array of commands
+	_parseBlocks: function(blocks) {
 		var id     = 0; // Has to be global or reference
 		var result = [];
 		var end    = null;
 		while(blocks.length) {
-			var block = this.parseBlock(blocks);
+			var block = this._parseBlock(blocks);
 			if(block == 'end' || block == 'else') { // @TODO improve!
 				end = block;
 				break;
@@ -30,10 +38,12 @@ var tempart = {
 		}
 		return {content: result, end: end};
 	},
-	parseBlock: function(blocks) {
+	////-----------------------------------------------------------------------------------------
+	// parses one command and adds new ones if needed
+	_parseBlock: function(blocks) {
 		var block = blocks[0];
 		var result = {};
-		var end = this.getEnd(block);
+		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
 		if(type[0][0] == '/') {
 			blocks.shift();
@@ -55,15 +65,15 @@ var tempart = {
 		blocks.shift();
 
 		if(block.length > end + 2 && result.type != 'echo') { // Handling of not-variable stuff
-			blocks.unshift(this.addEcho(block.slice(end + 2, block.length)));
+			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
 		}
 
 		if(this.needsEnd.indexOf(result.type) != -1) {
-			var contains = this.parseBlocks(blocks);
+			var contains = this._parseBlocks(blocks);
 			if(contains) {
 				result.contains = contains.content;
 				if(contains.end == 'else') {
-					result.elseContains = this.parseBlocks(blocks).content;
+					result.elseContains = this._parseBlocks(blocks).content;
 				}
 			}
 		}
@@ -71,14 +81,19 @@ var tempart = {
 
 		return result;
 	},
-	addEcho: function(echo) {
+	////-----------------------------------------------------------------------------------------
+	// plain html without any variable
+	_addEcho: function(echo) {
 		return 'echo}}' +  echo;
 	},
-	getEnd: function(block) {
+	////-----------------------------------------------------------------------------------------
+	// returns int on which position the }} are existent
+	_getEnd: function(block) {
 		return block.indexOf('}}');
 	},
-	escapeSpecials: function(templateContent) {
-		// escaping backslashes, single quotes, and newlines
+	////-----------------------------------------------------------------------------------------
+	// escaping backslashes, single quotes, and newlines
+	_escapeSpecials: function(templateContent) {
 		return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\n/g, '\\n').replace(/\r/g, '');
 	}
 };
