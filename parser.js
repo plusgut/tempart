@@ -1,5 +1,8 @@
 var tempart = {
 	////-----------------------------------------------------------------------------------------
+	// id generator for the blocks, needs to be global because of the recusion
+	_increment: 0,
+	////-----------------------------------------------------------------------------------------
 	// which things are reserved words
 	defined: ['if', 'each', 'variable', 'echo'],
 	////-----------------------------------------------------------------------------------------
@@ -8,6 +11,7 @@ var tempart = {
 	////-----------------------------------------------------------------------------------------
 	// Precompiles the html and generates json-arrays
 	parse: function(templateContent) {
+		this._increment = 0;
 		templateContent = this._escapeSpecials(templateContent);
 
 		if(templateContent[0] == '{' && templateContent[1] == '{') {
@@ -22,7 +26,6 @@ var tempart = {
 	////-----------------------------------------------------------------------------------------
 	// takes an array of commands
 	_parseBlocks: function(blocks) {
-		var id     = 0; // Has to be global or reference
 		var result = [];
 		var end    = null;
 		while(blocks.length) {
@@ -31,10 +34,10 @@ var tempart = {
 				end = block;
 				break;
 			} else if(block) {
-				block.id = id;
+				block.id = this._increment;
 				result.push(block);
 			}
-			id++;
+			this._increment++;
 		}
 		return {content: result, end: end};
 	},

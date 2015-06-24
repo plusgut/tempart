@@ -7,7 +7,8 @@
 			<script src="compiler.js"></script>
 			<script type="text/javascript">
 				$.get('template.tp').then(function(result) {
-					console.log(tempart.parse(result));
+					var main = tempart.parse(result);
+					console.log(main);
 				});
 			</script>
 
