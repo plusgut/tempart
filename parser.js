@@ -82,6 +82,8 @@
 				result.contains = contains.content;
 				if(contains.end == 'else') {
 					result.elseContains = this._parseBlocks(blocks).content;
+				} else {
+					result.elseContains = [];
 				}
 			}
 		}
