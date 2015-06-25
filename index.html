@@ -9,11 +9,9 @@
 				$.get('template.tp').then(function(result) {
 					var main = tempartParser.parse(result);
 					console.log(main);
-					// var html = tempartCompiler.compiler(main);
-
+					var html = tempartCompiler.compile(main);
 				});
 			</script>
-
 	</head>
 	<body>
 	</body>

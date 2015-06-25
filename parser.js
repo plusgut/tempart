@@ -1,16 +1,19 @@
-var tempartParser = {
+// tempart templating library
+
+;(function(tempartParser) {
+	tempartParser.foo = 'bar';
 	////-----------------------------------------------------------------------------------------
 	// id generator for the blocks, needs to be global because of the recusion
-	_increment: 0,
+	tempartParser._increment = 0;
 	////-----------------------------------------------------------------------------------------
 	// which things are reserved words
-	defined: ['if', 'each', 'variable', 'echo'],
+	tempartParser.defined = ['if', 'each', 'variable', 'echo'];
 	////-----------------------------------------------------------------------------------------
 	// defines what commands need an {{/end}}
-	needsEnd: ['if', 'each'],
+	tempartParser.needsEnd = ['if', 'each'];
 	////-----------------------------------------------------------------------------------------
 	// Precompiles the html and generates json-arrays
-	parse: function(templateContent) {
+	tempartParser.parse = function(templateContent) {
 		this._increment = 0;
 		templateContent = this._escapeSpecials(templateContent);
 
@@ -22,10 +25,10 @@ var tempartParser = {
 		// @TODO add check if open-blocks are the same as end-blocks
 		var searches = templateContent.split('{{');
 		return this._parseBlocks(searches).content;
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// takes an array of commands
-	_parseBlocks: function(blocks) {
+	tempartParser._parseBlocks = function(blocks) {
 		var result = [];
 		var end    = null;
 		while(blocks.length) {
@@ -40,10 +43,10 @@ var tempartParser = {
 			this._increment++;
 		}
 		return {content: result, end: end};
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// parses one command and adds new ones if needed
-	_parseBlock: function(blocks) {
+	tempartParser._parseBlock = function(blocks) {
 		var block = blocks[0];
 		var result = {};
 		var end = this._getEnd(block);
@@ -70,10 +73,10 @@ var tempartParser = {
 		this._handleElse(result, blocks);
 
 		return result;
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// Checks if an block-has the {{else}} possibility and adds elseContains
-	_handleElse: function(result, blocks) {
+	tempartParser._handleElse = function(result, blocks) {
 		if(this.needsEnd.indexOf(result.type) != -1) {
 			var contains = this._parseBlocks(blocks);
 			if(contains) {
@@ -83,28 +86,28 @@ var tempartParser = {
 				}
 			}
 		}
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// Checks if an block has an html-string behind it
-	_handleOverlength: function(block, blocks) {
+	tempartParser._handleOverlength = function(block, blocks) {
 		var end = this._getEnd(block);
 		if(block.length > end + 2 && block.slice(0, end) != 'echo') { // Handling of not-variable stuff
 			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
 		}
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// plain html without any variable
-	_addEcho: function(echo) {
+	tempartParser._addEcho = function(echo) {
 		return 'echo}}' +  echo;
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// returns int on which position the }} are existent
-	_getEnd: function(block) {
+	tempartParser._getEnd = function(block) {
 		return block.indexOf('}}');
-	},
+	};
 	////-----------------------------------------------------------------------------------------
 	// escaping backslashes, single quotes, and newlines
-	_escapeSpecials: function(templateContent) {
+	tempartParser._escapeSpecials = function(templateContent) {
 		return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\n/g, '\\n').replace(/\r/g, '');
-	}
-};
+	};
+}(typeof module == 'object' ? module.exports : window.tempartParser = {}));
