@@ -7,8 +7,10 @@
 			<script src="compiler.js"></script>
 			<script type="text/javascript">
 				$.get('template.tp').then(function(result) {
-					var main = tempart.parse(result);
+					var main = tempartParser.parse(result);
 					console.log(main);
+					// var html = tempartCompiler.compiler(main);
+
 				});
 			</script>
 

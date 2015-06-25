@@ -1,4 +1,4 @@
-var tempart = {
+var tempartParser = {
 	////-----------------------------------------------------------------------------------------
 	// id generator for the blocks, needs to be global because of the recusion
 	_increment: 0,
@@ -49,11 +49,9 @@ var tempart = {
 		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
 		if(type[0][0] == '/') {
-			blocks.shift();
-			return 'end';
+			result = 'end';
 		} else if(type[0] == 'else') {
-			blocks.shift();
-			return 'else';
+			result = 'else';
 		} else if(this.defined.indexOf(type[0]) == -1) {
 			result.type = 'variable';
 			result.depending = [type[0]];
@@ -67,9 +65,7 @@ var tempart = {
 		}
 		blocks.shift();
 
-		if(block.length > end + 2 && result.type != 'echo') { // Handling of not-variable stuff
-			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
-		}
+		this._handleOverlength(block, blocks);
 
 		if(this.needsEnd.indexOf(result.type) != -1) {
 			var contains = this._parseBlocks(blocks);
@@ -81,8 +77,13 @@ var tempart = {
 			}
 		}
 
-
 		return result;
+	},
+	_handleOverlength: function(block, blocks) {
+		var end = this._getEnd(block);
+		if(block.length > end + 2 && block.slice(0, end) != 'echo') { // Handling of not-variable stuff
+			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
+		}
 	},
 	////-----------------------------------------------------------------------------------------
 	// plain html without any variable
