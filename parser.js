@@ -1,7 +1,6 @@
 // tempart templating library
 
 ;(function(tempartParser) {
-	tempartParser.foo = 'bar';
 	////-----------------------------------------------------------------------------------------
 	// id generator for the blocks, needs to be global because of the recusion
 	tempartParser._increment = 0;

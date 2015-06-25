@@ -9,7 +9,11 @@
 				$.get('template.tp').then(function(result) {
 					var main = tempartParser.parse(result);
 					console.log(main);
-					var html = tempartCompiler.compile(main);
+					var html = tempartCompiler.compile(main, {
+						mep: 'first entry',
+						echotext: 'second entry'
+					});
+					console.log(html);
 				});
 			</script>
 	</head>
