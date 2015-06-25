@@ -66,7 +66,13 @@ var tempartParser = {
 		blocks.shift();
 
 		this._handleOverlength(block, blocks);
+		this._handleElse(result, blocks);
 
+		return result;
+	},
+	////-----------------------------------------------------------------------------------------
+	// Checks if an block-has the {{else}} possibility and adds elseContains
+	_handleElse: function(result, blocks) {
 		if(this.needsEnd.indexOf(result.type) != -1) {
 			var contains = this._parseBlocks(blocks);
 			if(contains) {
@@ -76,9 +82,9 @@ var tempartParser = {
 				}
 			}
 		}
-
-		return result;
 	},
+	////-----------------------------------------------------------------------------------------
+	// Checks if an block has an html-string behind it
 	_handleOverlength: function(block, blocks) {
 		var end = this._getEnd(block);
 		if(block.length > end + 2 && block.slice(0, end) != 'echo') { // Handling of not-variable stuff
