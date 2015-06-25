@@ -6,7 +6,7 @@ var tempartParser = {
 	// which things are reserved words
 	defined: ['if', 'each', 'variable', 'echo'],
 	////-----------------------------------------------------------------------------------------
-	// defines what commands need an {{/if}}
+	// defines what commands need an {{/end}}
 	needsEnd: ['if', 'each'],
 	////-----------------------------------------------------------------------------------------
 	// Precompiles the html and generates json-arrays
@@ -19,8 +19,8 @@ var tempartParser = {
 		} else {
 			templateContent = this._addEcho(templateContent);
 		}
-
-		var searches = templateContent.split(/{{/);
+		// @TODO add check if open-blocks are the same as end-blocks
+		var searches = templateContent.split('{{');
 		return this._parseBlocks(searches).content;
 	},
 	////-----------------------------------------------------------------------------------------
@@ -49,6 +49,7 @@ var tempartParser = {
 		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
 		if(type[0][0] == '/') {
+			// @TODO add for debugging purpose a check if this was the one which was last opened
 			result = 'end';
 		} else if(type[0] == 'else') {
 			result = 'else';
