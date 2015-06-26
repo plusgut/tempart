@@ -1,0 +1,29 @@
+{
+  "name": "tempart",
+  "version": "0.1.0",
+  "homepage": "https://github.com/plusgut/tempart",
+  "authors": [
+    "plusgut <github@webentwickler2-0.de>"
+  ],
+  "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
+  "main": [
+    "compiler.js"
+  ],
+  "moduleType": [
+    "globals",
+    "node"
+  ],
+  "keywords": [
+    "template",
+    "recompile",
+    "blocks"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
