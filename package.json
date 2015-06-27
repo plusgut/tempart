@@ -1,0 +1,25 @@
+{
+  "name": "tempart",
+  "version": "0.1.0",
+  "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
+  "main": "parser.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/plusgut/tempart.git"
+  },
+  "keywords": [
+    "template",
+    "recompile",
+    "blocks"
+  ],
+  "author": "Carlo jeske",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/plusgut/tempart/issues"
+  },
+  "devDependencies": {
+  }
+}
