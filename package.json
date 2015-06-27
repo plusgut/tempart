@@ -1,6 +1,6 @@
 {
   "name": "tempart",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": "parser.js",
   "scripts": {
@@ -20,6 +20,5 @@
   "bugs": {
     "url": "https://github.com/plusgut/tempart/issues"
   },
-  "devDependencies": {
-  }
+  "devDependencies": {}
 }
