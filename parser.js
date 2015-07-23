@@ -16,7 +16,7 @@
 		this._increment = 0;
 		templateContent = this._escapeSpecials(templateContent);
 
-		if(templateContent[0] == '{' && templateContent[1] == '{') {
+		if(templateContent.indexOf('{{') === 0) {
 			templateContent = templateContent.slice(2, templateContent.length);
 		} else {
 			templateContent = this._addEcho(templateContent);
