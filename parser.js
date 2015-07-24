@@ -6,7 +6,7 @@
 	tempartParser._increment = 0;
 	////-----------------------------------------------------------------------------------------
 	// which things are reserved words
-	tempartParser.defined = ['if', 'each', 'variable', 'echo'];
+	tempartParser.defined = ['if', 'each', 'variable', 'echo', 'log'];
 	////-----------------------------------------------------------------------------------------
 	// defines what commands need an {{/end}}
 	tempartParser.needsEnd = ['if', 'each'];

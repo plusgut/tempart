@@ -2,25 +2,23 @@
 
 ;(function(tempartCompiler) {
 	////-----------------------------------------------------------------------------------------
-	// returns the compiled blocks, depending on the inserted data
-	tempartCompiler.compile = function(blocks, data, opt) {
-		var result = {};
-		this._handleBlocks(blocks, data, result, opt);
-		return result;
+	// returns the html and adds context to currentValues
+	tempartCompiler.compile = function( blocks, content, currentValues, dirties ){
+		return this._handleBlocks(blocks, content, currentValues, dirties);
 	};
 	////-----------------------------------------------------------------------------------------
 	// iterates threw the block on one level and calls the type-handler
-	tempartCompiler._handleBlocks = function(blocks, data, result, opt) {
+	tempartCompiler._handleBlocks = function( blocks, content, currentValues, dirties ){
+		var result = "";
 		for(var i = 0; i < blocks.length; i++) {
-			this._handleBlock(blocks[i], data, result, opt);
+			result += this._handleBlock( blocks[i], content, currentValues, dirties );
 		}
 		return result;
 	};
 	////-----------------------------------------------------------------------------------------
 	// returns the compiled block, depending on the inserted data
-	tempartCompiler._handleBlock = function(block, data, result, opt) {
-		result[block.id]      = tempartCompiler.types[block.type](block, data);
-		result[block.id].type = block.type;
+	tempartCompiler._handleBlock = function( block, content, currentValues, dirties ){
+		return  tempartCompiler.types[block.type]( block, content, currentValues, dirties );
 	};
 
 	////-----------------------------------------------------------------------------------------
@@ -28,39 +26,45 @@
 	tempartCompiler.types = {
 		////-----------------------------------------------------------------------------------------
 		// returns a variable
-		variable: function(block, data) {
-			return {html: data[block.depending[0]], value: data[block.depending[0]]};
+		variable: function( block, content, currentValues, dirties ){
+			return content[block.depending[ 0 ]];
 		},
 		////-----------------------------------------------------------------------------------------
 		// returns html
-		echo: function(block, data) {
-			return {html: block.content, value: true};
+		echo: function( block, content, currentValues, dirties ){
+			return block.content;
 		},
 		////-----------------------------------------------------------------------------------------
 		// calls handleBlocks depending on the data contributed
-		if: function(block, data) {
+		if: function( block, content, currentValues, dirties ) {
 			var result = false;
 			var type   = 'elseContains';
-			if(data[block.depending[0]]) {
+			if(content[block.depending[0]]) {
 				result = true;
 				type   = 'contains';
 			}
-			return {contains: [tempartCompiler._handleBlocks(block[type], data, {})], value: result};
+			return tempartCompiler._handleBlocks(block[type],  content, currentValues, dirties);
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
-		each: function(block, data) {
-			var key = data[block.depending[2]];
-			if(data[key]) { // @TODO add deep-handling
-				var result = [];
-				for(var i = 0; i < data[key].length; i++) {
-					data[block.depending[0]] = data[key][i];
-					result.push({contains: tempartCompiler._handleBlocks(block.contains, data, {}), value: data[key].length});
+		each: function(block, content, currentValues, dirties ) {
+			var key = block.depending[ 0 ];
+			if(content[key]) { // @TODO add deep-handling
+				var result = "";
+				for(var i = 0; i < content[key].length; i++) {
+					content[block.depending[2]] = content[key][i];
+					result += tempartCompiler._handleBlocks( block.contains, content, currentValues, dirties);
 				}
 				return result;
 			} else {
-				return {contains: [tempartCompiler._handleBlocks(block.elseContains, data, {})], value: false};
+				return tempartCompiler._handleBlocks( block.elseContains, content, currentValues, dirties );
 			}
+		},
+		////-----------------------------------------------------------------------------------------
+		// puts values in the console
+		log: function(block, content) {
+			console.log(content[block.depending[ 0 ]] );
+			return "";
 		}
 	};
 }(typeof module == 'object' ? module.exports : window.tempartCompiler= {}));
