@@ -50,7 +50,10 @@
 		var result = {};
 		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
-		if(type[0][0] == '/') {
+		if(type[0][0] == '#') {
+			result.type = 'partial';
+			result.path = type[0].slice(1, type[0].length);
+		} else if(type[0][0] == '/') {
 			// @TODO add for debugging purpose a check if this was the one which was last opened
 			result = 'end';
 		} else if(type[0] == 'else') {

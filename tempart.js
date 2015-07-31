@@ -1,24 +1,33 @@
 // tempart templating library
 
 ;(function(tempartCompiler) {
+
+	////-----------------------------------------------------------------------------------------
+	// you need to overwrite this function, to have working partial support
+	tempartCompiler.partial = function(block, context, currentValues, dirties, path) {
+		// @TODO do a better api for that..
+		console.error('Overwrite the function tempartCompiler.partial to have partials');
+		return '';
+	},
 	////-----------------------------------------------------------------------------------------
 	// returns the html and adds context to currentValues
-	tempartCompiler.compile = function( blocks, content, currentValues, dirties ){
-		return this._handleBlocks(blocks, content, currentValues, dirties);
+	// path is not used, it only is passed to partial
+	tempartCompiler.compile = function( blocks, content, currentValues, dirties, path ){
+		return this._handleBlocks(blocks, content, currentValues, dirties, path);
 	};
 	////-----------------------------------------------------------------------------------------
 	// iterates threw the block on one level and calls the type-handler
-	tempartCompiler._handleBlocks = function( blocks, content, currentValues, dirties ){
+	tempartCompiler._handleBlocks = function( blocks, content, currentValues, dirties, path ){
 		var result = "";
 		for(var i = 0; i < blocks.length; i++) {
-			result += this._handleBlock( blocks[i], content, currentValues, dirties );
+			result += this._handleBlock( blocks[i], content, currentValues, dirties, path );
 		}
 		return result;
 	};
 	////-----------------------------------------------------------------------------------------
 	// returns the compiled block, depending on the inserted data
-	tempartCompiler._handleBlock = function( block, content, currentValues, dirties ){
-		return  tempartCompiler.types[block.type]( block, content, currentValues, dirties );
+	tempartCompiler._handleBlock = function( block, content, currentValues, dirties, path ){
+		return  tempartCompiler.types[block.type]( block, content, currentValues, dirties, path );
 	};
 
 	////-----------------------------------------------------------------------------------------
@@ -47,7 +56,7 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
-		each: function(block, content, currentValues, dirties ) {
+		each: function( block, content, currentValues, dirties ) {
 			var key = block.depending[ 0 ];
 			if(content[key] && content[key].length) { // @TODO add deep-handling
 				var result = "";
@@ -65,6 +74,14 @@
 		log: function(block, content) {
 			console.log(content[block.depending[ 0 ]] );
 			return "";
+		},
+		////-----------------------------------------------------------------------------------------
+		// patial handler, for rewriting contexts and stuff
+		partial: function( block, content, currentValues, dirties, path ) {
+			if(block.path !== '/') {
+				block.path = path + '/' + block.path;
+			}
+			return tempartCompiler.partial(block, content, currentValues, dirties, path);
 		}
 	};
 }(typeof module == 'object' ? module.exports : window.tempartCompiler= {}));
