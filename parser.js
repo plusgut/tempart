@@ -61,7 +61,7 @@
 		} else {
 			result.type    = type[0];
 			type.shift();
-			result.depending = type;
+			if(type.length) result.depending = type;
 			if(result.type == 'echo') {
 				result.content = block.slice(end + 2, block.length);
 			}
@@ -109,6 +109,7 @@
 	////-----------------------------------------------------------------------------------------
 	// escaping backslashes, single quotes, and newlines
 	tempartParser._escapeSpecials = function(templateContent) {
-		return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\n/g, '\\n').replace(/\r/g, '');
+		return templateContent;
+		// return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\r/g, '');
 	};
 }(typeof module == 'object' ? module.exports : window.tempartParser = {}));
