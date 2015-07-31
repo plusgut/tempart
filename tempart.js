@@ -49,7 +49,7 @@
 		// sets a variable of an array and calls handleBlocks in the containing level
 		each: function(block, content, currentValues, dirties ) {
 			var key = block.depending[ 0 ];
-			if(content[key]) { // @TODO add deep-handling
+			if(content[key] && content[key].length) { // @TODO add deep-handling
 				var result = "";
 				for(var i = 0; i < content[key].length; i++) {
 					content[block.depending[2]] = content[key][i];
