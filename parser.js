@@ -6,7 +6,7 @@
 	tempartParser._increment = 0;
 	////-----------------------------------------------------------------------------------------
 	// which things are reserved words
-	tempartParser.defined = ['if', 'each', 'variable', 'echo'];
+	tempartParser.defined = ['if', 'each', 'variable', 'echo', 'log'];
 	////-----------------------------------------------------------------------------------------
 	// defines what commands need an {{/end}}
 	tempartParser.needsEnd = ['if', 'each'];
@@ -16,7 +16,7 @@
 		this._increment = 0;
 		templateContent = this._escapeSpecials(templateContent);
 
-		if(templateContent[0] == '{' && templateContent[1] == '{') {
+		if(templateContent.indexOf('{{') === 0) {
 			templateContent = templateContent.slice(2, templateContent.length);
 		} else {
 			templateContent = this._addEcho(templateContent);
@@ -50,7 +50,10 @@
 		var result = {};
 		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
-		if(type[0][0] == '/') {
+		if(type[0][0] == '#') {
+			result.type = 'partial';
+			result.path = type[0].slice(1, type[0].length);
+		} else if(type[0][0] == '/') {
 			// @TODO add for debugging purpose a check if this was the one which was last opened
 			result = 'end';
 		} else if(type[0] == 'else') {
@@ -61,7 +64,7 @@
 		} else {
 			result.type    = type[0];
 			type.shift();
-			result.depending = type;
+			if(type.length) result.depending = type;
 			if(result.type == 'echo') {
 				result.content = block.slice(end + 2, block.length);
 			}
@@ -109,6 +112,7 @@
 	////-----------------------------------------------------------------------------------------
 	// escaping backslashes, single quotes, and newlines
 	tempartParser._escapeSpecials = function(templateContent) {
-		return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\n/g, '\\n').replace(/\r/g, '');
+		return templateContent;
+		// return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\r/g, '');
 	};
 }(typeof module == 'object' ? module.exports : window.tempartParser = {}));
