@@ -5,9 +5,6 @@
 	// id generator for the blocks, needs to be global because of the recusion
 	tempartParser._increment = 0;
 	////-----------------------------------------------------------------------------------------
-	// which things are reserved words
-	tempartParser.defined = ['if', 'each', 'variable', 'echo', 'log'];
-	////-----------------------------------------------------------------------------------------
 	// defines what commands need an {{/end}}
 	tempartParser.needsEnd = ['if', 'each'];
 	////-----------------------------------------------------------------------------------------
@@ -50,25 +47,26 @@
 		var result = {};
 		var end = this._getEnd(block);
 		var type = block.slice(0, end).split(' ');
-		if(type[0][0] == '#') {
+		if(type[0][0] == '>') {
 			result.type = 'partial';
 			result.path = type[0].slice(1, type[0].length);
 		} else if(type[0][0] == '/') {
 			// @TODO add for debugging purpose a check if this was the one which was last opened
 			result = 'end';
-		} else if(type[0] == 'else') {
+		} else if(type[0] == '#else') {
 			result = 'else';
-		} else if(this.defined.indexOf(type[0]) == -1) {
-			result.type = 'variable';
-			result.depending = [type[0]];
-		} else {
-			result.type    = type[0];
+		} else if(type[0][0] == '#') {
+			result.type = type[0].slice(1, type[0].length);
 			type.shift();
 			if(type.length) result.depending = type;
 			if(result.type == 'echo') {
 				result.content = block.slice(end + 2, block.length);
 			}
+		} else {
+			result.type = 'variable';
+			result.depending = [type[0]];
 		}
+
 		blocks.shift();
 
 		this._handleOverlength(block, blocks);
@@ -95,14 +93,14 @@
 	// Checks if an block has an html-string behind it
 	tempartParser._handleOverlength = function(block, blocks) {
 		var end = this._getEnd(block);
-		if(block.length > end + 2 && block.slice(0, end) != 'echo') { // Handling of not-variable stuff
+		if(block.length > end + 2 && block.slice(0, end) != '#echo') { // Handling of not-variable stuff
 			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
 		}
 	};
 	////-----------------------------------------------------------------------------------------
 	// plain html without any variable
 	tempartParser._addEcho = function(echo) {
-		return 'echo}}' +  echo;
+		return '#echo}}' +  echo;
 	};
 	////-----------------------------------------------------------------------------------------
 	// returns int on which position the }} are existent

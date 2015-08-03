@@ -1,10 +1,10 @@
 {{mep}} <div></div><span>{{echotext}}</span>
-{{if checkText}}
+{{#if checkText}}
 	mep
-{{else}}
+{{#else}}
 	möp
 {{/if}}
 
-{{each arr as entity}}
+{{#each arr as entity}}
 	{{entity}}
 {{/each}}
