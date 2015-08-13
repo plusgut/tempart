@@ -79,7 +79,7 @@
 		// patial handler, for rewriting contexts and stuff
 		partial: function( block, content, currentValues, dirties, path ) {
 			if(block.path !== '/') {
-				block.path = path + '/' + block.path;
+				path = path + '/' + block.path;
 			}
 			return tempartCompiler.partial(block, content, currentValues, dirties, path);
 		}
