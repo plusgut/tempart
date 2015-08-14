@@ -6,35 +6,35 @@
 	tempartParser._increment = 0;
 	////-----------------------------------------------------------------------------------------
 	// defines what commands need an {{/end}}
-	tempartParser.needsEnd = ['if', 'each'];
+	tempartParser.needsEnd = [ 'if', 'each' ];
 	////-----------------------------------------------------------------------------------------
 	// Precompiles the html and generates json-arrays
-	tempartParser.parse = function(templateContent) {
+	tempartParser.parse = function( templateContent ){
 		this._increment = 0;
-		templateContent = this._escapeSpecials(templateContent);
+		templateContent = this._escapeSpecials( templateContent );
 
-		if(templateContent.indexOf('{{') === 0) {
-			templateContent = templateContent.slice(2, templateContent.length);
+		if( templateContent.indexOf( '{{' ) === 0 ){
+			templateContent = templateContent.slice( 2, templateContent.length );
 		} else {
-			templateContent = this._addEcho(templateContent);
+			templateContent = this._addEcho( templateContent );
 		}
 		// @TODO add check if open-blocks are the same as end-blocks
-		var searches = templateContent.split('{{');
-		return this._parseBlocks(searches).content;
+		var searches = templateContent.split( '{{' );
+		return this._parseBlocks( searches ).content;
 	};
 	////-----------------------------------------------------------------------------------------
 	// takes an array of commands
-	tempartParser._parseBlocks = function(blocks) {
+	tempartParser._parseBlocks = function( blocks ){
 		var result = [];
 		var end    = null;
-		while(blocks.length) {
-			var block = this._parseBlock(blocks);
-			if(block == 'end' || block == 'else') { // @TODO improve!
+		while( blocks.length ){
+			var block = this._parseBlock( blocks );
+			if( block == 'end' || block == 'else' ){ // @TODO improve!
 				end = block;
 				break;
-			} else if(block) {
+			} else if( block ){
 				block.id = this._increment;
-				result.push(block);
+				result.push( block );
 			}
 			this._increment++;
 		}
@@ -42,26 +42,26 @@
 	};
 	////-----------------------------------------------------------------------------------------
 	// parses one command and adds new ones if needed
-	tempartParser._parseBlock = function(blocks) {
-		var block = blocks[0];
+	tempartParser._parseBlock = function( blocks ){
+		var block = blocks[ 0 ];
 		var result = {};
-		var end = this._getEnd(block);
-		var type = block.slice(0, end).split(' ');
-		if(type[0][0] == '>') {
+		var end = this._getEnd( block);
+		var type = block.slice( 0, end).split( ' ' );
+		if( type[ 0 ][ 0 ] == '>' ) {
 			result.type = 'partial';
-			result.path = type[0].slice(1, type[0].length);
-		} else if(type[0][0] == '/') {
+			result.path = type[ 0 ].slice( 1, type[ 0 ].length );
+		} else if( type[ 0 ][ 0 ] == '/' ) {
 			// @TODO add for debugging purpose a check if this was the one which was last opened
 			result = 'end';
-		} else if(type[0] == '#else') {
+		} else if( type[ 0 ] == '#else' ) {
 			result = 'else';
-		} else if(type[0][0] == '#') {
-			result.type = type[0].slice(1, type[0].length);
+		} else if( type[ 0 ][ 0 ] == '#' ) {
+			result.type = type[ 0 ].slice( 1, type[ 0 ].length );
 			type.shift();
-			if(type.length) result.depending = type;
-			if(result.type == 'echo') {
-				result.content  = block.slice(end + 2, block.length);
-				while( blocks[1] && blocks[1].indexOf('#bindAttr') === 0 ){
+			if( type.length ) result.depending = type;
+			if( result.type == 'echo' ){
+				result.content  = block.slice( end + 2, block.length );
+				while( blocks[ 1 ] && blocks[ 1 ].indexOf( '#bindAttr' ) === 0 ){
 					if( !result.contains ) result.contains = [];
 					blocks.shift();
 					result.contains.push( this._parseBlock( blocks ));
@@ -69,25 +69,25 @@
 			}
 		} else {
 			result.type = 'variable';
-			result.depending = [type[0]];
+			result.depending = [ type[ 0 ] ];
 		}
 
 		blocks.shift();
 
-		this._handleOverlength(block, blocks);
-		this._handleElse(result, blocks);
+		this._handleOverlength( block, blocks );
+		this._handleElse( result, blocks );
 
 		return result;
 	};
 	////-----------------------------------------------------------------------------------------
 	// Checks if an block-has the {{else}} possibility and adds elseContains
-	tempartParser._handleElse = function(result, blocks) {
-		if(this.needsEnd.indexOf(result.type) != -1) {
-			var contains = this._parseBlocks(blocks);
-			if(contains) {
+	tempartParser._handleElse = function( result, blocks ){
+		if( this.needsEnd.indexOf( result.type ) != -1 ){
+			var contains = this._parseBlocks( blocks );
+			if( contains ){
 				result.contains = contains.content;
-				if(contains.end == 'else') {
-					result.elseContains = this._parseBlocks(blocks).content;
+				if( contains.end == 'else' ){
+					result.elseContains = this._parseBlocks( blocks ).content;
 				} else {
 					result.elseContains = [];
 				}
@@ -96,25 +96,25 @@
 	};
 	////-----------------------------------------------------------------------------------------
 	// Checks if an block has an html-string behind it
-	tempartParser._handleOverlength = function(block, blocks) {
-		var end = this._getEnd(block);
-		if(block.length > end + 2 && block.slice(0, end) != '#echo') { // Handling of not-variable stuff
-			blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
+	tempartParser._handleOverlength = function( block, blocks ){
+		var end = this._getEnd( block );
+		if( block.length > end + 2 && block.slice( 0, end ) != '#echo' ){ // Handling of not-variable stuff
+			blocks.unshift(this._addEcho( block.slice( end + 2, block.length )));
 		}
 	};
 	////-----------------------------------------------------------------------------------------
 	// plain html without any variable
-	tempartParser._addEcho = function(echo) {
+	tempartParser._addEcho = function( echo ){
 		return '#echo}}' +  echo;
 	};
 	////-----------------------------------------------------------------------------------------
 	// returns int on which position the }} are existent
-	tempartParser._getEnd = function(block) {
-		return block.indexOf('}}');
+	tempartParser._getEnd = function( block ){
+		return block.indexOf( '}}' );
 	};
 	////-----------------------------------------------------------------------------------------
 	// escaping backslashes, single quotes, and newlines
-	tempartParser._escapeSpecials = function(templateContent) {
+	tempartParser._escapeSpecials = function( templateContent ){
 		return templateContent;
 		// return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\r/g, '');
 	};
