@@ -170,7 +170,6 @@
 				return '<' +this.options.domNode+ ' ' +this.options.attrStart+ '="' +prefix + '"></' +this.options.domNode+ '>';
 			},
 			suffix: function( suffix ){
-				// debugger;
 				return '<' +this.options.domNode+ ' ' +this.options.attrEnd+ '="' +suffix + '"></' +this.options.domNode+ '>';
 			},
 			random: function() {
@@ -242,14 +241,27 @@
 	};
 
 	tempartCompiler.dom = {
+		////-----------------------------------------------------------------------------------------
+		// Puts the things where they belong
 		prepend: function( prefix, html ){
-			this.obj( prefix, tempartCompiler.types.executes.options.attrStart).after( html );
+			this.obj( prefix, tempartCompiler.types.executes.options.attrStart).insertAdjacentHTML( 'afterend', html );
 		},
+		////-----------------------------------------------------------------------------------------
+		// Puts the things where they belong
 		append: function( prefix, html ){
-			this.obj( prefix, tempartCompiler.types.executes.options.attrEnd).before( html );
+			this.obj( prefix, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
 		},
+		////-----------------------------------------------------------------------------------------
+		// Builds jquery-query
+		// @FIXME change this to browser-behaviour to avoid dependency
 		obj: function( prefix, attr ){
-			return $('[' + attr + '=' + prefix + ']' );
+			var objs = document.querySelectorAll( '[' + attr + ']' );
+			for(var i = 0; i < objs.length; i++) {
+				var obj = objs[ i ];
+				if( obj.getAttribute( attr ) === prefix ){
+					return obj;
+				}
+			}
 		}
 	};
 }(typeof module == 'object' ? module.exports : window.tempartCompiler= {}));
