@@ -60,7 +60,12 @@
 			type.shift();
 			if(type.length) result.depending = type;
 			if(result.type == 'echo') {
-				result.content = block.slice(end + 2, block.length);
+				result.content  = block.slice(end + 2, block.length);
+				while( blocks[1] && blocks[1].indexOf('#bindAttr') === 0 ){
+					if( !result.contains ) result.contains = [];
+					blocks.shift();
+					result.contains.push( this._parseBlock( blocks ));
+				}
 			}
 		} else {
 			result.type = 'variable';

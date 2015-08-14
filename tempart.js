@@ -56,8 +56,12 @@
 	// returns the compiled block, depending on the inserted data
 	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix ){
 		var detailPrefix = prefix + this.types.executes.options.prefixDelimiter + block.id;
-		if(block.type === 'log') { // No need for pre and suffix at an log
-			return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix );
+		if(block.type === 'log' || block.type === 'bindAttr' ) { // No need for pre and suffix at log/attribute-bindings
+			if( dirties === '*' ){
+				return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix );
+			} else {
+				return this.types.dirties[block.type]( block, content, local, currentValues, dirties, path, prefix );
+			}
 		} else {
 			if( dirties === '*' ){
 				return this.types.executes.prefix( detailPrefix ) + this.types[ block.type ]( block, content, local, currentValues, dirties, path, prefix ) + this.types.executes.suffix( detailPrefix );
@@ -73,8 +77,8 @@
 	tempartCompiler.types = {
 		////-----------------------------------------------------------------------------------------
 		// checks if a variable changed and update its attribute
-		bindAttr: function( block, content, local, currentValues, dirties ){
-			throw 'Not yet implemented';
+		bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
+			return this.executes.options.attrStart+ '="' +prefix + '"';
 		},
 		////-----------------------------------------------------------------------------------------
 		// returns a variable
