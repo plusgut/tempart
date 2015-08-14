@@ -30,7 +30,13 @@
 				result[key] = {append: [], prepend: [], update: []};
 				for( var i = 0; i < dirty.length; i++ ){
 					var entity = dirty[ i ];
-					result[ key ][ batchMap[ entity.type ]].push( entity.value );
+					var type = batchMap[ entity.type ];
+					if( type == 'update' ){
+						result[ key ][ type ] = entity.value;
+						break; // Update is alway a reference, prepend update are included
+					} else {
+						result[ key ][ type ].push( entity.value );
+					}
 				}
 			}
 		}
@@ -199,7 +205,7 @@
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				if( dirties[ key ] !== undefined ){
-					var types = ['prepend', 'append'];
+					var types = ['update', 'prepend', 'append'];
 					for( var i = 0; i < types.length; i++ ){
 						var type  = types[ i ];
 						var value = dirties[ key ][ type ];
@@ -208,17 +214,23 @@
 							var tmpCurrentValues = {};
 							// @FIXME overwriting result is not possible in server side
 							var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
-							for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
-								var rand = null;
-								if( type == 'append' ){
-									rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
-									currentValues[ block.id ].order.push( rand );
-								} else {
-									var order = tmpCurrentValues[ block.id ].order;
-									rand =  order[ order.length - orderIndex - 1];
-									currentValues[ block.id ].order.unshift( rand );
+							if( type === 'update' ){
+								currentValues[ block.id ] = tmpCurrentValues[ block.id ];
+							} else {
+								for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
+									var rand = null;
+									if( type === 'append' ){
+										rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
+										currentValues[ block.id ].order.push( rand );
+									} else if( type === 'prepend' ){
+										var order = tmpCurrentValues[ block.id ].order;
+										rand =  order[ order.length - orderIndex - 1];
+										currentValues[ block.id ].order.unshift( rand );
+									} else {
+										throw 'Unknown type!';
+									}
+									currentValues[ block.id ].values[ rand ] = tmpCurrentValues[ block.id ].values[ rand ];
 								}
-								currentValues[ block.id ].values[ rand ] = tmpCurrentValues[ block.id ].values[ rand ];
 							}
 							tempartCompiler.dom[ type ]( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, result );
 							tempartCompiler.types.executes.unset( key, local ); // @FIXME is this actually needed?
@@ -241,7 +253,7 @@
 				var previous = currentValues[ block.id ];
 				var now      = tempartCompiler.types[ block.type ]( block, content, local, currentValues, dirties );
 				if( previous != now ){
-					tempartCompiler.dom.updateNode( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
+					tempartCompiler.dom.update( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
 				}
 			},
 			////-----------------------------------------------------------------------------------------
@@ -260,7 +272,7 @@
 				} else {
 					currentValues[ block.id ].type = type;
 					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix);
-					tempartCompiler.dom.updateNode( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
+					tempartCompiler.dom.update( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
 				}
 				
 			},
@@ -286,7 +298,7 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// Realises nextUntil and its replacement
-		updateNode: function( id, html ) {
+		update: function( id, html ) {
 			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
 			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
 			while( first.nextSibling != end ) {
