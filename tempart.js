@@ -85,19 +85,11 @@
 		////-----------------------------------------------------------------------------------------
 		// calls handleBlocks depending on the data contributed
 		if: function( block, content, local, currentValues, dirties, path, prefix ) {
-			var type   = 'elseContains';
-			if(this.executes.get(block.depending[ 0 ], content, local )) {
-				type   = 'contains';
-			}
-
-			if( dirties != '*' && currentValues[ block.id ] != type) {
-				throw 'Not yet implemented';
-			} else {
-				currentValues[ block.id ] = type;
-			}
+			var type = this.executes.condition( block.depending[ 0 ], content, local );
+			currentValues[ block.id ] = {type: type, contains: {}};
 			prefix += this.executes.options.prefixDelimiter + block.id;
 
-			return tempartCompiler._handleBlocks(block[type], content, local, currentValues, dirties, path, prefix);
+			return tempartCompiler._handleBlocks(block[type], content, local, currentValues[block.id].contains, dirties, path, prefix);
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
@@ -179,6 +171,13 @@
 			},
 			random: function() {
 				return Math.random().toString(36).substring(7);
+			},
+			condition: function( key, global, local ){
+				if(this.get( key, global, local )) {
+					return 'contains';
+				} else {
+					return 'elseContains';
+				}
 			}
 		},
 		dirties: {
@@ -239,8 +238,20 @@
 			////-----------------------------------------------------------------------------------------
 			// only updates when something is different, or an contains depending changed
 			// @TODO
-			if: function() {
+			if: function( block, content, local, currentValues, dirties, path, prefix ) {
+				var type = tempartCompiler.types.executes.condition( block.depending[ 0 ], content, local );
 
+				if( currentValues[ block.id ].type != type ){
+					currentValues[ block.id ].type = type;
+					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix);
+					tempartCompiler.dom.updateNode( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
+				} else {
+					currentValues[ block.id ] = {type: type, contains: {}};
+					prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+
+					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix);
+				}
+				
 			},
 			////-----------------------------------------------------------------------------------------
 			// I actually don't know what exactly will happen here, some dependencieneeds to be done...
@@ -271,7 +282,7 @@
 			first.insertAdjacentHTML( 'beforebegin', html );
 		},
 		////-----------------------------------------------------------------------------------------
-		// Builds jquery-query
+		// Searches for the right objects
 		obj: function( id, attr ){
 			var objs = document.querySelectorAll( '[' + attr + ']' );
 			for(var i = 0; i < objs.length; i++) {
