@@ -21,7 +21,7 @@
 	tempartCompiler._batchDirties = function( dirties ){
 		if( dirties === '*' ) return dirties;
 		var result = {};
-		var batchMap = {push: 'append', shift: 'prepend'};
+		var batchMap = {push: 'append', unshift: 'prepend'};
 		// @TODO update / remove
 		for( var key in dirties ){
 			if( dirties.hasOwnProperty( key )){
@@ -193,11 +193,14 @@
 							var tmpCurrentValues = {};
 							var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
 							for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
-								rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
-								if( type == 'prepend' ){
+								var rand = null;
+								if( type == 'append' ){
+									rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
 									currentValues[ block.id ].order.push( rand );
 								} else {
-									currentValues[ block.id ].order.shift( rand );
+									var order = tmpCurrentValues[ block.id ].order;
+									rand =  order[ order.length - orderIndex - 1];
+									currentValues[ block.id ].order.unshift( rand );
 								}
 								currentValues[ block.id ].values[ rand ] = tmpCurrentValues[ block.id ].values[ rand ];
 							}
