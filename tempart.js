@@ -18,6 +18,7 @@
 	};
 	////-----------------------------------------------------------------------------------------
 	// batches the dirties
+	// @FIXME shouldn't be inside lib, should be given as this in the parameter
 	tempartCompiler._batchDirties = function( dirties ){
 		if( dirties === '*' ) return dirties;
 		var result = {};
@@ -64,6 +65,11 @@
 	////-----------------------------------------------------------------------------------------
 	// Contains the possible handlers
 	tempartCompiler.types = {
+		////-----------------------------------------------------------------------------------------
+		// checks if a variable changed and update its attribute
+		bindAttr: function( block, content, local, currentValues, dirties ){
+			throw 'Not yet implemented';
+		},
 		////-----------------------------------------------------------------------------------------
 		// returns a variable
 		variable: function( block, content, local, currentValues, dirties ){
@@ -152,10 +158,9 @@
 			_get: function( keyParts, global) {
 				var firstKey = keyParts.shift();
 				if(!keyParts.length) {
-
 					return global[ firstKey ];
 				} else {
-					return this.get( keyParts, value, global[ firstKey ] );
+					return this._get( keyParts, global[ firstKey ] );
 				}
 			},
 			////-----------------------------------------------------------------------------------------
@@ -213,6 +218,11 @@
 					throw "Not yet implemented";
 				}
 				
+			},
+			////-----------------------------------------------------------------------------------------
+			// checks if a variable changed and update its attribute
+			bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
+				throw 'Not yet implemented';
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed
