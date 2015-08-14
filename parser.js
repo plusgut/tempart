@@ -46,7 +46,7 @@
 		var block = blocks[ 0 ];
 		var result = {};
 		var end = this._getEnd( block);
-		var type = block.slice( 0, end).split( ' ' );
+		var type = block.slice( 0, end ).split( ' ' );
 		if( type[ 0 ][ 0 ] == '>' ) {
 			result.type = 'partial';
 			result.path = type[ 0 ].slice( 1, type[ 0 ].length );
