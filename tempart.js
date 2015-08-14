@@ -160,18 +160,28 @@
 			set: function( key, value, scope ){
 				scope[ key ] = value;
 			},
+			////-----------------------------------------------------------------------------------------
+			// Removes some values from the local place
 			unset: function( key, scope ){
 				delete scope[key];
 			},
+			////-----------------------------------------------------------------------------------------
+			// Generates start-element of an block
 			prefix: function( prefix ){
 				return '<' +this.options.domNode+ ' ' +this.options.attrStart+ '="' +prefix + '"></' +this.options.domNode+ '>';
 			},
+			////-----------------------------------------------------------------------------------------
+			// Generates end-element of an block
 			suffix: function( suffix ){
 				return '<' +this.options.domNode+ ' ' +this.options.attrEnd+ '="' +suffix + '"></' +this.options.domNode+ '>';
 			},
+			////-----------------------------------------------------------------------------------------
+			// Generates a random string (needed for length changing #each)
 			random: function() {
 				return Math.random().toString(36).substring(7);
 			},
+			////-----------------------------------------------------------------------------------------
+			// decides what type will be used
 			condition: function( key, global, local ){
 				if(this.get( key, global, local )) {
 					return 'contains';
@@ -180,6 +190,8 @@
 				}
 			}
 		},
+		////-----------------------------------------------------------------------------------------
+		// Special implementation of each lazy-block
 		dirties: {
 			////-----------------------------------------------------------------------------------------
 			// only changed values should be iterated, or when in contains dependings something changed
@@ -241,15 +253,14 @@
 			if: function( block, content, local, currentValues, dirties, path, prefix ) {
 				var type = tempartCompiler.types.executes.condition( block.depending[ 0 ], content, local );
 
-				if( currentValues[ block.id ].type != type ){
+				if( currentValues[ block.id ].type == type ){
+					currentValues[ block.id ] = {type: type, contains: {}};
+					prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix);
+				} else {
 					currentValues[ block.id ].type = type;
 					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix);
 					tempartCompiler.dom.updateNode( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
-				} else {
-					currentValues[ block.id ] = {type: type, contains: {}};
-					prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
-
-					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix);
 				}
 				
 			},
@@ -273,6 +284,8 @@
 		append: function( id, html ){
 			this.obj( id, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
 		},
+		////-----------------------------------------------------------------------------------------
+		// Realises nextUntil and its replacement
 		updateNode: function( id, html ) {
 			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
 			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
