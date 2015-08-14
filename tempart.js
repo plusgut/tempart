@@ -21,12 +21,12 @@
 	tempartCompiler._batchDirties = function( dirties ){
 		if( dirties === '*' ) return dirties;
 		var result = {};
-		var batchMap = {push: 'append', unshift: 'prepend'};
+		var batchMap = {push: 'append', unshift: 'prepend', set: 'update'};
 		// @TODO update / remove
 		for( var key in dirties ){
 			if( dirties.hasOwnProperty( key )){
 				var dirty = dirties[ key ];
-				result[key] = {append: [], prepend: []};
+				result[key] = {append: [], prepend: [], update: []};
 				for( var i = 0; i < dirty.length; i++ ){
 					var entity = dirty[ i ];
 					result[ key ][ batchMap[ entity.type ]].push( entity.value );
@@ -190,6 +190,7 @@
 						if( value.length ){
 							tempartCompiler.types.executes.set( key, value, local );
 							var tmpCurrentValues = {};
+							// @FIXME overwriting result is not possible in server side
 							var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
 							for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
 								var rand = null;
@@ -219,7 +220,7 @@
 				var previous = currentValues[ block.id ];
 				var now      = tempartCompiler.types[ block.type ]( block, content, local, currentValues, dirties );
 				if( previous != now ){
-					debugger;
+					tempartCompiler.dom.updateNode( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
 				}
 			},
 			////-----------------------------------------------------------------------------------------
@@ -243,22 +244,29 @@
 	tempartCompiler.dom = {
 		////-----------------------------------------------------------------------------------------
 		// Puts the things where they belong
-		prepend: function( prefix, html ){
-			this.obj( prefix, tempartCompiler.types.executes.options.attrStart).insertAdjacentHTML( 'afterend', html );
+		prepend: function( id, html ){
+			this.obj( id, tempartCompiler.types.executes.options.attrStart).insertAdjacentHTML( 'afterend', html );
 		},
 		////-----------------------------------------------------------------------------------------
 		// Puts the things where they belong
-		append: function( prefix, html ){
-			this.obj( prefix, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
+		append: function( id, html ){
+			this.obj( id, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
+		},
+		updateNode: function( id, html ) {
+			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
+			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
+			while( first.nextSibling != end ) {
+				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
+			}
+			first.insertAdjacentHTML( 'beforebegin', html );
 		},
 		////-----------------------------------------------------------------------------------------
 		// Builds jquery-query
-		// @FIXME change this to browser-behaviour to avoid dependency
-		obj: function( prefix, attr ){
+		obj: function( id, attr ){
 			var objs = document.querySelectorAll( '[' + attr + ']' );
 			for(var i = 0; i < objs.length; i++) {
 				var obj = objs[ i ];
-				if( obj.getAttribute( attr ) === prefix ){
+				if( obj.getAttribute( attr ) === id ){
 					return obj;
 				}
 			}
