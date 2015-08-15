@@ -255,14 +255,13 @@
 					}
 				} else {
 					// @TODO searchblocks
-					throw "Not yet implemented";
+					// throw "Not yet implemented";
 				}
 				
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed and update its attribute
 			bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
-				// throw 'Not yet implemented';
 				for(var i = 0; i < block.order.length; i++) {
 					var attribute = block.order[ i ];
 					var dependingBlock = block.contains[ i ];
@@ -335,7 +334,7 @@
 			while( first.nextSibling != end ) {
 				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
 			}
-			first.insertAdjacentHTML( 'beforebegin', html );
+			first.insertAdjacentHTML( 'afterend', html );
 		},
 		////-----------------------------------------------------------------------------------------
 		// Updates only the attributes of an dom element
