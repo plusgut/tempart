@@ -59,7 +59,7 @@
 	// returns the compiled block, depending on the inserted data
 	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix ){
 		var detailPrefix = prefix + this.types.executes.options.prefixDelimiter + block.id;
-		if(block.type === 'log' || block.type === 'bindAttr' ) { // No need for pre and suffix at log/attribute-bindings
+		if(block.type === 'log' || block.type === 'bindAttr' ){ // No need for pre and suffix at log/attribute-bindings
 			if( dirties === '*' ){
 				return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix );
 			} else {
@@ -72,7 +72,6 @@
 				return this.types.dirties[ block.type ]( block, content, local, currentValues, dirties, path, prefix );
 			}
 		}
-		
 	};
 
 	////-----------------------------------------------------------------------------------------
@@ -81,7 +80,18 @@
 		////-----------------------------------------------------------------------------------------
 		// checks if a variable changed and update its attribute
 		bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
-			return this.executes.options.attrStart+ '="' +prefix + '"';
+			var result = block.content;
+			result += this.executes.options.attrStart + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
+			// @TODO is it a good idea to add attrEnd?
+			// result += this.executes.options.attrEnd   + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
+			currentValues[ block.id ] = {};
+			for( var i = 0; i < block.order.length; i++ ){
+				result += block.order[ i ] + '="';
+				var depending = block.contains[ i ];
+				result += this[depending.type]( depending, content, local, currentValues[ block.id ], dirties, path, prefix ) + '" ';
+			}
+			result += '>';
+			return result;
 		},
 		////-----------------------------------------------------------------------------------------
 		// returns a variable
