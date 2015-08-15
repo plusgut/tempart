@@ -97,7 +97,7 @@
 		// returns a variable
 		variable: function( block, content, local, currentValues, dirties ){
 			var value = this.executes.get(block.depending[ 0 ], content, local );
-			if(value === undefined) value = '';
+			if( !value ) value = '';
 			currentValues[ block.id ] = value;
 			return value;
 		},
@@ -113,7 +113,7 @@
 			currentValues[ block.id ] = {type: type, contains: {}};
 			prefix += this.executes.options.prefixDelimiter + block.id;
 
-			return tempartCompiler._handleBlocks(block[type], content, local, currentValues[block.id].contains, dirties, path, prefix);
+			return tempartCompiler._handleBlocks(block[type], content, local, currentValues[block.id].contains, dirties, path, prefix );
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
@@ -174,7 +174,11 @@
 			_get: function( keyParts, global) {
 				var firstKey = keyParts.shift();
 				if(!keyParts.length) {
-					return global[ firstKey ];
+					if(global) {
+						return global[ firstKey ];
+					} else {
+						return undefined;
+					}
 				} else {
 					return this._get( keyParts, global[ firstKey ] );
 				}
@@ -271,6 +275,7 @@
 						if(dirties[depending]) {
 							var oldValue = currentValues[ block.id ][ dependingBlock.id ];
 							var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
+
 							if(oldValue != newValue) {
 								tempartCompiler.dom.updateAttribute(prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, attribute, newValue);
 							}
@@ -299,10 +304,10 @@
 				if( currentValues[ block.id ].type == type ){
 					currentValues[ block.id ] = {type: type, contains: {}};
 					prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
-					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix);
+					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix );
 				} else {
 					currentValues[ block.id ].type = type;
-					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix);
+					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix );
 					tempartCompiler.dom.update( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
 				}
 				
