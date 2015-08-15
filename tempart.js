@@ -300,15 +300,15 @@
 			// @TODO
 			if: function( block, content, local, currentValues, dirties, path, prefix ) {
 				var type = tempartCompiler.types.executes.condition( block.depending[ 0 ], content, local );
-
+				prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
 				if( currentValues[ block.id ].type == type ){
 					currentValues[ block.id ] = {type: type, contains: {}};
-					prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
 					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix );
 				} else {
 					currentValues[ block.id ].type = type;
 					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix );
-					tempartCompiler.dom.update( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, now );
+					tempartCompiler.dom.remove( prefix );
+					tempartCompiler.dom.append( prefix, now );
 				}
 				
 			},
@@ -334,13 +334,20 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// Realises nextUntil and its replacement
-		update: function( id, html ) {
+		update: function( id, html ){
 			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
 			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
 			while( first.nextSibling != end ) {
 				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
 			}
 			first.insertAdjacentHTML( 'afterend', html );
+		},
+		remove: function( id ){
+			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
+			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
+			while( first.nextSibling != end ) {
+				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
+			}
 		},
 		////-----------------------------------------------------------------------------------------
 		// Updates only the attributes of an dom element
