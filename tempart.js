@@ -97,6 +97,7 @@
 		// returns a variable
 		variable: function( block, content, local, currentValues, dirties ){
 			var value = this.executes.get(block.depending[ 0 ], content, local );
+			if(value === undefined) value = '';
 			currentValues[ block.id ] = value;
 			return value;
 		},
