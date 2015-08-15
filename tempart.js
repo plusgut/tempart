@@ -12,6 +12,9 @@
 	// returns the html and adds context to currentValues
 	// path is not used, it only is passed to partial
 	tempartCompiler.compile = function( blocks, content, currentValues, dirties, path, prefix ){
+		if(!currentValues) currentValues = {};
+		if(!dirties) dirties = '*';
+		if(!path) path = '/';
 		if(!prefix) prefix = '';
 		var local = {};
 		return this._handleBlocks(blocks, content, local, currentValues, this._batchDirties( dirties ), path, prefix);

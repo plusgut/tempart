@@ -1,10 +1,20 @@
-{{mep}} <div></div><span>{{echotext}}</span>
-{{#if checkText}}
-	mep
-{{#else}}
-	möp
-{{/if}}
+{{regards}}
 
-{{#each arr as entity}}
-	{{entity}}
-{{/each}}
+{{#if serious}}
+	!
+{{#else}}
+	?
+{{/#if}}
+
+<input value={{new}} type="text" class={{classVariable}} name="test">
+{{arr.length}}
+<ul>
+	{{#each arr as entity}}
+		<li>{{entity}}</li>
+		{{#log entity}}
+	{{#else}}
+		<li>liste leer</li>
+	{{/each}}
+</ul>
+
+{{>sub}}
