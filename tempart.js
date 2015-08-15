@@ -87,8 +87,8 @@
 			currentValues[ block.id ] = {};
 			for( var i = 0; i < block.order.length; i++ ){
 				result += block.order[ i ] + '="';
-				var depending = block.contains[ i ];
-				result += this[depending.type]( depending, content, local, currentValues[ block.id ], dirties, path, prefix ) + '" ';
+				var dependingBlock = block.contains[ i ];
+				result += this[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix ) + '" ';
 			}
 			result += '>';
 			return result;
@@ -263,6 +263,20 @@
 			// checks if a variable changed and update its attribute
 			bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
 				// throw 'Not yet implemented';
+				for(var i = 0; i < block.order.length; i++) {
+					var attribute = block.order[ i ];
+					var dependingBlock = block.contains[ i ];
+					for( var dependingIndex = 0; dependingIndex < dependingBlock.depending.length; dependingIndex++ ){
+						var depending = dependingBlock.depending[dependingIndex];
+						if(dirties[depending]) {
+							var oldValue = currentValues[ block.id ][ dependingBlock.id ];
+							var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
+							if(oldValue != newValue) {
+								tempartCompiler.dom.updateAttribute(prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, attribute, newValue);
+							}
+						}
+					}
+				}
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed
@@ -322,6 +336,20 @@
 				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
 			}
 			first.insertAdjacentHTML( 'beforebegin', html );
+		},
+		////-----------------------------------------------------------------------------------------
+		// Updates only the attributes of an dom element
+		updateAttribute: function( id, attribute, value ){
+			var obj = this.obj( id, tempartCompiler.types.executes.options.attrStart);
+			if( attribute === 'value' ){
+				if( obj[attribute] != value ){
+					obj[attribute] = value;
+				}
+			} else {
+				if( obj.getAttribute(attribute) != value ){
+					obj.setAttribute(attribute, value);
+				}
+			}
 		},
 		////-----------------------------------------------------------------------------------------
 		// Searches for the right objects
