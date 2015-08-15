@@ -110,10 +110,26 @@
 	};
 	tempartParser._buildBindAttr = function( result, blocks ){
 		var block               = blocks[ 0 ];
-		var detailResult        = result[ 0 ];
-		var lastElementPosition = detailResult.content.lastIndexOf( '>' );
+		var lastElementPosition = result[ 0 ].content.lastIndexOf( '<' );
 		var content             = block[ 0 ].content;
 		var done                = false;
+		var bindAttr            = null;
+		if( lastElementPosition === 0 ){
+			detailResult.type = 'bindAttr';
+			detailResult.depending = [];
+			detailResult        = result[ 0 ];
+		} else {
+			var swap = result.shift();
+			result.unshift({
+				type: 'bindAttr',
+				contains: [],
+				content: swap.content.slice(lastElementPosition, swap.content.length),
+				order: []
+			});
+			swap.content = swap.content.slice(0, lastElementPosition);
+			result.unshift( swap );
+			detailResult        = result[ 1 ];
+		}
 		while( this._isInsideHtml( detailResult.content )){
 			if( blocks[ 0 ].indexOf( '#echo' ) === 0 ){
 				var end = blocks[ 0 ].indexOf( '>' );
@@ -127,19 +143,14 @@
 					break;
 				}
 			} else {
-				if( !detailResult.contains ) detailResult.contains = [];
+				var attribute = this._removeLastAttribute(result[ result.length - 1]);
 				var contains = this._parseBlock( blocks );
 				if( contains.length > 1) throw 'Something weird is happening here';
 				detailResult.contains.push( contains[ 0 ]);
+				detailResult.order.push( attribute );
 			}
 		}
-		if( lastElementPosition === 0 ){
-			detailResult.type = 'bindAttr';
-			detailResult.depending = [];
-			throw 'Not done yet!';
-		} else {
-			var bindAttr = '#bindAttr ';
-		}
+
 	};
 	////-----------------------------------------------------------------------------------------
 	// plain html without any variable
@@ -157,14 +168,18 @@
 		return templateContent;
 		// return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\r/g, '');
 	};
+	////-----------------------------------------------------------------------------------------
+	// Counts beginning tags
 	tempartParser._countOpen = function( templateContent ){
 		return ( templateContent.match( /</g  ) || []).length;
 	};
-
+	////-----------------------------------------------------------------------------------------
+	// escaping backslashes, single quotes, and newlines
 	tempartParser._countClose = function( templateContent ){
 		return ( templateContent.match( />/g  ) || []).length;
 	};
-
+	////-----------------------------------------------------------------------------------------
+	// counts closing tags
 	tempartParser._isInsideHtml = function( templateContent ){
 		// Counts the opening and closing tags
 		if( this._countOpen( templateContent ) === this._countClose( templateContent )) {
@@ -172,5 +187,16 @@
 		} else {
 			return true;
 		}
+	};
+
+	////-----------------------------------------------------------------------------------------
+	// parses the element and removes beginning attribute and returns the key
+	tempartParser._removeLastAttribute = function( block ){
+		var equalPos       = block.content.lastIndexOf( '=' );
+		var attributeBlock = block.content.slice(0, equalPos );
+		var attributePos   = attributeBlock.lastIndexOf( ' ' );
+		var attribute      = attributeBlock.slice( attributePos, attributeBlock.length).trim();
+		block.content      = attributeBlock.slice( 0 , attributePos);
+		return attribute;
 	};
 }(typeof module == 'object' ? module.exports : window.tempartParser = {}));

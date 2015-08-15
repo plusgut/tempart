@@ -252,7 +252,7 @@
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed and update its attribute
 			bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
-				throw 'Not yet implemented';
+				// throw 'Not yet implemented';
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed

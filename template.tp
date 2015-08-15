@@ -6,7 +6,7 @@
 	?
 {{/#if}}
 
-<input value={{new}} type="text" class={{classVariable}} name="test">
+<input alt="alternative text" value={{new}} type="text" class={{classVariable}} name="test">
 {{arr.length}}
 <ul>
 	{{#each arr as entity}}
