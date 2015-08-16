@@ -51,7 +51,7 @@
 		var block = blocks[ 0 ];
 		var result = [{}];
 		var end = this._getEnd( block);
-		var type = block.slice( 0, end ).split( ' ' );
+		var type = block.slice( 0, end ).trim().split( ' ' );
 		var gotRemoved = false;
 		if( type[ 0 ][ 0 ] == '>' ) {
 			result[ 0 ].type = 'partial';
@@ -63,8 +63,18 @@
 			result[ 0 ] = 'else';
 		} else if( type[ 0 ][ 0 ] == '#' ) {
 			result[ 0 ].type = type[ 0 ].slice( 1, type[ 0 ].length );
-			type.shift();
-			if( type.length ) result[ 0 ].depending = type;
+			if( type.length ) {
+				var dependings = [];
+				for(var typeIndex = 1; typeIndex < type.length; typeIndex++){
+					if(type[ 0 ] === '#each' && type[ typeIndex ] === 'as') continue;
+					var dependingParts = type[ typeIndex ].split( ',' );
+					for(var dependingIndex = 0; dependingIndex < dependingParts.length; dependingIndex++){
+						if( dependingParts[ dependingIndex ]) dependings.push( dependingParts[ dependingIndex ]);
+					}
+				}
+				result[ 0 ].depending = dependings;
+			}
+
 			if( result[ 0 ].type == 'echo' ){
 				result[ 0 ].content  = block.slice( end + 2, block.length );
 				gotRemoved = true;

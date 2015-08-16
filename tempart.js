@@ -80,7 +80,7 @@
 		var result = [];
 		for( var blockIndex = 0; blockIndex < blocks.length; blockIndex++ ){
 			var block = blocks[ blockIndex];
-			if( block.depending) {
+			if( block.depending ){
 				for( var dependingIndex = 0; dependingIndex < block.depending.length; dependingIndex++ ){
 					var depending = block.depending[ dependingIndex ];
 					if( dirties.hasOwnProperty( depending ) && depending != exclude ) {
@@ -161,9 +161,13 @@
 				for(var i = 0; i < value.length; i++) {
 					var rand = this.executes.random();
 					currentValues[ block.id ].values[ rand ] = {};
-					currentValues[block.id].order.push( rand );
+					currentValues[ block.id ].order.push( rand );
 					var detailPrefix = prefix + this.executes.options.prefixDelimiter + block.id + ':' + rand;
-					this.executes.set( block.depending[2], value[i], local );
+					this.executes.set( block.depending[ block.depending.length - 1 ], value[i], local );
+					if( block.depending.length > 2) {
+						this.executes.set( block.depending[ 1 ], i, local );
+					}
+
 					result += tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix );
 				}
 				return result;
