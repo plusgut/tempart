@@ -75,6 +75,12 @@
 	};
 
 	////-----------------------------------------------------------------------------------------
+	// logic xor
+	tempartCompiler.xor = function(a,b) {
+		return ( a || b ) && !( a && b );
+	};
+
+	////-----------------------------------------------------------------------------------------
 	// Contains the possible handlers
 	tempartCompiler.types = {
 		////-----------------------------------------------------------------------------------------
@@ -226,36 +232,43 @@
 			each: function( block, content, local, currentValues, dirties, path, prefix ){
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
+				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
 				if( dirties[ key ] !== undefined ){
-					var types = ['update', 'prepend', 'append'];
-					for( var i = 0; i < types.length; i++ ){
-						var type  = types[ i ];
-						var value = dirties[ key ][ type ];
-						if( value.length ){
-							tempartCompiler.types.executes.set( key, value, local );
-							var tmpCurrentValues = {};
-							// @FIXME overwriting result is not possible in server side
-							var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
-							if( type === 'update' ){
-								currentValues[ block.id ] = tmpCurrentValues[ block.id ];
-							} else {
-								for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
-									var rand = null;
-									if( type === 'append' ){
-										rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
-										currentValues[ block.id ].order.push( rand );
-									} else if( type === 'prepend' ){
-										var order = tmpCurrentValues[ block.id ].order;
-										rand =  order[ order.length - orderIndex - 1];
-										currentValues[ block.id ].order.unshift( rand );
-									} else {
-										throw 'Unknown type!';
+					if( tempartCompiler.xor( currentValues[ block.id ].order.length, tempartCompiler.types.executes.get( key, content, local ).length )){
+						tempartCompiler.dom.remove( detailPrefix );
+						var html = tempartCompiler.types[ block.type ]( block, content, local, currentValues, '*', path, prefix );
+						tempartCompiler.dom.append( detailPrefix, html );
+					} else {
+						var types = ['update', 'prepend', 'append'];
+						for( var i = 0; i < types.length; i++ ){
+							var type  = types[ i ];
+							var value = dirties[ key ][ type ];
+							if( value.length ){
+								tempartCompiler.types.executes.set( key, value, local );
+								var tmpCurrentValues = {};
+								// @FIXME overwriting result is not possible in server side
+								var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
+								if( type === 'update' ){
+									currentValues[ block.id ] = tmpCurrentValues[ block.id ];
+								} else {
+									for( var orderIndex = 0; orderIndex < tmpCurrentValues[ block.id ].order.length; orderIndex++ ) {
+										var rand = null;
+										if( type === 'append' ){
+											rand =  tmpCurrentValues[ block.id ].order[ orderIndex ];
+											currentValues[ block.id ].order.push( rand );
+										} else if( type === 'prepend' ){
+											var order = tmpCurrentValues[ block.id ].order;
+											rand =  order[ order.length - orderIndex - 1];
+											currentValues[ block.id ].order.unshift( rand );
+										} else {
+											throw 'Unknown type!';
+										}
+										currentValues[ block.id ].values[ rand ] = tmpCurrentValues[ block.id ].values[ rand ];
 									}
-									currentValues[ block.id ].values[ rand ] = tmpCurrentValues[ block.id ].values[ rand ];
 								}
+								tempartCompiler.dom[ type ]( detailPrefix, result );
+								tempartCompiler.types.executes.unset( key, local ); // @FIXME is this actually needed?
 							}
-							tempartCompiler.dom[ type ]( prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, result );
-							tempartCompiler.types.executes.unset( key, local ); // @FIXME is this actually needed?
 						}
 					}
 				} else {
