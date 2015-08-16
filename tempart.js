@@ -75,6 +75,35 @@
 	};
 
 	////-----------------------------------------------------------------------------------------
+	// Checks if anything given has a dependency - recusivly
+	tempartCompiler._hasDependency = function( blocks, dirties, exclude ){
+		var result = [];
+		for( var blockIndex = 0; blockIndex < blocks.length; blockIndex++ ){
+			var block = blocks[ blockIndex];
+			if( block.depending) {
+				for( var dependingIndex = 0; dependingIndex < block.depending.length; dependingIndex++ ){
+					var depending = block.depending[ dependingIndex ];
+					if( dirties.hasOwnProperty( depending ) && depending != exclude ) {
+						result.push( block );
+					}
+				}
+			}
+
+			var containTypes = ['contains', 'elseContains'];
+			for( var containIndex = 0; containIndex < containTypes.length; containIndex++ ){
+				if( block[ containTypes[ containIndex ]]){
+					var childrenDependency = this._hasDependency( block[ containTypes[ containIndex ]], dirties, exclude );
+
+					if( result ){ // Only stopping when i found something
+						result.push( block );
+					}
+				}
+			}
+		}
+		return result;
+	};
+
+	////-----------------------------------------------------------------------------------------
 	// logic xor
 	tempartCompiler.xor = function(a,b) {
 		return ( a || b ) && !( a && b );
@@ -233,6 +262,7 @@
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+
 				if( dirties[ key ] !== undefined ){
 					if( tempartCompiler.xor( currentValues[ block.id ].order.length, tempartCompiler.types.executes.get( key, content, local ).length )){
 						tempartCompiler.dom.remove( detailPrefix );
@@ -267,15 +297,48 @@
 									}
 								}
 								tempartCompiler.dom[ type ]( detailPrefix, result );
-								tempartCompiler.types.executes.unset( key, local ); // @FIXME is this actually needed?
+								tempartCompiler.types.executes.unset( key, local ); // @TODO is this actually needed?
 							}
 						}
 					}
-				} else {
-					// @TODO searchblocks
-					// throw "Not yet implemented";
 				}
-				
+
+				this._eachDependencyHelper( block, content, local, currentValues, dirties, path, prefix );
+			},
+			_eachDependencyHelper: function( block, content, local, currentValues, dirties, path, prefix ){
+				var previous = currentValues[ block.id ];
+				var key = block.depending[ 0 ];
+				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+				if( !dirties[ key ] || !dirties[ key ].update ) { // No need to check inside dependencies, when update already triggered
+					// Checks the dependencies, which are maybe defined outside the array scope
+					for( var index in dirties ){
+						if( dirties.hasOwnProperty( index ) && index != key ){
+							var containType = 'elseContains';
+							if( currentValues[block.id].order.length ) containType = 'contains';
+							var dependencies = tempartCompiler._hasDependency( block[ containType ], dirties, key );
+							if( dependencies.length){
+								console.log('something changed!');
+								if( containType == 'contains' ){ // @TODO completly untested
+									var values = this.get( key, local, global );
+									for( valueIndex = 0; valueIndex < values.length; valueIndex++ ){
+										tempartCompiler.types.executes.set( key, values[ valueIndex ], local );
+										for(var blockIndex = 0; blockIndex < dependencies.length; blockIndex++ ) {
+											var depencyBlock = dependencies[ blockIndex ];
+											var detailBlockPrefix = prefix + ':' + currentValues.order[ valueIndex ];
+											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues, dirties, path, detailBlockPrefix );
+										}
+									}
+									this.unset( key, local);
+								} else {
+									for(var elseBlockIndex = 0; elseBlockIndex < dependencies.length; elseBlockIndex++ ) {
+										var elseDepencyBlock = dependencies[ elseBlockIndex ];
+										tempartCompiler.types.dirties[ elseDepencyBlock.type ]( elseDepencyBlock, content, local, currentValues, dirties, path, detailPrefix );
+									}
+								}
+							}
+						}
+					}
+				}
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed and update its attribute
