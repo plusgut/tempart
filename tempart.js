@@ -132,7 +132,7 @@
 		// returns a variable
 		variable: function( block, content, local, currentValues, dirties ){
 			var value = this.executes.get(block.depending[ 0 ], content, local );
-			if( !value ) value = '';
+			if( value === undefined || value === null ) value = '';
 			currentValues[ block.id ] = value;
 			return value;
 		},
@@ -152,7 +152,8 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
-		each: function( block, content, local, currentValues, dirties, path, prefix ) {
+		each: function( block, content, local, currentValues, dirties, path, prefix, contentOffset ) {
+			if( !contentOffset ) contentOffset = 0;
 			var value = this.executes.get(block.depending[ 0 ], content, local );
 			currentValues[block.id] = {values: {}, order: []};
 
@@ -165,10 +166,14 @@
 					var detailPrefix = prefix + this.executes.options.prefixDelimiter + block.id + ':' + rand;
 					this.executes.set( block.depending[ block.depending.length - 1 ], value[i], local );
 					if( block.depending.length > 2) {
-						this.executes.set( block.depending[ 1 ], i, local );
+						this.executes.set( block.depending[ 1 ], i + contentOffset, local );
 					}
 
 					result += tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix );
+					//	this.executes.unset( block.depending[ block.depending.length - 1 ], local );
+					//	if( block.depending.length > 2) {
+					//		this.executes.unset( block.depending[ 1 ], local );
+					//	}
 				}
 				return result;
 			} else {
@@ -281,7 +286,9 @@
 								tempartCompiler.types.executes.set( key, value, local );
 								var tmpCurrentValues = {};
 								// @FIXME overwriting result is not possible in server side
-								var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix );
+								var contentOffset = 0;
+								if(type === 'append') contentOffset = currentValues[ block.id ].order.length;
+								var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix, contentOffset );
 								if( type === 'update' ){
 									currentValues[ block.id ] = tmpCurrentValues[ block.id ];
 								} else {
@@ -294,6 +301,9 @@
 											var order = tmpCurrentValues[ block.id ].order;
 											rand =  order[ order.length - orderIndex - 1];
 											currentValues[ block.id ].order.unshift( rand );
+											if( block.depending.length > 2 && !dirties[ block.depending[ 1 ] ]) {
+												dirties[ block.depending[ 1 ]] = {update: null}; // @TODO think about something smarter
+											}
 										} else {
 											throw 'Unknown type!';
 										}
@@ -313,6 +323,8 @@
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+				var eachIndex   = null;
+				if( block.depending.length > 2 ) eachIndex = block.depending[ 1 ];
 				if( !dirties[ key ] || !dirties[ key ].update.length ) { // No need to check inside dependencies, when update already triggered
 					// Checks the dependencies, which are maybe defined outside the array scope
 					for( var index in dirties ){
@@ -322,17 +334,23 @@
 							var dependencies = tempartCompiler._hasDependency( block[ containType ], dirties, key );
 							if( dependencies.length){
 								if( containType == 'contains' ){
-									var values                    = tempartCompiler.types.executes.get( key, content, local );
-									for( valueIndex               = 0; valueIndex < values.length; valueIndex++ ){
+									var values = tempartCompiler.types.executes.get( key, content, local );
+									for( valueIndex = 0; valueIndex < values.length; valueIndex++ ){
 										tempartCompiler.types.executes.set( key, values[ valueIndex ], local );
 										for(var blockIndex        = 0; blockIndex < dependencies.length; blockIndex++ ) {
 											var depencyBlock      = dependencies[ blockIndex ];
 											var rand              = currentValues[ block.id ].order[ valueIndex ];
 											var detailBlockPrefix = prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id + ':' + rand;
+											if( eachIndex == index ){
+												tempartCompiler.types.executes.set( eachIndex, valueIndex, local );
+											}
 											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailBlockPrefix );
+											//	if( eachIndex == index ){
+											//		tempartCompiler.types.executes.unset( eachIndex, local );
+											//	}
 										}
 									}
-									tempartCompiler.types.executes.unset( key, local);
+									// tempartCompiler.types.executes.unset( key, local);
 								} else {
 									for(var elseBlockIndex = 0; elseBlockIndex < dependencies.length; elseBlockIndex++ ) {
 										var elseDepencyBlock = dependencies[ elseBlockIndex ];

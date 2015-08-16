@@ -1,8 +1,8 @@
 {{variable}}<input alt="alternative text" value={{new}} type="text" class={{classVariable}} name="test">
 {{arr.length}}
 <ul>
-	{{#each arr as entity}}
-		<li>{{entity}}</li>
+	{{#each arr, index as entity}}
+		<li>{{index}}: {{entity}}</li>
 		{{#log entity}}
 	{{#else}}
 		<li>liste leer</li>
