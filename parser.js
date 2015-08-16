@@ -114,10 +114,14 @@
 		var content             = block[ 0 ].content;
 		var done                = false;
 		var bindAttr            = null;
+		var detailResult        = null;
 		if( lastElementPosition === 0 ){
-			detailResult.type = 'bindAttr';
+			detailResult           = result[ 0 ];
+			if(detailResult.type !== 'echo') console.error('does that even make sense?');
+			detailResult.type      = 'bindAttr';
 			detailResult.depending = [];
-			detailResult        = result[ 0 ];
+			detailResult.contains  = [];
+			detailResult.order     = [];
 		} else {
 			var swap = result.shift();
 			result.unshift({

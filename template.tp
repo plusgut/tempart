@@ -1,12 +1,4 @@
-{{regards}}
-
-{{#if serious}}
-	!
-{{#else}}
-	?
-{{/#if}}
-
-<input alt="alternative text" value={{new}} type="text" class={{classVariable}} name="test">
+{{variable}}<input alt="alternative text" value={{new}} type="text" class={{classVariable}} name="test">
 {{arr.length}}
 <ul>
 	{{#each arr as entity}}

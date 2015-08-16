@@ -317,7 +317,7 @@
 							if( currentValues[block.id].order.length ) containType = 'contains';
 							var dependencies = tempartCompiler._hasDependency( block[ containType ], dirties, key );
 							if( dependencies.length){
-								if( containType == 'contains' ){ // @TODO completly untested
+								if( containType == 'contains' ){
 									var values                    = tempartCompiler.types.executes.get( key, content, local );
 									for( valueIndex               = 0; valueIndex < values.length; valueIndex++ ){
 										tempartCompiler.types.executes.set( key, values[ valueIndex ], local );
@@ -373,7 +373,6 @@
 			echo: function() {},
 			////-----------------------------------------------------------------------------------------
 			// only updates when something is different, or an contains depending changed
-			// @TODO
 			if: function( block, content, local, currentValues, dirties, path, prefix ) {
 				var type = tempartCompiler.types.executes.condition( block.depending[ 0 ], content, local );
 				prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
