@@ -399,7 +399,6 @@
 				var type = tempartCompiler.types.executes.condition( block.depending[ 0 ], content, local );
 				prefix += tempartCompiler.types.executes.options.prefixDelimiter + block.id;
 				if( currentValues[ block.id ].type == type ){
-					currentValues[ block.id ] = {type: type, contains: {}};
 					return tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, dirties, path, prefix );
 				} else {
 					currentValues[ block.id ].type = type;
