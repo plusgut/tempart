@@ -309,7 +309,7 @@
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
-				if( !dirties[ key ] || !dirties[ key ].update ) { // No need to check inside dependencies, when update already triggered
+				if( !dirties[ key ] || !dirties[ key ].update.length ) { // No need to check inside dependencies, when update already triggered
 					// Checks the dependencies, which are maybe defined outside the array scope
 					for( var index in dirties ){
 						if( dirties.hasOwnProperty( index ) && index != key ){
@@ -317,18 +317,18 @@
 							if( currentValues[block.id].order.length ) containType = 'contains';
 							var dependencies = tempartCompiler._hasDependency( block[ containType ], dirties, key );
 							if( dependencies.length){
-								console.log('something changed!');
 								if( containType == 'contains' ){ // @TODO completly untested
-									var values = this.get( key, local, global );
-									for( valueIndex = 0; valueIndex < values.length; valueIndex++ ){
+									var values                    = tempartCompiler.types.executes.get( key, content, local );
+									for( valueIndex               = 0; valueIndex < values.length; valueIndex++ ){
 										tempartCompiler.types.executes.set( key, values[ valueIndex ], local );
-										for(var blockIndex = 0; blockIndex < dependencies.length; blockIndex++ ) {
-											var depencyBlock = dependencies[ blockIndex ];
-											var detailBlockPrefix = prefix + ':' + currentValues.order[ valueIndex ];
-											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues, dirties, path, detailBlockPrefix );
+										for(var blockIndex        = 0; blockIndex < dependencies.length; blockIndex++ ) {
+											var depencyBlock      = dependencies[ blockIndex ];
+											var rand              = currentValues[ block.id ].order[ valueIndex ];
+											var detailBlockPrefix = prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id + ':' + rand;
+											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailBlockPrefix );
 										}
 									}
-									this.unset( key, local);
+									tempartCompiler.types.executes.unset( key, local);
 								} else {
 									for(var elseBlockIndex = 0; elseBlockIndex < dependencies.length; elseBlockIndex++ ) {
 										var elseDepencyBlock = dependencies[ elseBlockIndex ];
