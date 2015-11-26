@@ -80,7 +80,7 @@
 				gotRemoved = true;
 				blocks.shift();
 				if( this._isInsideHtml( result[ 0 ].content )){
-					this._buildBindAttr( result, blocks );
+					this._buildDom( result, blocks );
 				}
 			}
 		} else {
@@ -118,7 +118,7 @@
 			blocks.unshift(this._addEcho( block.slice( end + 2, block.length )));
 		}
 	};
-	tempartParser._buildBindAttr = function( result, blocks ){
+	tempartParser._buildDom = function( result, blocks ){
 		var block               = blocks[ 0 ];
 		var lastElementPosition = result[ 0 ].content.lastIndexOf( '<' );
 		var content             = block[ 0 ].content;
@@ -128,14 +128,14 @@
 		if( lastElementPosition === 0 ){
 			detailResult           = result[ 0 ];
 			if(detailResult.type !== 'echo') console.error('does that even make sense?');
-			detailResult.type      = 'bindAttr';
+			detailResult.type      = 'dom';
 			detailResult.depending = [];
 			detailResult.contains  = [];
 			detailResult.order     = [];
 		} else {
 			var swap = result.shift();
 			result.unshift({
-				type: 'bindAttr',
+				type: 'dom',
 				contains: [],
 				content: swap.content.slice(lastElementPosition, swap.content.length),
 				order: []

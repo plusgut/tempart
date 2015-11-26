@@ -59,7 +59,7 @@
 	// returns the compiled block, depending on the inserted data
 	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix ){
 		var detailPrefix = prefix + this.types.executes.options.prefixDelimiter + block.id;
-		if(block.type === 'log' || block.type === 'bindAttr' ){ // No need for pre and suffix at log/attribute-bindings
+		if(block.type === 'log' || block.type === 'dom' ){ // No need for pre and suffix at log/attribute-bindings
 			if( dirties === '*' ){
 				return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix );
 			} else {
@@ -114,7 +114,7 @@
 	tempartCompiler.types = {
 		////-----------------------------------------------------------------------------------------
 		// checks if a variable changed and update its attribute
-		bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
+		dom: function( block, content, local, currentValues, dirties, path, prefix ){
 			var result = block.content;
 			result += this.executes.options.attrStart + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
 			// @TODO is it a good idea to add attrEnd?
@@ -185,7 +185,7 @@
 		// puts values in the console
 		log: function(block, content, local) {
 			console.log( this.executes.get(block.depending[ 0 ], content, local ));
-			return "";
+			return '';
 		},
 		////-----------------------------------------------------------------------------------------
 		// patial handler, for rewriting contexts and stuff
@@ -194,6 +194,11 @@
 				path = path + '/' + block.path;
 			}
 			return tempartCompiler.partial(block, content, currentValues, dirties, path);
+		},
+		////-----------------------------------------------------------------------------------------
+		// Adds element listeners
+		event: function( block, content, local, currentValues, dirties, path ) {
+			return '';
 		},
 		executes: {
 			////-----------------------------------------------------------------------------------------
@@ -364,7 +369,7 @@
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed and update its attribute
-			bindAttr: function( block, content, local, currentValues, dirties, path, prefix ){
+			dom: function( block, content, local, currentValues, dirties, path, prefix ){
 				for(var i = 0; i < block.order.length; i++) {
 					var attribute = block.order[ i ];
 					var dependingBlock = block.contains[ i ];
