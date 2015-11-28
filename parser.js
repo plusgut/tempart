@@ -163,7 +163,6 @@
 					contains[ 0 ].id = this._increment++;
 					if( contains.length > 1) throw 'Something weird is happening here';
 					detailResult.contains.push( contains[ 0 ]);
-					console.log('mep');
 					detailResult.order.push( attribute );
 				}
 			}
