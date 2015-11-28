@@ -159,10 +159,13 @@
 			} else {
 				var attribute    = this._removeLastAttribute(result[ result.length - 1 ]);
 				var contains     = this._parseBlock( blocks );
-				contains[ 0 ].id = this._increment++;
-				if( contains.length > 1) throw 'Something weird is happening here';
-				detailResult.contains.push( contains[ 0 ]);
-				detailResult.order.push( attribute );
+				if(attribute) {
+					contains[ 0 ].id = this._increment++;
+					if( contains.length > 1) throw 'Something weird is happening here';
+					detailResult.contains.push( contains[ 0 ]);
+					console.log('mep');
+					detailResult.order.push( attribute );
+				}
 			}
 		}
 	};
@@ -209,6 +212,7 @@
 		var equalPos       = block.content.lastIndexOf( '=' );
 		var attributeBlock = block.content.slice(0, equalPos );
 		var attributePos   = attributeBlock.lastIndexOf( ' ' );
+		if(attributePos === -1) return false; // There are not always other attributes
 		var attribute      = attributeBlock.slice( attributePos, attributeBlock.length).trim();
 		block.content      = attributeBlock.slice( 0 , attributePos);
 		return attribute;
