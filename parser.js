@@ -159,10 +159,10 @@
 			} else {
 				var attribute    = this._removeLastAttribute(result[ result.length - 1 ]);
 				var contains     = this._parseBlock( blocks );
+				contains[ 0 ].id = this._increment++;
+				if( contains.length > 1) throw 'Something weird is happening here';
+				detailResult.contains.push( contains[ 0 ]);
 				if(attribute) {
-					contains[ 0 ].id = this._increment++;
-					if( contains.length > 1) throw 'Something weird is happening here';
-					detailResult.contains.push( contains[ 0 ]);
 					detailResult.order.push( attribute );
 				}
 			}
