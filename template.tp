@@ -1,7 +1,7 @@
 {{arr.length}}
 <ul>
 	{{#each arr, index as entity}}
-		<li {{#event}}>{{index}}: {{entity}}</li>
+		<li {{#event type="click" action="edit"}}}>{{index}}: {{entity}}</li>
 		{{#log entity}}
 	{{#else}}
 		<li>liste leer</li>

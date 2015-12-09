@@ -65,14 +65,29 @@
 			result[ 0 ].type = type[ 0 ].slice( 1, type[ 0 ].length );
 			if( type.length ) {
 				var dependings = [];
+				var dependingNames = [];
+				// @TODO seperate this logic to a new parse function
 				for(var typeIndex = 1; typeIndex < type.length; typeIndex++){
 					if(type[ 0 ] === '#each' && type[ typeIndex ] === 'as') continue;
 					var dependingParts = type[ typeIndex ].split( ',' );
 					for(var dependingIndex = 0; dependingIndex < dependingParts.length; dependingIndex++){
-						if( dependingParts[ dependingIndex ]) dependings.push( dependingParts[ dependingIndex ]);
+						if( dependingParts[ dependingIndex ]) {
+							var key   = null;
+							var value = dependingParts[ dependingIndex ];
+							if(value.indexOf('=') !== -1) {
+								var parts = value.split('=');
+								if(parts.length !== 2) throw 'An attribute had malformed attributes';
+								key   = parts[0];
+								value = parts[1];
+							}
+							dependingNames.push(key);
+							dependings.push( value );
+						}
 					}
 				}
-				result[ 0 ].depending = dependings;
+
+				result[ 0 ].depending      = dependings;
+				result[ 0 ].dependingNames = dependingNames;
 			}
 
 			if( result[ 0 ].type == 'echo' ){
