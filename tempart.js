@@ -121,9 +121,11 @@
 			// result += this.executes.options.attrEnd   + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
 			currentValues[ block.id ] = {};
 			for( var i = 0; i < block.order.length; i++ ){
-				result += block.order[ i ] + '="';
 				var dependingBlock = block.contains[ i ];
-				result += this[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix ) + '" ';
+				var blockContent = this[ dependingBlock.type ]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
+				if( block.order[ i ]){ // Not every block needs a attribute (events zb)
+					result += block.order[ i ] + '="' + blockContent + '" ';
+				}
 			}
 			result += '>';
 			return result;

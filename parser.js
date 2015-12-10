@@ -74,11 +74,11 @@
 						if( dependingParts[ dependingIndex ]) {
 							var key   = null;
 							var value = dependingParts[ dependingIndex ];
-							if(value.indexOf('=') !== -1) {
-								var parts = value.split('=');
-								if(parts.length !== 2) throw 'An attribute had malformed attributes';
-								key   = parts[0];
-								value = parts[1];
+							if(value.indexOf( '=' ) !== -1) {
+								var parts = value.split( '=' );
+								if( parts.length !== 2 ) throw 'An attribute had malformed attributes';
+								key   = parts[ 0 ];
+								value = parts[ 1 ];
 							}
 							dependingNames.push(key);
 							dependings.push( value );
@@ -179,6 +179,8 @@
 				detailResult.contains.push( contains[ 0 ]);
 				if(attribute) {
 					detailResult.order.push( attribute );
+				} else {
+					detailResult.order.push( null );
 				}
 			}
 		}
