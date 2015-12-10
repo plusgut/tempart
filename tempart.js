@@ -125,6 +125,8 @@
 				var blockContent = this[ dependingBlock.type ]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
 				if( block.order[ i ]){ // Not every block needs a attribute (events zb)
 					result += block.order[ i ] + '="' + blockContent + '" ';
+				} else {
+					result += blockContent;
 				}
 			}
 			result += '>';
@@ -133,7 +135,7 @@
 		////-----------------------------------------------------------------------------------------
 		// returns a variable
 		variable: function( block, content, local, currentValues, dirties ){
-			var value = this.executes.get(block.depending[ 0 ], content, local );
+			var value = this.executes.get( block.depending[ 0 ], content, local );
 			if( value === undefined || value === null ) value = '';
 			currentValues[ block.id ] = value;
 			return value;
@@ -192,15 +194,27 @@
 		////-----------------------------------------------------------------------------------------
 		// patial handler, for rewriting contexts and stuff
 		partial: function( block, content, local, currentValues, dirties, path ) {
-			if(block.path !== '/') {
+			if( block.path !== '/' ){
 				path = path + '/' + block.path;
 			}
 			return tempartCompiler.partial(block, content, currentValues, dirties, path);
 		},
 		////-----------------------------------------------------------------------------------------
 		// Adds element listeners
-		event: function( block, content, local, currentValues, dirties, path ) {
-			return '';
+		event: function( block, content, local, currentValues, dirties, path, prefix ) {
+			var type   = null;
+			var action = null;
+			var result = '';
+			currentValues[ block.id ] = {values: {}};
+			for( var i = 0; i < block.dependingNames.length; i++ ) {
+				currentValues[ block.id ].values[ block.dependingNames[ i ]] = this.executes.get(block.depending[ i ]);
+			}
+			if( !currentValues[ block.id ].values.type || !currentValues[ block.id ].values.action ) {
+				throw 'Event definition was malformed';
+			}
+			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="' + currentValues[ block.id ].values.action + '()"';
+
+			return result;
 		},
 		executes: {
 			////-----------------------------------------------------------------------------------------
@@ -214,7 +228,9 @@
 			////-----------------------------------------------------------------------------------------
 			// Checks if something is in the local space
 			get: function( key, global, local ){
-				if( local.hasOwnProperty( key )){
+				if( key[ 0 ] === '"' && key[ key.length - 1 ] === '"' ) {
+					return key.slice(1, key.length - 1);
+				} else if( local.hasOwnProperty( key )){
 					return local[ key ];
 				} else {
 					return this._get( key.split( '.' ), global );
