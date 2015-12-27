@@ -3,11 +3,28 @@
 ;(function(tempartCompiler) {
 	////-----------------------------------------------------------------------------------------
 	// you need to overwrite this function, to have working partial support
-	tempartCompiler.partial = function(block, context, currentValues, dirties, path ){
+	tempartCompiler.partial = function( block, context, currentValues, dirties, path ){
 		// @TODO do a better api for that..
 		console.error('Overwrite the function tempartCompiler.partial to have partials');
 		return '';
 	};
+	////-----------------------------------------------------------------------------------------
+	// parses dataattribute tempartStart, to return an array of block ids
+	tempartCompiler.getBlockIds = function( ele ){
+		for( var i = 0; i < ele.attributes.length; i++ ){
+			if( ele.attributes[i].nodeName === tempartCompiler.types.executes.options.attrStart.toLowerCase() ){ // Has to be lowercase, because of standard
+				var value = ele.attributes[i].nodeValue.split('-');
+				value.shift();
+				return value;
+			}
+		}
+		throw 'Getting the blockids went wrong';
+	};
+
+	////-----------------------------------------------------------------------------------------
+	// an object which holds all block-callbacks
+	// {prefix-block.id: callback}
+	tempartCompiler.eventCallbacks = {};
 	////-----------------------------------------------------------------------------------------
 	// returns the html and adds context to currentValues
 	// path is not used, it only is passed to partial
@@ -204,9 +221,10 @@
 		////-----------------------------------------------------------------------------------------
 		// Adds element listeners
 		event: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
-			var type   = null;
-			var action = null;
-			var result = '';
+			var type    = null;
+			var action  = null;
+			var result  = '';
+			var eventId = opt.prefix + '-' + block.id;
 			currentValues[ block.id ] = {values: {}};
 			for( var i = 0; i < block.dependingNames.length; i++ ) {
 				currentValues[ block.id ].values[ block.dependingNames[ i ]] = this.executes.get(block.depending[ i ]);
@@ -214,8 +232,13 @@
 			if( !currentValues[ block.id ].values.type || !currentValues[ block.id ].values.action ) {
 				throw 'Event definition was malformed';
 			}
-			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.executables()"';
-
+			if( !tempartCompiler.eventCallbacks[eventId]) {
+				tempartCompiler.eventCallbacks[eventId] = function(block, content, obj) {
+					var id = tempartCompiler.getBlockIds( obj );
+					console.log(id);
+				}.bind(undefined, block, content);
+			}
+			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.eventCallbacks[`' + eventId + '`](this)"';
 			return result;
 		},
 		executes: {
