@@ -3,19 +3,24 @@
 ;(function(tempartCompiler) {
 	////-----------------------------------------------------------------------------------------
 	// you need to overwrite this function, to have working partial support
-	tempartCompiler.partial = function( block, context, currentValues, dirties, path ){
+	tempartCompiler.partial = function( block, context, currentValues, dirties, path, opt ){
 		// @TODO do a better api for that..
 		console.error('Overwrite the function tempartCompiler.partial to have partials');
 		return '';
 	};
 	////-----------------------------------------------------------------------------------------
+	// you need to overwrite this function, to have working partial support
+	tempartCompiler.triggerEvent = function( componentId, parameter ){
+		console.error('Overwrite the function tempartCompiler.triggerEvent to have events');
+		return '';
+	};
+
+	////-----------------------------------------------------------------------------------------
 	// parses dataattribute tempartStart, to return an array of block ids
 	tempartCompiler.getBlockIds = function( ele ){
 		for( var i = 0; i < ele.attributes.length; i++ ){
 			if( ele.attributes[i].nodeName === tempartCompiler.types.executes.options.attrStart.toLowerCase() ){ // Has to be lowercase, because of standard
-				var value = ele.attributes[i].nodeValue.split('-');
-				value.shift();
-				return value;
+				return ele.attributes[i].nodeValue.split('-');
 			}
 		}
 		throw 'Getting the blockids went wrong';
@@ -128,6 +133,35 @@
 		return ( a || b ) && !( a && b );
 	};
 
+	// Is used
+	tempartCompiler.locals = {
+		_generate: function(ids, blocks, content, local, currentValues, offset) {
+			var idParts = ids[ offset ].split(':');
+			for( var i = 0; i < blocks.length; i++) {
+				block = blocks[i];
+				if(block.id == idParts[0]) {
+					tempartCompiler.locals[block.type](ids, idParts, blocks, block, content, local, currentValues, offset + 1);
+				}
+			}
+		},
+		each: function(ids, idParts, blocks, block, content, local, currentValues, offset) {
+			if(!currentValues[ idParts[ 0 ]].order.length) {
+				throw 'each-else events are not yet implemented';
+			}
+			var value = tempartCompiler.types.executes.get( block.depending[ 0 ], content, local );
+			for(var i = 0; i < currentValues[ idParts[ 0 ]].order.length; i++) {
+				if( idParts[ 1 ] === currentValues[ idParts[ 0 ]].order[ i ]) {
+					tempartCompiler.types.executes.set( block.depending[ block.depending.length - 1 ], value[ i ], local );
+					if(block.depending.length > 2) {
+						tempartCompiler.types.executes.set( block.depending[1 ], i, local );
+					}
+					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues[ idParts[ 0 ]], offset);
+				}
+			}
+
+		}
+	};
+
 	////-----------------------------------------------------------------------------------------
 	// Contains the possible handlers
 	tempartCompiler.types = {
@@ -176,9 +210,9 @@
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
 		each: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
-			var value = this.executes.get(block.depending[ 0 ], content, local );
-			currentValues[block.id] = {values: {}, order: []};
-			if(!opt.contentOffset) opt.contentOffset = 0;
+			var value = this.executes.get( block.depending[ 0 ], content, local );
+			currentValues[ block.id ] = {values: {}, order: []};
+			if( !opt.contentOffset ) opt.contentOffset = 0;
 			if( value && value.length ){
 				var result = "";
 				for(var i = 0; i < value.length; i++) {
@@ -188,7 +222,6 @@
 					var detailPrefix = prefix + this.executes.options.prefixDelimiter + block.id + ':' + rand;
 					this.executes.set( block.depending[ block.depending.length - 1 ], value[i], local );
 					if( block.depending.length > 2) {
-
 						this.executes.set( block.depending[ 1 ], i + opt.contentOffset, local );
 					}
 
@@ -225,18 +258,33 @@
 			var action  = null;
 			var result  = '';
 			var eventId = opt.prefix + '-' + block.id;
-			currentValues[ block.id ] = {values: {}};
+			currentValues[ block.id ] = {values: {}, parameter: []};
 			for( var i = 0; i < block.dependingNames.length; i++ ) {
-				currentValues[ block.id ].values[ block.dependingNames[ i ]] = this.executes.get(block.depending[ i ]);
+				if(block.dependingNames[ i ] === null) {
+					currentValues[ block.id ].parameter.push(this.executes.get(block.depending[ i ], content, local));
+				} else {
+					currentValues[ block.id ].values[ block.dependingNames[ i ]] = this.executes.get(block.depending[ i ], content, local);
+				}
 			}
 			if( !currentValues[ block.id ].values.type || !currentValues[ block.id ].values.action ) {
 				throw 'Event definition was malformed';
 			}
-			if( !tempartCompiler.eventCallbacks[eventId]) {
-				tempartCompiler.eventCallbacks[eventId] = function(block, content, obj) {
-					var id = tempartCompiler.getBlockIds( obj );
-					console.log(id);
-				}.bind(undefined, block, content);
+			if( !tempartCompiler.eventCallbacks[ eventId ]){
+				tempartCompiler.eventCallbacks[eventId] = function( block, blocks, content, currentValues, obj ) {
+					var ids         = tempartCompiler.getBlockIds( obj );
+					var componentId = ids.shift();
+					var local       = {};
+					var parameter   = [];
+					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues, 0);
+					for( var dependingIndex = 0; dependingIndex < block.dependingNames.length; dependingIndex++) {
+						if(block.dependingNames[dependingIndex] === null) {
+							parameter.push(tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local ));
+						}
+					}
+					parameter.push(event); // In case the component wants the event
+					tempartCompiler.triggerEvent(componentId, parameter);
+					debugger;
+				}.bind( undefined, block, opt.blocks, content, opt.currentValues );
 			}
 			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.eventCallbacks[`' + eventId + '`](this)"';
 			return result;
@@ -365,9 +413,9 @@
 					}
 				}
 
-				this._eachDependencyHelper( block, content, local, currentValues, dirties, path, prefix );
+				this._eachDependencyHelper( block, content, local, currentValues, dirties, path, prefix, opt );
 			},
-			_eachDependencyHelper: function( block, content, local, currentValues, dirties, path, prefix ){
+			_eachDependencyHelper: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
@@ -392,7 +440,7 @@
 											if( eachIndex == index ){
 												tempartCompiler.types.executes.set( eachIndex, valueIndex, local );
 											}
-											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailBlockPrefix );
+											tempartCompiler.types.dirties[ depencyBlock.type ]( depencyBlock, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailBlockPrefix, opt );
 											//	if( eachIndex == index ){
 											//		tempartCompiler.types.executes.unset( eachIndex, local );
 											//	}
