@@ -11,13 +11,15 @@
 	////-----------------------------------------------------------------------------------------
 	// returns the html and adds context to currentValues
 	// path is not used, it only is passed to partial
-	tempartCompiler.compile = function( blocks, content, currentValues, dirties, path, prefix ){
-		if(!currentValues) currentValues = {};
-		if(!dirties) dirties = '*';
-		if(!path) path = '/';
-		if(!prefix) prefix = '';
+	// expected properties of opt:
+	// blocks, content, currentValues, dirties, path, prefix
+	tempartCompiler.compile = function( opt ){
+		if(!opt.currentValues) opt.currentValues = {};
+		if(!opt.dirties)       opt.dirties = '*';
+		if(!opt.path)          opt.path = '/';
+		if(!opt.prefix)        opt.prefix = '';
 		var local = {};
-		return this._handleBlocks(blocks, content, local, currentValues, this._batchDirties( dirties ), path, prefix);
+		return this._handleBlocks(opt.blocks, opt.content, local, opt.currentValues, this._batchDirties( opt.dirties ), opt.path, opt.prefix, opt);
 	};
 	////-----------------------------------------------------------------------------------------
 	// batches the dirties
@@ -48,28 +50,28 @@
 
 	////-----------------------------------------------------------------------------------------
 	// iterates threw the block on one level and calls the type-handler
-	tempartCompiler._handleBlocks = function( blocks, content, local, currentValues, dirties, path, prefix ){
+	tempartCompiler._handleBlocks = function( blocks, content, local, currentValues, dirties, path, prefix, opt ){
 		var result = "";
 		for( var i = 0; i < blocks.length; i++ ){
-			result += this._handleBlock( blocks[i], content, local, currentValues, dirties, path, prefix );
+			result += this._handleBlock( blocks[i], content, local, currentValues, dirties, path, prefix, opt );
 		}
 		return result;
 	};
 	////-----------------------------------------------------------------------------------------
 	// returns the compiled block, depending on the inserted data
-	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix ){
+	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix, opt ){
 		var detailPrefix = prefix + this.types.executes.options.prefixDelimiter + block.id;
 		if(block.type === 'log' || block.type === 'dom' ){ // No need for pre and suffix at log/attribute-bindings
 			if( dirties === '*' ){
-				return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix );
+				return this.types[block.type]( block, content, local, currentValues, dirties, path, prefix, opt );
 			} else {
-				return this.types.dirties[block.type]( block, content, local, currentValues, dirties, path, prefix );
+				return this.types.dirties[block.type]( block, content, local, currentValues, dirties, path, prefix, opt );
 			}
 		} else {
 			if( dirties === '*' ){
-				return this.types.executes.prefix( detailPrefix ) + this.types[ block.type ]( block, content, local, currentValues, dirties, path, prefix ) + this.types.executes.suffix( detailPrefix );
+				return this.types.executes.prefix( detailPrefix ) + this.types[ block.type ]( block, content, local, currentValues, dirties, path, prefix, opt ) + this.types.executes.suffix( detailPrefix );
 			} else {
-				return this.types.dirties[ block.type ]( block, content, local, currentValues, dirties, path, prefix );
+				return this.types.dirties[ block.type ]( block, content, local, currentValues, dirties, path, prefix, opt );
 			}
 		}
 	};
@@ -114,7 +116,7 @@
 	tempartCompiler.types = {
 		////-----------------------------------------------------------------------------------------
 		// checks if a variable changed and update its attribute
-		dom: function( block, content, local, currentValues, dirties, path, prefix ){
+		dom: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 			var result = block.content;
 			result += this.executes.options.attrStart + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
 			// @TODO is it a good idea to add attrEnd?
@@ -122,7 +124,7 @@
 			currentValues[ block.id ] = {};
 			for( var i = 0; i < block.order.length; i++ ){
 				var dependingBlock = block.contains[ i ];
-				var blockContent = this[ dependingBlock.type ]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
+				var blockContent = this[ dependingBlock.type ]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix, opt );
 				if( block.order[ i ]){ // Not every block needs a attribute (events zb)
 					result += block.order[ i ] + '="' + blockContent + '" ';
 				} else {
@@ -156,11 +158,10 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// sets a variable of an array and calls handleBlocks in the containing level
-		each: function( block, content, local, currentValues, dirties, path, prefix, contentOffset ) {
-			if( !contentOffset ) contentOffset = 0;
+		each: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
 			var value = this.executes.get(block.depending[ 0 ], content, local );
 			currentValues[block.id] = {values: {}, order: []};
-
+			if(!opt.contentOffset) opt.contentOffset = 0;
 			if( value && value.length ){
 				var result = "";
 				for(var i = 0; i < value.length; i++) {
@@ -170,10 +171,11 @@
 					var detailPrefix = prefix + this.executes.options.prefixDelimiter + block.id + ':' + rand;
 					this.executes.set( block.depending[ block.depending.length - 1 ], value[i], local );
 					if( block.depending.length > 2) {
-						this.executes.set( block.depending[ 1 ], i + contentOffset, local );
+
+						this.executes.set( block.depending[ 1 ], i + opt.contentOffset, local );
 					}
 
-					result += tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix );
+					result += tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix, opt );
 					//	this.executes.unset( block.depending[ block.depending.length - 1 ], local );
 					//	if( block.depending.length > 2) {
 					//		this.executes.unset( block.depending[ 1 ], local );
@@ -201,7 +203,7 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// Adds element listeners
-		event: function( block, content, local, currentValues, dirties, path, prefix ) {
+		event: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
 			var type   = null;
 			var action = null;
 			var result = '';
@@ -212,7 +214,7 @@
 			if( !currentValues[ block.id ].values.type || !currentValues[ block.id ].values.action ) {
 				throw 'Event definition was malformed';
 			}
-			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="' + currentValues[ block.id ].values.action + '()"';
+			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.executables()"';
 
 			return result;
 		},
@@ -290,7 +292,7 @@
 		dirties: {
 			////-----------------------------------------------------------------------------------------
 			// only changed values should be iterated, or when in contains dependings something changed
-			each: function( block, content, local, currentValues, dirties, path, prefix ){
+			each: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 				var previous = currentValues[ block.id ];
 				var key = block.depending[ 0 ];
 				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
@@ -298,7 +300,7 @@
 				if( dirties[ key ] !== undefined ){
 					if( tempartCompiler.xor( currentValues[ block.id ].order.length, tempartCompiler.types.executes.get( key, content, local ).length )){
 						tempartCompiler.dom.remove( detailPrefix );
-						var html = tempartCompiler.types[ block.type ]( block, content, local, currentValues, '*', path, prefix );
+						var html = tempartCompiler.types[ block.type ]( block, content, local, currentValues, '*', path, prefix, opt );
 						tempartCompiler.dom.append( detailPrefix, html );
 					} else {
 						var types = ['update', 'prepend', 'append'];
@@ -309,9 +311,9 @@
 								tempartCompiler.types.executes.set( key, value, local );
 								var tmpCurrentValues = {};
 								// @FIXME overwriting result is not possible in server side
-								var contentOffset = 0;
-								if(type === 'append') contentOffset = currentValues[ block.id ].order.length;
-								var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix, contentOffset );
+								opt.contentOffset = 0;
+								if(type === 'append') opt.contentOffset = currentValues[ block.id ].order.length;
+								var result = tempartCompiler.types[ block.type ]( block, content, local, tmpCurrentValues, '*', path, prefix, opt );
 								if( type === 'update' ){
 									currentValues[ block.id ] = tmpCurrentValues[ block.id ];
 								} else {
@@ -387,7 +389,7 @@
 			},
 			////-----------------------------------------------------------------------------------------
 			// checks if a variable changed and update its attribute
-			dom: function( block, content, local, currentValues, dirties, path, prefix ){
+			dom: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 				for(var i = 0; i < block.order.length; i++) {
 					var attribute = block.order[ i ];
 					var dependingBlock = block.contains[ i ];
@@ -395,7 +397,7 @@
 						var depending = dependingBlock.depending[dependingIndex];
 						if(dirties[depending]) {
 							var oldValue = currentValues[ block.id ][ dependingBlock.id ];
-							var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix );
+							var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix, opt );
 
 							if(oldValue != newValue) {
 								tempartCompiler.dom.updateAttribute(prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, attribute, newValue);
