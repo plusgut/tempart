@@ -10,7 +10,7 @@
 	};
 	////-----------------------------------------------------------------------------------------
 	// you need to overwrite this function, to have working partial support
-	tempartCompiler.trigger = function( componentId, parameter ){
+	tempartCompiler.trigger = function( componentId, action, parameter ){
 		console.error('Overwrite the function tempartCompiler.trigger to have events');
 		return '';
 	};
@@ -275,15 +275,21 @@
 					var componentId = ids.shift();
 					var local       = {};
 					var parameter   = [];
+					var action      = null;
 					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues, 0);
+
 					for( var dependingIndex = 0; dependingIndex < block.dependingNames.length; dependingIndex++) {
 						if(block.dependingNames[dependingIndex] === null) {
 							parameter.push(tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local ));
+						} else if( block.dependingNames[dependingIndex] === 'action' ) {
+							action = tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local );
 						}
 					}
+					if(!action) {
+						throw "Could not find action parameter";
+					}
 					parameter.push(event); // In case the component wants the event
-					tempartCompiler.trigger(componentId, parameter);
-					debugger;
+					tempartCompiler.trigger(componentId, action, parameter);
 				}.bind( undefined, block, opt.blocks, content, opt.currentValues );
 			}
 			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.eventCallbacks[`' + eventId + '`](this)"';
