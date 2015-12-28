@@ -322,7 +322,7 @@
 								if(keyPartIndex === keyParts.length) {
 									return value[ keyNode ];
 								}
-								value = value[k eyNode ];
+								value = value[ keyNode ];
 							} else {
 								break;
 							}
