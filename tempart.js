@@ -308,25 +308,26 @@
 			// Checks if something is in the local space
 			get: function( key, global, local ){
 				if( key[ 0 ] === '"' && key[ key.length - 1 ] === '"' ) {
-					return key.slice(1, key.length - 1);
-				} else if( local.hasOwnProperty( key )){
-					return local[ key ];
+					return key.slice( 1, key.length - 1 );
 				} else {
-					return this._get( key.split( '.' ), global );
-				}
-			},
-			////-----------------------------------------------------------------------------------------
-			// handles dotnotation for getting values
-			_get: function( keyParts, global) {
-				var firstKey = keyParts.shift();
-				if(!keyParts.length) {
-					if(global) {
-						return global[ firstKey ];
-					} else {
-						return undefined;
+					var scopes   = [ local, global ];
+					var keyParts = key.split( '.' );
+					for( var scopeIndex = 0 ; scopeIndex < scopes.length; scopeIndex++) {
+						var value = scopes[ scopeIndex ];
+						var keyPartIndex = 0;
+						do {
+							var keyNode = keyParts[ keyPartIndex ];
+							keyPartIndex++;
+							if( value.hasOwnProperty( keyNode )) {
+								if(keyPartIndex === keyParts.length) {
+									return value[ keyNode ];
+								}
+								value = value[k eyNode ];
+							} else {
+								break;
+							}
+						} while( keyPartIndex < keyParts.length );
 					}
-				} else {
-					return this._get( keyParts, global[ firstKey ] );
 				}
 			},
 			////-----------------------------------------------------------------------------------------
