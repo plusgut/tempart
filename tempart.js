@@ -10,8 +10,8 @@
 	};
 	////-----------------------------------------------------------------------------------------
 	// you need to overwrite this function, to have working partial support
-	tempartCompiler.triggerEvent = function( componentId, parameter ){
-		console.error('Overwrite the function tempartCompiler.triggerEvent to have events');
+	tempartCompiler.trigger = function( componentId, parameter ){
+		console.error('Overwrite the function tempartCompiler.trigger to have events');
 		return '';
 	};
 
@@ -282,7 +282,7 @@
 						}
 					}
 					parameter.push(event); // In case the component wants the event
-					tempartCompiler.triggerEvent(componentId, parameter);
+					tempartCompiler.trigger(componentId, parameter);
 					debugger;
 				}.bind( undefined, block, opt.blocks, content, opt.currentValues );
 			}
