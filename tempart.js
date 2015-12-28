@@ -169,7 +169,7 @@
 		// checks if a variable changed and update its attribute
 		dom: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 			var result = block.content;
-			result += this.executes.options.attrStart + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
+			result += ' ' + this.executes.options.attrStart + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
 			// @TODO is it a good idea to add attrEnd?
 			// result += this.executes.options.attrEnd   + '="' +prefix + this.executes.options.prefixDelimiter + block.id + '"';
 			currentValues[ block.id ] = {};
