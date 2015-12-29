@@ -35,9 +35,17 @@
 	// path is not used, it only is passed to partial
 	// expected properties of opt:
 	// blocks, content, currentValues, dirties, path, prefix
+	// dirties: [
+	// 	{op: 'insert',          to: 0, key: ['todos'], values: []},
+	// 	{op: 'update',          to: 1, key: ['todos'], value:  []}
+	// 	{op: 'move',   from: 4, to: 3, key: ['todos']},
+	// 	{op: 'remove', from: 4,        key: ['todos']}
+	// ]
 	tempartCompiler.compile = function( opt ){
 		if(!opt.currentValues) opt.currentValues = {};
-		if(!opt.dirties)       opt.dirties = '*';
+		if(!opt.dirties)       opt.dirties = '*'; else if(opt.dirties!='*'){
+			debugger;
+		}
 		if(!opt.path)          opt.path = '/';
 		if(!opt.prefix)        opt.prefix = '';
 		var local = {};
