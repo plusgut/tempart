@@ -295,22 +295,24 @@
 					return key.slice( 1, key.length - 1 );
 				} else {
 					var scopes   = [ local, global ];
-					var keyParts = key.split( '.' );
+					if(typeof key === 'string') {
+						key = key.split('.');
+					}
 					for( var scopeIndex = 0 ; scopeIndex < scopes.length; scopeIndex++) {
 						var value = scopes[ scopeIndex ];
 						var keyPartIndex = 0;
 						do {
-							var keyNode = keyParts[ keyPartIndex ];
+							var keyNode = key[ keyPartIndex ];
 							keyPartIndex++;
 							if( value.hasOwnProperty( keyNode )) {
-								if(keyPartIndex === keyParts.length) {
+								if(keyPartIndex === key.length) {
 									return value[ keyNode ];
 								}
 								value = value[ keyNode ];
 							} else {
 								break;
 							}
-						} while( keyPartIndex < keyParts.length );
+						} while( keyPartIndex < key.length );
 					}
 				}
 			},
@@ -379,24 +381,36 @@
 			////-----------------------------------------------------------------------------------------
 			// only changed values should be iterated, or when in contains dependings something changed
 			each: function( block, content, local, currentValues, dirties, path, prefix, opt ){
-				var previous = currentValues[ block.id ];
-				var keyParts = block.depending[ 0 ].split('.');
-				var detailPrefix =  prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+				var previous     = currentValues[ block.id ];
+				var keyParts     = block.depending[ 0 ].split('.');
+				var detailPrefix = prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
+				var rand         = null;
 
 				for( var i = 0; i < dirties.length; i++ ){
 					var dirty = dirties[ i ];
-					if( tempartCompiler.types.executes.isSame(keyParts, dirty.key)) {
+					if( tempartCompiler.types.executes.isSame(keyParts, dirty.key)){
 						if(dirty.type === 'create') {
-							var rand = currentValues[block.id].order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
+							rand = currentValues[block.id].order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
 							var result = tempartCompiler.types._each( block, content, local, currentValues, '*', path, prefix, opt, dirty.values, dirty.to);
 							if( dirty.to === 0) {
-								tempartCompiler.dom.append(prefix + '-' + block.id, result);
+								tempartCompiler.dom.append(detailPrefix, result);
 							} else {
 								var lastBlock = block.contains[block.contains.length - 1].id;
-								tempartCompiler.dom.append(prefix + '-' + block.id + ':' + rand + '-' + lastBlock, result);
+								tempartCompiler.dom.append(detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + lastBlock, result);
 							}
-						} else if(dirty.type === 'update') {
-							throw 'Not yet implemented'; // @TODO
+						} else {
+							throw dirty.type + ' is no valid dirtytype';
+						}
+					} else if(tempartCompiler.types.executes.isChild(keyParts, dirty.key)){
+						var index = dirty.key[keyParts.length];
+						rand      = currentValues[block.id].order[index];
+						var value = tempartCompiler.types.executes.get(dirty.key.slice(0, keyParts.length + 1), content, local);
+						if(dirty.type === 'update') {
+							tempartCompiler.types.executes.set( block.depending[ block.depending.length - 1 ], value, local );
+							if( block.depending.length > 2) {
+								tempartCompiler.types.executes.set( block.depending[ 1 ], index, local );
+							}
+							tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix + ':' + rand , opt );
 						} else if(dirty.type === 'delete') {
 							throw 'Not yet implemented'; // @TODO
 						} else if(dirty.type === 'move') {
