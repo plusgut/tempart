@@ -98,7 +98,7 @@
 				if( block[ containTypes[ containIndex ]]){
 					var childrenDependency = this._hasDependency( block[ containTypes[ containIndex ]], dirties, exclude );
 
-					if( result ){ // Only stopping when i found something
+					if( childrenDependency.length ){ // Only stopping when i found something
 						result.push( block );
 					}
 				}
@@ -514,6 +514,10 @@
 			// @TODO
 			partial: function() {
 
+			},
+			////-----------------------------------------------------------------------------------------
+			log: function( block, content, local ) {
+				return tempartCompiler.types.log( block, content,local );
 			}
 		},
 	};
