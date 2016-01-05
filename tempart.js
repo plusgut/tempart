@@ -195,10 +195,11 @@
 		},
 		_each: function( block, content, local, currentValues, dirties, path, prefix, opt, values, contentOffset) {
 			if(!currentValues[ block.id ]) {
-				currentValues[ block.id ] = {values: {}, order: []};
+				currentValues[ block.id ] = {values: {}, order: [], type: null};
 			}
 			if( values && values.length ){
 				var result = "";
+				currentValues[ block.id ].type = 'contains';
 				for(var i = 0; i < values.length; i++) {
 					var rand = this.executes.random();
 					currentValues[ block.id ].values[ rand ] = {};
@@ -217,6 +218,7 @@
 				}
 				return result;
 			} else {
+				currentValues[ block.id ].type = 'elseContains';
 				var elsePrefix = prefix + this.executes.options.prefixDelimiter + block.id;
 				return tempartCompiler._handleBlocks( block.elseContains, content, local, currentValues, dirties, path, elsePrefix, opt);
 			}
