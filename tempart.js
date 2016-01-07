@@ -84,11 +84,6 @@
 		}
 		return key;
 	};
-
-	////-----------------------------------------------------------------------------------------
-	// an object which holds all block-callbacks
-	// {prefix-block.id: callback}
-	tempartCompiler.eventCallbacks = {};
 	////-----------------------------------------------------------------------------------------
 	// returns the html and adds context to currentValues
 	// path is not used, it only is passed to partial
@@ -172,8 +167,9 @@
 		return ( a || b ) && !( a && b );
 	};
 
-	// Is used
+	// Is used for syncing dom-values to currentValues
 	tempartCompiler.locals = {
+		// iterates threw all blocks, to start there syncing
 		_generate: function(ids, blocks, content, local, currentValues, offset) {
 			var idParts = ids[ offset ].split(':');
 			for( var i = 0; i < blocks.length; i++) {
@@ -183,6 +179,7 @@
 				}
 			}
 		},
+		// Saves currentValues for each loops
 		each: function(ids, idParts, blocks, block, content, local, currentValues, offset) {
 			if(!currentValues[ idParts[ 0 ]].order.length) {
 				throw 'each-else events are not yet implemented';
@@ -198,6 +195,13 @@
 				}
 			}
 
+		},
+		// Currently does nothing
+		dom: function(ids, idParts, blocks, block, content, local, currentValues) {
+		// 	for(var i = 0; i < block.contains.length; i++) {
+		// 		if()
+				// tempartCompiler.types.executes.set( block.depending[0], i, local );
+		// }
 		}
 	};
 
@@ -222,6 +226,8 @@
 				}
 			}
 			result += '>';
+			console.log(result);
+
 			return result;
 		},
 		////-----------------------------------------------------------------------------------------
@@ -299,8 +305,6 @@
 		////-----------------------------------------------------------------------------------------
 		// Adds element listeners
 		event: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
-			var type    = null;
-			var action  = null;
 			var result  = '';
 			var eventId = opt.prefix + '-' + block.id;
 			currentValues[ block.id ] = {values: {}, parameter: []};
@@ -314,13 +318,14 @@
 			if( !currentValues[ block.id ].values.type || !currentValues[ block.id ].values.action ) {
 				throw 'Event definition was malformed';
 			}
-			if( !tempartCompiler.eventCallbacks[ eventId ]){
-				tempartCompiler.eventCallbacks[eventId] = function( block, blocks, content, currentValues, obj ) {
+			if( !tempartCompiler.events.callbacks[ eventId ]){
+				tempartCompiler.events.callbacks[eventId] = function( block, blocks, content, currentValues, obj ) {
 					var ids         = tempartCompiler.getBlockIds( obj );
 					var componentId = ids.shift();
 					var local       = {};
 					var parameter   = [];
 					var action      = null;
+					var eventType   = null;
 					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues, 0);
 
 					for( var dependingIndex = 0; dependingIndex < block.dependingNames.length; dependingIndex++) {
@@ -328,16 +333,27 @@
 							parameter.push(tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local ));
 						} else if( block.dependingNames[dependingIndex] === 'action' ) {
 							action = tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local );
+						} else if( block.dependingNames[dependingIndex] === 'type' ) {
+							eventType = tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local );
 						}
 					}
 					if(!action) {
 						throw "Could not find action parameter";
 					}
 					parameter.push(event); // In case the component wants the event
+					var rewrite = tempartCompiler.events.rewrites[eventType];
+					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) { // When onEnter, only key 13 is valid eventkey
+						console.log('skipped');
+						return;
+					}
 					tempartCompiler.trigger(componentId, action, parameter);
 				}.bind( undefined, block, opt.blocks, content, opt.currentValues );
 			}
-			result = 'on' + currentValues[ block.id ].values.type.charAt(0).toUpperCase() + currentValues[ block.id ].values.type.slice(1) + '="tempartCompiler.eventCallbacks[`' + eventId + '`](this)"';
+			var eventType = currentValues[ block.id ].values.type;
+			if(tempartCompiler.events.rewrites.hasOwnProperty(eventType)) {
+				eventType = tempartCompiler.events.rewrites[ eventType ].event;
+			}
+			result = 'on' + eventType + '="tempartCompiler.events.callbacks[`' + eventId + '`](this)"';
 			return result;
 		},
 		executes: {
@@ -636,5 +652,19 @@
 				}
 			}
 		}
+	};
+	tempartCompiler.events = {
+		// rewrites for events, with a selector on the event
+		rewrites: {
+			enter: {
+				selectorType: 'keyCode',
+				selectorValue: 13,
+				event: 'keydown'
+			}
+		},
+		////-----------------------------------------------------------------------------------------
+		// an object which holds all block-callbacks
+		// {prefix-block.id: callback}
+		callbacks: {}
 	};
 }(typeof module == 'object' ? module.exports : window.tempartCompiler= {}));

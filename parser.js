@@ -221,16 +221,17 @@
 			return true;
 		}
 	};
-
 	////-----------------------------------------------------------------------------------------
 	// parses the element and removes beginning attribute and returns the key
 	tempartParser._removeLastAttribute = function( block ){
-		var equalPos       = block.content.lastIndexOf( '=' );
-		var attributeBlock = block.content.slice(0, equalPos );
-		var attributePos   = attributeBlock.lastIndexOf( ' ' );
-		if(attributePos === -1) return false; // There are not always other attributes
-		var attribute      = attributeBlock.slice( attributePos, attributeBlock.length).trim();
-		block.content      = attributeBlock.slice( 0 , attributePos);
+		var equalPos  = block.content.lastIndexOf( '=' );
+		var attribute = false;
+		if(equalPos + 1 === block.content.length || equalPos + 2 === block.content.length) {
+			var attributeBlock = block.content.slice(0, equalPos );
+			var attributePos   = attributeBlock.lastIndexOf( ' ' );
+			attribute      = attributeBlock.slice( attributePos, attributeBlock.length).trim();
+			block.content      = attributeBlock.slice( 0 , attributePos);
+		}
 		return attribute;
 	};
 }(typeof module == 'object' ? module.exports : window.tempartParser = {}));
