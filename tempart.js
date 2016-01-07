@@ -26,6 +26,65 @@
 		throw 'Getting the blockids went wrong';
 	};
 
+	//// ------------------------------------------------------------
+	// Layer for comunnicate with tempart, to sync values
+	tempartCompiler.syncModel = function(blocks, tempartId, type, value, currentValues) {
+		var parts  = tempartId.split( '-' );
+		var blocksList = [];
+		for( var i = 0; i < parts.length; i++ ){
+			for( var blockIndex = 0; blockIndex < blocks.length; blockIndex++ ){
+				var block      = blocks[ blockIndex ];
+				var blockParts = parts[ i ].split( ':' );
+				var blockId    = blockParts[ 0 ];
+
+				if( block.id == blockId ){
+					var currentValue  = null;
+					if( blockParts[ 1 ] ) {
+						currentValue = currentValues[ blockId ];
+					}
+					blocksList.push({block: block, local: blockParts[ 1 ], id: blockParts[ 0 ], currentValues: currentValue}); // @TODO add currentValues
+					if( i + 1 < parts.length) {
+						blocks = block[ currentValues[ block.id ].type ];
+					} else {
+						if(block.type !== 'dom') throw 'Something went wrong here!';
+						// @TODO add updating of currentValues in block.dom
+						for( var orderIndex = 0; orderIndex < block.order.length; orderIndex++ ){
+							if( block.order[ orderIndex ] == type ){
+								return this.generateRealKey(block.contains[orderIndex].depending[0], blocksList);
+							}
+						}
+					}
+					if( blockParts[ 1 ] ){
+						currentValues = currentValues[ blockId ].values[ blockParts[ 1 ]];
+					}
+					break;
+				}
+			}
+		}
+		console.error(' Couldnt update your value, seems like no one cares');
+	};
+
+
+	//// ------------------------------------------------------------
+	// In template can happen renamings, eg in loops this has to be reversed
+	tempartCompiler.generateRealKey = function(source, blocks) {
+		var key = source.split('.');
+		for(var i = 0; i < blocks.length; i++) {
+			if(blocks[ i ].local) {
+				var blockEntity = blocks[ i ];
+				var pos = blockEntity.currentValues.order.indexOf(blocks[i].local);
+
+				if( pos === -1 ) throw 'Generating arrayposition of hash did not work';
+				if( blockEntity.block.depending[ blockEntity.block.depending.length - 1 ] === key[ 0 ] ){
+					key.shift();
+					key.unshift(pos);
+					key.unshift(blockEntity.block.depending[ 0 ]);
+				}
+			}
+		}
+		return key;
+	};
+
 	////-----------------------------------------------------------------------------------------
 	// an object which holds all block-callbacks
 	// {prefix-block.id: callback}
