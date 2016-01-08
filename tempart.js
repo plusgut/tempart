@@ -196,7 +196,7 @@
 			}
 
 		},
-		// Currently does nothing
+		// @TODO Currently does nothing, and unsure if it should
 		dom: function(ids, idParts, blocks, block, content, local, currentValues) {
 		// 	for(var i = 0; i < block.contains.length; i++) {
 		// 		if()
@@ -226,7 +226,6 @@
 				}
 			}
 			result += '>';
-			console.log(result);
 
 			return result;
 		},
@@ -235,7 +234,7 @@
 		variable: function( block, content, local, currentValues, dirties ){
 			var value = this.executes.get( block.depending[ 0 ], content, local );
 			if( value === undefined || value === null ) value = '';
-			currentValues[ block.id ] = value;
+			currentValues[ block.id ] = {content: value};
 			return value;
 		},
 		////-----------------------------------------------------------------------------------------
@@ -307,7 +306,7 @@
 		event: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
 			var result  = '';
 			var eventId = opt.prefix + '-' + block.id;
-			currentValues[ block.id ] = {values: {}, parameter: []};
+			currentValues[ block.id ] = {values: {}, parameter: [], content: null};
 			for( var i = 0; i < block.dependingNames.length; i++ ) {
 				if(block.dependingNames[ i ] === null) {
 					currentValues[ block.id ].parameter.push(this.executes.get(block.depending[ i ], content, local));
@@ -342,8 +341,10 @@
 					}
 					parameter.push(event); // In case the component wants the event
 					var rewrite = tempartCompiler.events.rewrites[eventType];
-					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) { // When onEnter, only key 13 is valid eventkey
+					// When onEnter, only key 13 is valid eventkey
+					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) {
 						console.log('skipped');
+						// debugger;
 						return;
 					}
 					tempartCompiler.trigger(componentId, action, parameter);
@@ -354,6 +355,7 @@
 				eventType = tempartCompiler.events.rewrites[ eventType ].event;
 			}
 			result = 'on' + eventType + '="tempartCompiler.events.callbacks[`' + eventId + '`](this)"';
+			currentValues[block.id].content = result;
 			return result;
 		},
 		executes: {
@@ -546,14 +548,23 @@
 			// checks if a variable changed and update its attribute
 			dom: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 				for(var i = 0; i < block.order.length; i++) {
-					var attribute = block.order[ i ];
 					var dependingBlock = block.contains[ i ];
 					for( var dependingIndex = 0; dependingIndex < dependingBlock.depending.length; dependingIndex++ ){
 						var depending = dependingBlock.depending[dependingIndex];
 						var oldValue = currentValues[ block.id ][ dependingBlock.id ];
 						var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix, opt );
 
-						if(oldValue != newValue) {
+						if(oldValue.content != newValue) {
+							var attribute = block.order[ i ];
+							if(!attribute) {
+								var oldParts = oldValue.content.split('=');
+								var newParts = newValue.split('=');
+								if(oldParts.length === 1 || oldParts[0] !== newParts[0]) {
+									tempartCompiler.dom.removeAttribute(prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, oldParts[0]);
+								}
+								attribute = newParts[0];
+								newValue  = newParts[1];
+							}
 							tempartCompiler.dom.updateAttribute(prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id, attribute, newValue);
 						}
 					}
