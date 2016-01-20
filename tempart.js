@@ -343,8 +343,6 @@
 					var rewrite = tempartCompiler.events.rewrites[eventType];
 					// When onEnter, only key 13 is valid eventkey
 					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) {
-						console.log('skipped');
-						// debugger;
 						return;
 					}
 					tempartCompiler.trigger(componentId, action, parameter);

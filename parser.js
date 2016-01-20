@@ -168,7 +168,7 @@
 				} else {
 					done = true;
 					detailResult.content += blocks[ 0 ].slice( this._getEnd( blocks[ 0 ] ) + 2, end );
-					blocks[ 0 ]           = this._addEcho( blocks[0].slice( end + 2, blocks[ 0 ].length ));
+					blocks[ 0 ]           = this._addEcho( blocks[0].slice( end + 1, blocks[ 0 ].length ));
 					break;
 				}
 			} else {

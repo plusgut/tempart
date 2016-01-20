@@ -3,7 +3,7 @@
 <section class="todoapp">
 	<header class="header">
 		<h1>todos</h1>
-		<input class="new-todo" placeholder="What needs to be done?"autofocus value="{{entry.value}}" {{#event type="enter" action="addTodo" index entity}}>
+		<input class="new-todo" placeholder="What needs to be done?" value={{entry}} {{#event type="enter" action="addTodo" index entity}}>
 	</header>
 	<!-- This section should be hidden by default and shown when there are todos -->
 	<section class="main">
@@ -17,12 +17,12 @@
 				<li>
 					<div class="view">
 							{{#if entity.edit}}
-								<input type="text" value={{entity.value}} {{#event type="enter" action="saveTodo" index entity}}>
+								<input class="new-todo" autofocus type="text" value={{entity.value}} {{#event type="enter" action="saveTodo" index entity}}>
 							{{#else}}
 								<input class="toggle" type="checkbox">
 								{{#log entity}}
 								<label {{#event type="click" action="editTodo" index entity}}>{{entity.value}}</label>
-								<button class="destroy"></button>
+								<button class="destroy" {{#event type="click" action="removeTodo" index entity}}></button>
 							{{/if}}
 
 					</div>
