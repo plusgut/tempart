@@ -467,7 +467,11 @@
 					var dirty = dirties[ i ];
 					if( tempartCompiler.types.executes.isSame(keyParts, dirty.key)){
 						if(dirty.type === 'create') {
-							rand = currentValues[block.id].order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
+							var order = currentValues[block.id].order;
+							if(dirty.to > order.length) {
+								dirty.to = order.length; // When mutliple entities get added, positions are malformed
+							}
+							rand = order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
 							var result = tempartCompiler.types._each( block, content, local, currentValues, '*', path, prefix, opt, dirty.values, dirty.to);
 							if( dirty.to === 0) {
 								tempartCompiler.dom.append(detailPrefix, result);
