@@ -100,6 +100,7 @@
 		if(!opt.dirties)       opt.dirties = '*';
 		if(!opt.path)          opt.path = '/';
 		if(!opt.prefix)        opt.prefix = '';
+		opt.renames = {};
 		var local = {};
 		return this._handleBlocks(opt.blocks, opt.content, local, opt.currentValues, opt.dirties, opt.path, opt.prefix, opt);
 	};
@@ -460,14 +461,23 @@
 			each: function( block, content, local, currentValues, dirties, path, prefix, opt ){
 				var previous     = currentValues[ block.id ];
 				var keyParts     = block.depending[ 0 ].split('.');
+				if(opt.renames.hasOwnProperty(keyParts[0])) { // Checks if first variablenode, was renamed
+					var renameKey = keyParts.shift();
+					keyParts = opt.renames[renameKey].concat(keyParts); // Renames relative path, to absolute path
+				}
 				var detailPrefix = prefix + tempartCompiler.types.executes.options.prefixDelimiter + block.id;
 				var rand         = null;
 
 				for( var i = 0; i < dirties.length; i++ ){
 					var dirty = dirties[ i ];
+					if(window.foo) debugger;
 					if( tempartCompiler.types.executes.isSame(keyParts, dirty.key)){
 						if(dirty.type === 'create') {
-							rand = currentValues[block.id].order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
+							var order = currentValues[block.id].order;
+							if(dirty.to > order.length) {
+								dirty.to = order.length; // When mutliple entities get added, positions are malformed
+							}
+							rand = order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
 							var result = tempartCompiler.types._each( block, content, local, currentValues, '*', path, prefix, opt, dirty.values, dirty.to);
 							if( dirty.to === 0) {
 								tempartCompiler.dom.append(detailPrefix, result);
@@ -479,11 +489,14 @@
 							throw dirty.type + ' is no valid dirtytype';
 						}
 					} else if(tempartCompiler.types.executes.isChild(keyParts, dirty.key)){
-						var index = dirty.key[keyParts.length];
-						rand      = currentValues[block.id].order[index];
-						var value = tempartCompiler.types.executes.get(dirty.key.slice(0, keyParts.length + 1), content, local);
-						if(dirty.type === 'update') {
-							tempartCompiler.types.executes.set( block.depending[ block.depending.length - 1 ], value, local );
+						var index       = dirty.key[keyParts.length];
+						rand            = currentValues[block.id].order[index];
+						var propertyKey = dirty.key.slice(0, keyParts.length + 1);
+						var value       = tempartCompiler.types.executes.get(propertyKey, content, local);
+						var rename      = block.depending[ block.depending.length - 1 ];
+						if(dirty.type === 'update' || keyParts.length + 1 < dirty.key.length) {
+							tempartCompiler.types.executes.set( rename, value, local );
+							opt.renames[rename] = propertyKey;
 							if( block.depending.length > 2) {
 								tempartCompiler.types.executes.set( block.depending[ 1 ], index, local );
 							}
