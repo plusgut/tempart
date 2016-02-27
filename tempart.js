@@ -84,6 +84,7 @@
 		}
 		return key;
 	};
+
 	////-----------------------------------------------------------------------------------------
 	// returns the html and adds context to currentValues
 	// path is not used, it only is passed to partial
@@ -114,6 +115,7 @@
 		}
 		return result;
 	};
+
 	////-----------------------------------------------------------------------------------------
 	// returns the compiled block, depending on the inserted data
 	tempartCompiler._handleBlock = function( block, content, local, currentValues, dirties, path, prefix, opt ){
@@ -170,8 +172,10 @@
 
 	// Is used for syncing dom-values to currentValues
 	tempartCompiler.locals = {
+		////-----------------------------------------------------------------------------------------
 		// iterates threw all blocks, to start there syncing
 		_generate: function(ids, blocks, content, local, currentValues, offset) {
+			// offset defines which id block should be used
 			var idParts = ids[ offset ].split(':');
 			for( var i = 0; i < blocks.length; i++) {
 				block = blocks[i];
@@ -180,6 +184,7 @@
 				}
 			}
 		},
+		////-----------------------------------------------------------------------------------------
 		// Saves currentValues for each loops
 		each: function(ids, idParts, blocks, block, content, local, currentValues, offset) {
 			if(!currentValues[ idParts[ 0 ]].order.length) {
@@ -198,6 +203,7 @@
 			}
 
 		},
+		////-----------------------------------------------------------------------------------------
 		// @TODO Currently does nothing, and unsure if it should
 		dom: function(ids, idParts, blocks, block, content, local, currentValues) {
 		// 	for(var i = 0; i < block.contains.length; i++) {
@@ -358,6 +364,8 @@
 			currentValues[block.id].content = result;
 			return result;
 		},
+		////-----------------------------------------------------------------------------------------
+		// Some helper functions, which are always needed
 		executes: {
 			////-----------------------------------------------------------------------------------------
 			// Executables are in need of options too!
@@ -621,7 +629,8 @@
 			}
 		},
 	};
-
+	////-----------------------------------------------------------------------------------------
+	// Does the actual dom manipulation
 	tempartCompiler.dom = {
 		////-----------------------------------------------------------------------------------------
 		// Puts the things where they belong
@@ -634,7 +643,7 @@
 			this.obj( id, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
 		},
 		////-----------------------------------------------------------------------------------------
-		// Realises nextUntil and its replacement
+		// removes dom nodes and replaces them 
 		update: function( id, html ){
 			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
 			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
@@ -643,6 +652,8 @@
 			}
 			first.insertAdjacentHTML( 'afterend', html );
 		},
+		////-----------------------------------------------------------------------------------------
+		// removes objects
 		remove: function( id ){
 			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
 			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
@@ -676,6 +687,8 @@
 			}
 		}
 	};
+	////-----------------------------------------------------------------------------------------
+	// Container for eventcontent
 	tempartCompiler.events = {
 		// rewrites for events, with a selector on the event
 		rewrites: {
