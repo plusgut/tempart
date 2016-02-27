@@ -190,9 +190,10 @@
 				if( idParts[ 1 ] === currentValues[ idParts[ 0 ]].order[ i ]) {
 					tempartCompiler.types.executes.set( block.depending[ block.depending.length - 1 ], value[ i ], local );
 					if(block.depending.length > 2) {
-						tempartCompiler.types.executes.set( block.depending[1 ], i, local );
+						tempartCompiler.types.executes.set( block.depending[ 1 ], i, local );
 					}
-					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues[ idParts[ 0 ]], offset);
+					// @TODO check if an block.elseContains is needed
+					tempartCompiler.locals._generate(ids, block.contains, content, local, currentValues[ idParts[ 0 ]].values[idParts[ 1 ]], offset);
 				}
 			}
 
