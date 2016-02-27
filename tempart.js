@@ -61,7 +61,7 @@
 				}
 			}
 		}
-		console.error(' Couldnt update your value, seems like no one cares');
+		console.warn('Couldnt update your value, seems like no one cares');
 	};
 
 
@@ -479,7 +479,6 @@
 
 				for( var i = 0; i < dirties.length; i++ ){
 					var dirty = dirties[ i ];
-					if(window.foo) debugger;
 					if( tempartCompiler.types.executes.isSame(keyParts, dirty.key)){
 						if(dirty.type === 'create') {
 							var order = currentValues[block.id].order;
@@ -494,6 +493,9 @@
 								var lastBlock = block.contains[block.contains.length - 1].id;
 								tempartCompiler.dom.append(detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + lastBlock, result);
 							}
+						} else if(dirty.type === 'set') {
+							tempartCompiler.dom.update(detailPrefix, tempartCompiler.types.each(block, content, local, currentValues, '*', path, prefix, opt ));
+
 						} else {
 							throw dirty.type + ' is no valid dirtytype';
 						}
