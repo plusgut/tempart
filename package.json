@@ -1,6 +1,6 @@
 {
   "name": "tempart",
-  "version": "0.2.1",
+  "version": "0.2.2",
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": "parser.js",
   "scripts": {
