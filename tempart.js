@@ -487,6 +487,7 @@
 							}
 							rand = order[dirty.to - 1]; // Has to be in this position, else because ._each inserts to currentValues
 							var result = tempartCompiler.types._each( block, content, local, currentValues, '*', path, prefix, opt, dirty.values, dirty.to);
+
 							if( dirty.to === 0) {
 								tempartCompiler.dom.append(detailPrefix, result);
 							} else {
@@ -512,8 +513,10 @@
 								tempartCompiler.types.executes.set( block.depending[ 1 ], index, local );
 							}
 							tempartCompiler._handleBlocks( block.contains, content, local, currentValues[ block.id ].values[ rand ], dirties, path, detailPrefix + ':' + rand , opt );
-						} else if(dirty.type === 'delete') {
-							throw 'Not yet implemented'; // @TODO
+						} else if(dirty.type === 'remove') {
+							var startId = detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + block.contains[0].id;
+							var endId   = detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + block.contains[block.contains.length - 1].id;
+							tempartCompiler.dom.remove(startId , endId);
 						} else if(dirty.type === 'move') {
 							throw 'Not yet implemented'; // @TODO
 						} else {
@@ -614,7 +617,7 @@
 				} else {
 					currentValues[ block.id ].type = type;
 					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix, opt );
-					tempartCompiler.dom.remove( prefix );
+					tempartCompiler.dom.remove( prefix, prefix );
 					tempartCompiler.dom.append( prefix, now );
 				}
 				
@@ -656,9 +659,9 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// removes objects
-		remove: function( id ){
-			var first = this.obj( id, tempartCompiler.types.executes.options.attrStart );
-			var end   = this.obj( id, tempartCompiler.types.executes.options.attrEnd );
+		remove: function( startId, endId ){
+			var first = this.obj( startId, tempartCompiler.types.executes.options.attrStart );
+			var end   = this.obj( endId, tempartCompiler.types.executes.options.attrEnd );
 			while( first.nextSibling != end ) {
 				first.nextSibling.remove(); // @FIXME I want to batch that, but how?
 			}
