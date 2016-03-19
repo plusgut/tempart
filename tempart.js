@@ -205,6 +205,11 @@
 		},
 		////-----------------------------------------------------------------------------------------
 		// @TODO Currently does nothing, and unsure if it should
+		if: function(ids, idParts, blocks, block, content, local, currentValues) {
+
+		},
+		////-----------------------------------------------------------------------------------------
+		// @TODO Currently does nothing, and unsure if it should
 		dom: function(ids, idParts, blocks, block, content, local, currentValues) {
 		// 	for(var i = 0; i < block.contains.length; i++) {
 		// 		if()
@@ -617,8 +622,7 @@
 				} else {
 					currentValues[ block.id ].type = type;
 					var now = tempartCompiler._handleBlocks( block[ type ], content, local, currentValues[ block.id ].contains, '*', path, prefix, opt );
-					tempartCompiler.dom.remove( prefix, prefix );
-					tempartCompiler.dom.append( prefix, now );
+					tempartCompiler.dom.update( prefix, now );
 				}
 				
 			},
@@ -640,12 +644,12 @@
 		////-----------------------------------------------------------------------------------------
 		// Puts the things where they belong
 		prepend: function( id, html ){
-			this.obj( id, tempartCompiler.types.executes.options.attrStart).insertAdjacentHTML( 'afterend', html );
+			this.obj( id, tempartCompiler.types.executes.options.attrStart).insertAdjacentHTML( 'beforebegin', html );
 		},
 		////-----------------------------------------------------------------------------------------
 		// Puts the things where they belong
 		append: function( id, html ){
-			this.obj( id, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'beforebegin', html );
+			this.obj( id, tempartCompiler.types.executes.options.attrEnd).insertAdjacentHTML( 'afterend', html );
 		},
 		////-----------------------------------------------------------------------------------------
 		// removes dom nodes and replaces them 
