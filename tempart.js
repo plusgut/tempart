@@ -522,6 +522,9 @@
 							var startId = detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + block.contains[0].id;
 							var endId   = detailPrefix + ':' + rand + tempartCompiler.types.executes.options.prefixDelimiter + block.contains[block.contains.length - 1].id;
 							tempartCompiler.dom.remove(startId , endId);
+							// Removes the item from the currentValues
+							delete currentValues[block.id].values[rand];
+							currentValues[block.id].order.splice(index, 1);
 						} else if(dirty.type === 'move') {
 							throw 'Not yet implemented'; // @TODO
 						} else {
