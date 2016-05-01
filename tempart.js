@@ -372,12 +372,13 @@
 			currentValues[block.id].content = result;
 			return result;
 		},
+		////-----------------------------------------------------------------------------------------
+		// Calls the view instance, and triggers action and returns its value to e.g. an dom-object
 		view: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
 			var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
-			currentValues[block.id] = dependings.parameter;
 			var result = opt.controller.view[dependings.names.action].apply(opt.controller.view, dependings.parameter);
+			currentValues[block.id] = {content: result}; // Needed for caching reasons
 			return result;
-
 		},
 		////-----------------------------------------------------------------------------------------
 		// Some helper functions, which are always needed
@@ -596,7 +597,6 @@
 						var depending = dependingBlock.depending[dependingIndex];
 						var oldValue = currentValues[ block.id ][ dependingBlock.id ];
 						var newValue = tempartCompiler.types[dependingBlock.type]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix, opt );
-
 						if(oldValue.content != newValue) {
 							var attribute = block.order[ i ];
 							if(!attribute) {
@@ -646,15 +646,9 @@
 
 			},
 			////-----------------------------------------------------------------------------------------
+			// Logs stuff
 			log: function( block, content, local ) {
 				return tempartCompiler.types.log( block, content,local );
-			},
-			view: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
-				var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
-				currentValues[block.id] = dependings.parameter;
-				var result = opt.controller.view[dependings.names.action].apply(opt.controller.view, dependings.parameter);
-				console.log(result);
-				return result;
 			}
 		}
 	};
