@@ -64,6 +64,19 @@
 		console.warn('Couldnt update your value, seems like no one cares');
 	};
 
+	//// ------------------------------------------------------------
+	// parses the depending lists and named options
+	tempartCompiler.parseDependings = function(dependingNames, depending, global, local) {
+		var result = {parameter: [], names: {}}
+		for( var dependingIndex = 0; dependingIndex < dependingNames.length; dependingIndex++) {
+			if(dependingNames[dependingIndex] === null) { // Has no name, so its a list
+				result.parameter.push(tempartCompiler.types.executes.get( depending[ dependingIndex ], global, local ));
+			} else if(dependingNames[dependingIndex]) { // Has name, so its no list
+				result.names[dependingNames[dependingIndex]] = tempartCompiler.types.executes.get( depending[ dependingIndex ], global, local );
+			}
+		}
+		return result;
+	};
 
 	//// ------------------------------------------------------------
 	// In template can happen renamings, eg in loops this has to be reversed
@@ -178,7 +191,7 @@
 			// offset defines which id block should be used
 			var idParts = ids[ offset ].split(':');
 			for( var i = 0; i < blocks.length; i++) {
-				block = blocks[i];
+				var block = blocks[i];
 				if(block.id == idParts[0]) {
 					tempartCompiler.locals[block.type](ids, idParts, blocks, block, content, local, currentValues, offset + 1);
 				}
@@ -340,16 +353,8 @@
 					var eventType   = null;
 					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues, 0);
 
-					for( var dependingIndex = 0; dependingIndex < block.dependingNames.length; dependingIndex++) {
-						if(block.dependingNames[dependingIndex] === null) {
-							parameter.push(tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local ));
-						} else if( block.dependingNames[dependingIndex] === 'action' ) {
-							action = tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local );
-						} else if( block.dependingNames[dependingIndex] === 'type' ) {
-							eventType = tempartCompiler.types.executes.get( block.depending[ dependingIndex ], content, local );
-						}
-					}
-					if(!action) {
+					var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
+					if(!dependings.names.action) {
 						throw "Could not find action parameter";
 					}
 					parameter.push(event); // In case the component wants the event
@@ -358,7 +363,7 @@
 					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) {
 						return;
 					}
-					tempartCompiler.trigger(componentId, action, parameter);
+					tempartCompiler.trigger(componentId, dependings.names.action, dependings.parameter);
 				}.bind( undefined, block, opt.blocks, content, opt.currentValues );
 			}
 			var eventType = currentValues[ block.id ].values.type;
@@ -368,6 +373,13 @@
 			result = 'on' + eventType + '="tempartCompiler.events.callbacks[`' + eventId + '`](this)"';
 			currentValues[block.id].content = result;
 			return result;
+		},
+		view: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
+			var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
+			currentValues[block.id] = dependings.parameter;
+			var result = opt.controller.view[dependings.names.action].apply(opt.controller.view, dependings.parameter);
+			return result;
+
 		},
 		////-----------------------------------------------------------------------------------------
 		// Some helper functions, which are always needed
@@ -638,8 +650,15 @@
 			////-----------------------------------------------------------------------------------------
 			log: function( block, content, local ) {
 				return tempartCompiler.types.log( block, content,local );
+			},
+			view: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
+				var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
+				currentValues[block.id] = dependings.parameter;
+				var result = opt.controller.view[dependings.names.action].apply(opt.controller.view, dependings.parameter);
+				console.log(result);
+				return result;
 			}
-		},
+		}
 	};
 	////-----------------------------------------------------------------------------------------
 	// Does the actual dom manipulation
