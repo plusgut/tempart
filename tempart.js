@@ -349,8 +349,6 @@
 					var componentId = ids.shift();
 					var local       = {};
 					var parameter   = [];
-					var action      = null;
-					var eventType   = null;
 					tempartCompiler.locals._generate(ids, blocks, content, local, currentValues, 0);
 
 					var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
@@ -358,7 +356,7 @@
 						throw "Could not find action parameter";
 					}
 					parameter.push(event); // In case the component wants the event
-					var rewrite = tempartCompiler.events.rewrites[eventType];
+					var rewrite = tempartCompiler.events.rewrites[dependings.names.type];
 					// When onEnter, only key 13 is valid eventkey
 					if(rewrite && rewrite.event == event.type && event[rewrite.selectorType] !== rewrite.selectorValue) {
 						return;
