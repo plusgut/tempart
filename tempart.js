@@ -486,7 +486,6 @@
 			////-----------------------------------------------------------------------------------------
 			// Checks if an dom-attribute is one that has no value, but stands for itself
 			isAttributeWithoutValue: function(key) {
-				console.log(key, this.options.attributesWithoutValues.indexOf(key) !== -1);
 				return this.options.attributesWithoutValues.indexOf(key) !== -1;
 			}
 		},
