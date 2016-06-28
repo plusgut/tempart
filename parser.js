@@ -138,7 +138,6 @@
 		var lastElementPosition = result[ 0 ].content.lastIndexOf( '<' );
 		var content             = block[ 0 ].content;
 		var done                = false;
-		var bindAttr            = null;
 		var detailResult        = null;
 		if( lastElementPosition === 0 ){
 			detailResult           = result[ 0 ];

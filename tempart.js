@@ -245,8 +245,12 @@
 			for( var i = 0; i < block.order.length; i++ ){
 				var dependingBlock = block.contains[ i ];
 				var blockContent = this[ dependingBlock.type ]( dependingBlock, content, local, currentValues[ block.id ], dirties, path, prefix, opt );
-				if( block.order[ i ]){ // Not every block needs a attribute (events zb)
-					result += block.order[ i ] + '="' + blockContent + '" ';
+				if( block.order[ i ]){ // Not every block needs a attribute (events e.g.)
+					if(!this.executes.isAttributeWithoutValue(block.order[i])) {
+						result += block.order[ i ] + '="' + blockContent + '" ';
+					} else if(blockContent){
+						result += block.order[ i ];
+					}
 				} else {
 					result += blockContent;
 				}
@@ -376,8 +380,9 @@
 		// Calls the view instance, and triggers action and returns its value to e.g. an dom-object
 		view: function( block, content, local, currentValues, dirties, path, prefix, opt ) {
 			var dependings = tempartCompiler.parseDependings(block.dependingNames, block.depending, content, local);
+			// if(currentValues[block.id]) // @TODO add a check if dependings changed
 			var result = opt.controller.view[dependings.names.action].apply(opt.controller.view, dependings.parameter);
-			currentValues[block.id] = {content: result}; // Needed for caching reasons
+			currentValues[block.id] = {content: result, dependings: dependings}; // Needed for caching reasons
 			return result;
 		},
 		////-----------------------------------------------------------------------------------------
@@ -389,7 +394,8 @@
 				domNode:   'script',
 				attrStart: 'tempartStart',
 				attrEnd: 'tempartEnd',
-				prefixDelimiter: '-'
+				prefixDelimiter: '-',
+				attributesWithoutValues: ["checked","selected","required","multiple","disabled", "autofocus"]
 			},
 			////-----------------------------------------------------------------------------------------
 			// Checks if something is in the local space
@@ -476,6 +482,12 @@
 					}
 				}
 				return true;
+			},
+			////-----------------------------------------------------------------------------------------
+			// Checks if an dom-attribute is one that has no value, but stands for itself
+			isAttributeWithoutValue: function(key) {
+				console.log(key, this.options.attributesWithoutValues.indexOf(key) !== -1);
+				return this.options.attributesWithoutValues.indexOf(key) !== -1;
 			}
 		},
 		////-----------------------------------------------------------------------------------------
