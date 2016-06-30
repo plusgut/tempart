@@ -67,7 +67,7 @@
 	//// ------------------------------------------------------------
 	// parses the depending lists and named options
 	tempartCompiler.parseDependings = function(dependingNames, depending, global, local) {
-		var result = {parameter: [], names: {}}
+		var result = {parameter: [], names: {}};
 		for( var dependingIndex = 0; dependingIndex < dependingNames.length; dependingIndex++) {
 			if(dependingNames[dependingIndex] === null) { // Has no name, so its a list
 				result.parameter.push(tempartCompiler.types.executes.get( depending[ dependingIndex ], global, local ));
@@ -348,7 +348,7 @@
 				throw 'Event definition was malformed';
 			}
 			if( !tempartCompiler.events.callbacks[ eventId ]){
-				tempartCompiler.events.callbacks[eventId] = function( block, blocks, content, currentValues, obj ) {
+				tempartCompiler.events.callbacks[eventId] = function( block, blocks, content, currentValues, obj, event ) {
 					var ids         = tempartCompiler.getBlockIds( obj );
 					var componentId = ids.shift();
 					var local       = {};
@@ -372,7 +372,7 @@
 			if(tempartCompiler.events.rewrites.hasOwnProperty(eventType)) {
 				eventType = tempartCompiler.events.rewrites[ eventType ].event;
 			}
-			result = 'on' + eventType + '="tempartCompiler.events.callbacks[`' + eventId + '`](this)"';
+			result = 'on' + eventType + '="tempartCompiler.events.callbacks[\'' + eventId + '\'](this, event)"';
 			currentValues[block.id].content = result;
 			return result;
 		},
