@@ -1,6 +1,7 @@
 // tempart templating library
 
 ;(function(tempartCompiler) {
+	"use strict";
 	////-----------------------------------------------------------------------------------------
 	// you need to overwrite this function, to have working partial support
 	tempartCompiler.partial = function( block, context, currentValues, dirties, path, opt ){
@@ -326,10 +327,15 @@
 		////-----------------------------------------------------------------------------------------
 		// patial handler, for rewriting contexts and stuff
 		partial: function( block, content, local, currentValues, dirties, path ) {
-			if( block.path !== '/' ){
-				path = path + '/' + block.path;
+			var partialPath = this.executes.get(block.path);
+			if(!partialPath) {
+				console.error("The Variable " + block.path + ' did not return anything, if ' + block.path + ' should be the value, then use "' + block.path + '" with quotes');
+			} else {
+				if( partialPath[0] !== '/' ){
+					partialPath = path + '/' + partialPath;
+				}
+				return tempartCompiler.partial(block, content, currentValues, dirties, partialPath);
 			}
-			return tempartCompiler.partial(block, content, currentValues, dirties, path);
 		},
 		////-----------------------------------------------------------------------------------------
 		// Adds element listeners
@@ -413,7 +419,7 @@
 						do {
 							var keyNode = key[ keyPartIndex ];
 							keyPartIndex++;
-							if( value.hasOwnProperty( keyNode )) {
+							if( value && value.hasOwnProperty( keyNode )) {
 								if(keyPartIndex === key.length) {
 									return value[ keyNode ];
 								}
