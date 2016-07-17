@@ -20,5 +20,14 @@
   "bugs": {
     "url": "https://github.com/plusgut/tempart/issues"
   },
+  "jshintConfig": {
+    "esversion": 6,
+    "loopfunc": true,
+    "unused": true,
+    "undef": true,
+    "curly": true,
+    "eqeqeq": true,
+    "forin": true
+  },
   "devDependencies": {}
 }
