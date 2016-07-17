@@ -1,3 +1,5 @@
+/* globals window, module, console */
+
 // tempart templating library
 
 ;(function (tempartParser) {
@@ -21,6 +23,7 @@
     } else {
       templateContent = this._addEcho(templateContent);
     }
+
     // @TODO add check if open-blocks are the same as end-blocks
     var searches = templateContent.split('{{');
     return this._parseBlocks(searches).content;
@@ -59,22 +62,25 @@
     var end = this._getEnd(block);
     var type = block.slice(0, end).trim().split(' ');
     var gotRemoved = false;
-    if (type[0][0] == '>') {
+    if (type[0][0] === '>') {
       result[0].type = 'partial';
       result[0].path = type[0].slice(1, type[0].length);
-    } else if (type[0][0] == '/') {
+    } else if (type[0][0] === '/') {
+
       // @TODO add for debugging purpose a check if this was the one which was last opened
       result[0] = 'end';
-    } else if (type[0] == '#else') {
+    } else if (type[0] === '#else') {
       result[0] = 'else';
-    } else if (type[0][0] == '#') {
+    } else if (type[0][0] === '#') {
       result[0].type = type[0].slice(1, type[0].length);
       if (type.length) {
         var dependings = [];
         var dependingNames = [];
+
         // @TODO seperate this logic to a new parse function
         for (var typeIndex = 1; typeIndex < type.length; typeIndex++) {
-          if (type[0] === '#each' && type[typeIndex] === 'as') continue;
+          if (type[0] === '#each' && type[typeIndex] === 'as') { continue;}
+
           var dependingParts = type[typeIndex].split(',');
           for (var dependingIndex = 0; dependingIndex < dependingParts.length; dependingIndex++) {
             if (dependingParts[dependingIndex]) {
@@ -82,7 +88,8 @@
               var value = dependingParts[dependingIndex];
               if (value.indexOf('=') !== -1) {
                 var parts = value.split('=');
-                if (parts.length !== 2) throw 'An attribute had malformed attributes';
+                if (parts.length !== 2) {throw 'An attribute had malformed attributes';}
+
                 key   = parts[0];
                 value = parts[1];
               }
@@ -97,7 +104,7 @@
         result[0].dependingNames = dependingNames;
       }
 
-      if (result[0].type == 'echo') {
+      if (result[0].type === 'echo') {
         result[0].content  = block.slice(end + 2, block.length);
         gotRemoved = true;
         blocks.shift();
@@ -110,7 +117,9 @@
       result[0].depending = [type[0]];
     }
 
-    if (!gotRemoved) blocks.shift();
+    if (!gotRemoved) {
+      blocks.shift();
+    }
 
     this._handleOverlength(block, blocks);
     this._handleElse(result[0], blocks);
@@ -121,11 +130,11 @@
   ////-----------------------------------------------------------------------------------------
   // Checks if an block-has the {{else}} possibility and adds elseContains
   tempartParser._handleElse = function (result, blocks) {
-    if (this.needsEnd.indexOf(result.type) != -1) {
+    if (this.needsEnd.indexOf(result.type) !== -1) {
       var contains = this._parseBlocks(blocks);
       if (contains) {
         result.contains = contains.content;
-        if (contains.end == 'else') {
+        if (contains.end === 'else') {
           result.elseContains = this._parseBlocks(blocks).content;
         } else {
           result.elseContains = [];
@@ -138,20 +147,21 @@
   // Checks if an block has an html-string behind it
   tempartParser._handleOverlength = function (block, blocks) {
     var end = this._getEnd(block);
-    if (block.length > end + 2 && block.slice(0, end) != '#echo') { // Handling of not-variable stuff
+
+    // Handling of not-variable stuff
+    if (block.length > end + 2 && block.slice(0, end) !== '#echo') {
       blocks.unshift(this._addEcho(block.slice(end + 2, block.length)));
     }
   };
 
   tempartParser._buildDom = function (result, blocks) {
-    var block               = blocks[0];
     var lastElementPosition = result[0].content.lastIndexOf('<');
-    var content             = block[0].content;
     var done                = false;
     var detailResult        = null;
     if (lastElementPosition === 0) {
       detailResult           = result[0];
-      if (detailResult.type !== 'echo') console.error('does that even make sense?');
+      if (detailResult.type !== 'echo') {console.error('does that even make sense?');}
+
       detailResult.type      = 'dom';
       detailResult.depending = [];
       detailResult.contains  = [];
@@ -185,7 +195,8 @@
         var attribute    = this._removeLastAttribute(result[result.length - 1]);
         var contains     = this._parseBlock(blocks);
         contains[0].id = this._increment++;
-        if (contains.length > 1) throw 'Something weird is happening here';
+        if (contains.length > 1) {throw 'Something weird is happening here';}
+
         detailResult.contains.push(contains[0]);
         if (attribute) {
           detailResult.order.push(attribute);
@@ -212,6 +223,7 @@
   // escaping backslashes, single quotes, and newlines
   tempartParser._escapeSpecials = function (templateContent) {
     return templateContent;
+
     // return templateContent.replace(/\\/g, '\\\\').replace(/\'/g, '\\\'').replace(/\r/g, '');
   };
 
@@ -252,4 +264,4 @@
 
     return attribute;
   };
-}(typeof module == 'object' ? module.exports : window.tempartParser = {}));
+}(typeof module === 'object' ? module.exports : window.tempartParser = {}));
