@@ -19,7 +19,7 @@ class Block {
     return this.push('variables', value);
   }
   addConstants(value) {
-    return this.push('constant', value);
+    return this.push('constants', value);
   }
   addContains(value) {
     return this.push('contains', value);
