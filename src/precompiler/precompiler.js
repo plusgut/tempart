@@ -1,43 +1,47 @@
 function Precompiler(template) {
-  this.template = template;
+  this._template = template;
 }
 
 Precompiler.prototype = {
   parse() {
-    this.positions = this.indexOfAll();
-    this.index = 0;
+    this._positions = this._indexOfAll();
+    this._index = 0;
     let blocks = [];
-    this.handleBlocks(blocks)
+    this.blocks = this._handleBlocks(blocks);
+
+    return this;
   },
 
-  handleBlocks(blocks) {
-    blocks.push({
-
-    });
-    while(this.index < this.positions.length) {
+  _handleBlocks() {
+    let blocks;
+    while(this._index < this._positions.length) {
       // else-closing
-        
+        this._setClose();
       // closing
-        this.incrementIndex()
-        break;
+        this._setOpen()
+            .incrementIndex();
+        // break;
       // openening
+        this._setOpen();
         let lastBlock = blocks[blocks.length - 1];
         lastBlock.children = [];
-        this.incrementIndex()
-            .handleBlocks(lastBlock.children)
+        this._incrementIndex();
+        lastBlock.children = this._handleBlocks(lastBlock.children);
 
     }
+
+    return blocks;
   },
-  nodePosition(fromIndex) {
-    return this.template.indexOf(/<|{{/g, fromIndex);
+  _nodePosition(fromIndex) {
+    return this._template.indexOf(/<|{{/g, fromIndex); // @TODO add until > or }}
   },
 
-  indexOfAll() {
+  _indexOfAll() {
     let occurances = [];
     let fromIndex = 0;
     let occurance;
     do {
-      occurance = this.nodePosition(fromIndex);
+      occurance = this._nodePosition(fromIndex);
       if(occurance !== -1) {
         occurances.push(occurance);
       }
@@ -46,8 +50,52 @@ Precompiler.prototype = {
     return occurances;
   },
 
-  isInside(currentPosition, nextPosition) {
-    return this.template.indexOf(">", currentPosition) < nextPosition;
+  _incrementIndex() {
+    this.index++;
+
+    return this;
+  },
+
+  _isOpen() {
+    return this.open;
+  },
+
+  _setOpen() {
+    this.open = true;
+
+    return this;
+  },
+
+  _setClose() {
+    this.open = false;
+
+    return this;
+  },
+
+  isOpenTag(position) {
+    var snippet = this._template.substring(position, 2);
+    return snippet[0] === '<' && snippet[1] !== '/';
+  },
+
+  isCloseTag(position) {
+    var snippet = this._template.substring(position, 2);
+    return snippet === '</';
+  },
+
+  isOpenMustache(position) {
+    var snippet = this._template.substring(position, 3);
+    return snippet[0] === '{' && snippet[1] !== '{' && snippet[2] !== '/';
+  },
+
+  isCloseMustache(position) {
+    var snippet = this._template.substring(position, 3);
+    return snippet[0] === '{' && snippet[1] !== '{' && snippet[2] === '/';
+  },
+
+  isElseMustache(position) {
+    var elseString = '{{#else';
+    var snippet = this._template.substring(position, elseString.length);
+    return snippet === elseString;
   },
 };
 

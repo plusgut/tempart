@@ -8,7 +8,7 @@ module.exports = function(grunt) {
         plugins: ["transform-es2015-modules-amd"],
         moduleIds: true,
         sourceRoot: 'src',
-        // moduleRoot: 'snew'
+        moduleRoot: 'tempart'
       },
       all: {
         files: [{
@@ -22,13 +22,13 @@ module.exports = function(grunt) {
     concat: {
       dist: {
         src: 'tmp/**/*.js',
-        dest: 'dist/precompiler.js'
+        dest: 'dist/tempart.js'
       }
     },
     uglify: {
       dist: {
         src: 'dist/tempart.js',
-        dest: 'dist/snew.min.js'
+        dest: 'dist/tempart.min.js'
       }
     },
     clean: {
@@ -37,7 +37,7 @@ module.exports = function(grunt) {
       }
     },
     touch: {
-      src: ['dist/snew.min.js']
+      src: ['dist/tempart.min.js']
     },
     watch: {
       scripts: {
@@ -50,8 +50,8 @@ module.exports = function(grunt) {
     },
     amdclean: {
       dist: {
-        src: 'dist/snew.js',
-        dest: 'dist/snew.js',
+        src: 'dist/tempart.js',
+        dest: 'dist/tempart.js',
       }
     },
     githooks: {
