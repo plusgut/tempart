@@ -1,5 +1,13 @@
-import helpersBlocks from 'helpers/blocks';
+import Class from './class';
 
-export function compile() {
-  helpersBlocks.all();
+export default function factory(path, blocks) {
+  var TempartTemplate = function(prefix) {
+    this._prefix = prefix;
+  };
+
+  TempartTemplate.prototype = new Class();
+  TempartTemplate.prototype._path = path;
+  TempartTemplate.prototype._blocks = blocks;
+
+  return TempartTemplate;
 }

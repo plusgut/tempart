@@ -1,11 +1,11 @@
-function log() {
-
-}
-
 export function clean() {
-  return log.apply(arguments);
+  console.log.apply(console, arguments);
+
+  return '';
 }
 
 export function dirty() {
-  return log.apply(arguments);
+  console.log.apply(console, arguments);
+
+  return '';
 }

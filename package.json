@@ -2,7 +2,7 @@
   "name": "tempart",
   "version": "0.3.0",
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
-  "main": "src/parser/parser.js",
+  "main": "src/precompiler/precompiler.js",
   "scripts": {
     "test": "jshint --show-non-errors src && ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
   },
@@ -37,6 +37,11 @@
     "grunt-babel": "^6.0.0",
     "grunt-contrib-clean": "^1.0.0",
     "grunt-contrib-watch": "^1.0.0",
-    "load-grunt-tasks": "^3.5.0"
+    "load-grunt-tasks": "^3.5.0",
+    "karma": "^1.1.0",
+    "karma-chrome-launcher": "^1.0.1",
+    "karma-coverage": "^1.0.0",
+    "karma-jasmine": "^1.0.2",
+    "karma-phantomjs-launcher": "^1.0.0"
   }
 }
