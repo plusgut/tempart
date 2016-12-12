@@ -13,13 +13,13 @@ Precompiler.prototype = {
   },
 
   _handleBlocks() {
-    let blocks;
+    let blocks = [];
     while(this._index < this._positions.length) {
       // else-closing
-        this._setClose();
+        // this._setClose();
       // closing
-        this._setOpen()
-            .incrementIndex();
+        // this._setOpen()
+        //     .incrementIndex();
         // break;
       // openening
         this._setOpen();
@@ -32,26 +32,18 @@ Precompiler.prototype = {
 
     return blocks;
   },
-  _nodePosition(fromIndex) {
-    return this._template.indexOf(/<|{{/g, fromIndex); // @TODO add until > or }}
-  },
-
   _indexOfAll() {
     let occurances = [];
-    let fromIndex = 0;
-    let occurance;
-    do {
-      occurance = this._nodePosition(fromIndex);
-      if(occurance !== -1) {
-        occurances.push(occurance);
-      }
-    } while(occurance !== -1);
-
+    let search = /<|{{/g;
+    let result;
+    while ((result = search.exec(this._template))) {
+      occurances.push(result.index);
+    }
     return occurances;
   },
 
   _incrementIndex() {
-    this.index++;
+    this._index++;
 
     return this;
   },

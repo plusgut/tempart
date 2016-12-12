@@ -1,9 +1,9 @@
-/*global tempart_precompiler_precompiler, tempart_compiler_tempart, module, window */
+/*global tempart_lexer_lexer, tempart_compiler_tempart, module, window */
 
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 var result = {
-    precompile: tempart_precompiler_precompiler.default,
+    lexer: tempart_lexer_lexer.default,
     factory: tempart_compiler_tempart.default
 };
 
