@@ -9,7 +9,7 @@ Precompiler.prototype = {
     let blocks = [];
     this.blocks = this._handleBlocks(blocks);
 
-    return this;
+    return this.blocks;
   },
 
   _handleBlocks() {
@@ -100,6 +100,6 @@ Precompiler.prototype = {
 };
 
 
-export function precompiler(template) {
+export default function precompiler(template) {
   return new Precompiler(template).parse();
 }

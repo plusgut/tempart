@@ -54,6 +54,20 @@ module.exports = function(grunt) {
         dest: 'dist/tempart.js',
       }
     },
+    'string-replace': {
+      dist: {
+        files: [{
+          src: 'dist/tempart.js',
+          dest: 'dist/tempart.js'
+        }],
+        options: {
+          replacements: [{
+            pattern: '}());',
+            replacement: grunt.file.read('src/tempart.js') + '}());'
+          }]
+        }
+      }
+    },
     githooks: {
       all: {
         'pre-commit': {
@@ -64,7 +78,7 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.registerTask('default', ['githooks', 'touch', 'babel', 'concat', 'amdclean']);
+  grunt.registerTask('default', ['githooks', 'touch', 'babel', 'concat', 'amdclean', 'string-replace']);
   grunt.registerTask('min', ['clean', 'default', 'uglify']);
 };
 
