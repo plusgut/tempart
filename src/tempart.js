@@ -1,9 +1,9 @@
-/*global tempart_lexer_lexer, tempart_compiler_tempart, module, window */
+/*global tempart_parser_parser, tempart_compiler_tempart, module, window */
 
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 var result = {
-    lexer: tempart_lexer_lexer.default,
+    parser: tempart_parser_parser.default,
     factory: tempart_compiler_tempart.default
 };
 

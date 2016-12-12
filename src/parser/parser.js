@@ -8,13 +8,12 @@ Precompiler.prototype = {
   parse() {
     this._positions = this._indexOfAll();
     this._index = 0;
-    let blocks = [];
-    this.blocks = this._handleBlocks(blocks);
+    this.blocks = this._handleBlocks();
 
     return this.blocks;
   },
 
-  _handleBlocks() {
+  _handleBlocks(parentBlock) {
     let blocks = [];
     while(this._index < this._template.length) {
       let block;
@@ -47,7 +46,7 @@ Precompiler.prototype = {
     let occurances = [];
     let search = /<|{{/g;
     let result;
-    while (result = search.exec(this._template)) {
+    while ((result = search.exec(this._template))) {
       occurances.push(result.index);
     }
     return occurances;
