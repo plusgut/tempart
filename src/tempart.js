@@ -1,10 +1,10 @@
-/*global tempart_parser_parser, tempart_compiler_tempart, module, window */
+/*global tempart_parser_parser, tempart_compiler_compiler, module, window */
 
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 var result = {
     parser: tempart_parser_parser.default,
-    factory: tempart_compiler_tempart.default
+    factory: tempart_compiler_compiler.default
 };
 
 if (typeof module === 'object') {

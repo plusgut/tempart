@@ -42,6 +42,7 @@ Precompiler.prototype = {
 
     return blocks;
   },
+
   _indexOfAll() {
     let occurances = [];
     let search = /<|{{/g;
@@ -50,12 +51,6 @@ Precompiler.prototype = {
       occurances.push(result.index);
     }
     return occurances;
-  },
-
-  _incrementIndex() {
-    this._index++;
-
-    return this;
   },
 
   _isOpen() {
