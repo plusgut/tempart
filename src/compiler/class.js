@@ -1,6 +1,4 @@
-function Class() {
-  this._currentValues = {};
-}
+function Class() {}
 
 Class.prototype = {
   clean(content) {
