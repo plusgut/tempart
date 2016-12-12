@@ -1,3 +1,5 @@
+import BlockClass from './blockClass';
+
 function Precompiler(template) {
   this._template = template;
 }
@@ -14,7 +16,8 @@ Precompiler.prototype = {
 
   _handleBlocks() {
     let blocks = [];
-    while(this._index < this._positions.length) {
+    while(this._index < this._template.length) {
+      let block;
       // else-closing
         // this._setClose();
       // closing
@@ -22,12 +25,20 @@ Precompiler.prototype = {
         //     .incrementIndex();
         // break;
       // openening
-        this._setOpen();
-        let lastBlock = blocks[blocks.length - 1];
-        lastBlock.children = [];
-        this._incrementIndex();
-        lastBlock.children = this._handleBlocks(lastBlock.children);
-
+      if(this._isOpenTag(this._index)) {
+        block = new BlockClass('staticNode');
+        blocks.push(block);
+        this._index = this._template.indexOf(">", this._index) + 1;
+        block.children = this._setOpen()._handleBlocks(block);
+      } else if(this._isCloseTag(this._index)) {
+        break;
+      } else {
+        var next = this._charsUntilNode(this._index);
+        block = new BlockClass('staticText');
+        block.addConstants(this._template.substring(this._index, this._index + next));
+        this._index = this._index + next;
+        blocks.push(block);
+      }
     }
 
     return blocks;
@@ -36,7 +47,7 @@ Precompiler.prototype = {
     let occurances = [];
     let search = /<|{{/g;
     let result;
-    while ((result = search.exec(this._template))) {
+    while (result = search.exec(this._template)) {
       occurances.push(result.index);
     }
     return occurances;
@@ -64,29 +75,38 @@ Precompiler.prototype = {
     return this;
   },
 
-  isOpenTag(position) {
-    var snippet = this._template.substring(position, 2);
+  _charsUntilNode(position) {
+    for (let i = 0; i < this._positions.length; i++) {
+      if (position < this._positions[i]) {
+        return this._positions[i] - position;
+      }
+    }
+    console.warn('is this calculated correct?');
+    return this._template.length - position;
+  },
+  _isOpenTag(position) {
+    let snippet = this._template.substring(position, 2);
     return snippet[0] === '<' && snippet[1] !== '/';
   },
 
-  isCloseTag(position) {
-    var snippet = this._template.substring(position, 2);
+  _isCloseTag(position) {
+    let snippet = this._template.substring(position, position + 2);
     return snippet === '</';
   },
 
-  isOpenMustache(position) {
-    var snippet = this._template.substring(position, 3);
+  _isOpenMustache(position) {
+    let snippet = this._template.substring(position, position + 3);
     return snippet[0] === '{' && snippet[1] !== '{' && snippet[2] !== '/';
   },
 
-  isCloseMustache(position) {
-    var snippet = this._template.substring(position, 3);
+  _isCloseMustache(position) {
+    let snippet = this._template.substring(position, position + 3);
     return snippet[0] === '{' && snippet[1] !== '{' && snippet[2] === '/';
   },
 
-  isElseMustache(position) {
-    var elseString = '{{#else';
-    var snippet = this._template.substring(position, elseString.length);
+  _isElseMustache(position) {
+    let elseString = '{{#else';
+    let snippet = this._template.substring(position, elseString.length);
     return snippet === elseString;
   },
 };
