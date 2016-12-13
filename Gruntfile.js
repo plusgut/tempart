@@ -4,8 +4,6 @@ module.exports = function(grunt) {
   grunt.initConfig({
     babel: {
       options: {
-        presets: ["es2015"],
-        plugins: ["transform-es2015-modules-amd"],
         moduleIds: true,
         sourceRoot: 'src',
         moduleRoot: 'tempart'
