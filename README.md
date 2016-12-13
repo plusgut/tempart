@@ -1,4 +1,4 @@
-# tempart
+# tempart [![Build Status](https://travis-ci.org/plusgut/tempart.svg?branch=v0.3)](https://travis-ci.org/plusgut/tempart)
 Its a mustache templating engine, which is optimized for recompiling.
 The precompiler returns a tree of blocks with there dependencies
 
