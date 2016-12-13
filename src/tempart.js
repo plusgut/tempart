@@ -1,5 +1,6 @@
 /*global tempart_parser_parser, tempart_compiler_compiler, module, window */
 
+// jshint varstmt: false
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 var result = {

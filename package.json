@@ -28,7 +28,8 @@
     "undef": true,
     "curly": true,
     "eqeqeq": true,
-    "forin": true
+    "forin": true,
+    "varstmt": true
   },
   "devDependencies": {
     "babel-cli": "^6.18.0",

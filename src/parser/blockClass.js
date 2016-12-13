@@ -18,11 +18,11 @@ BlockClass.prototype = {
   },
 
   addParameter(type, value) {
-    var capitalizedType = util.capitalize(type);
+    const capitalizedType = util.capitalize(type);
     if (capitalizedType === 'Parameter') {throw 'Are you trying to make an infinitive loop?';}
 
-    var length = this['add' + capitalizedType](value);
-    var parameter = {
+    const length = this['add' + capitalizedType](value);
+    const parameter = {
       exec: type,
       value: length - 1,
     };

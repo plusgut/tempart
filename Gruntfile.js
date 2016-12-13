@@ -12,7 +12,7 @@ module.exports = function(grunt) {
         files: [{
           expand: true,
           cwd: 'src/',
-          src: '*/*.js',
+          src: '**/*.js',
           dest: 'tmp/babel'
         }]
       }
@@ -41,14 +41,14 @@ module.exports = function(grunt) {
       src: {
         files: [
           'src/*',
-          'src/*/*'
+          'src/**/*'
         ],
         tasks: ['babel', 'build']
       },
       babel: {
         files: [
-          'tmp/babel/*',
-          'tmp/babel/*/*',
+          'tmp/babel/*.js',
+          'tmp/babel/**/*.js',
         ],
         tasks: ['build']
       }

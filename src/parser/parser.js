@@ -38,7 +38,7 @@ Precompiler.prototype = {
         }
         break;
       } else {
-        var next = this._charsUntilNode(this._index);
+        const next = this._charsUntilNode(this._index);
         block = new BlockClass('textNode');
         block.addConstants(this._template.substring(this._index, this._index + next));
         this._index = this._index + next;

@@ -6,7 +6,7 @@ import typeLog from '../types/log';
 import typePartial from '../types/partial';
 import typeView from '../types/view';
 
-var types = {
+const types = {
   dom: typeDom,
   each: typeEach,
   echo: typeEcho,
