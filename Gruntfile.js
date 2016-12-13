@@ -15,14 +15,14 @@ module.exports = function(grunt) {
           expand: true,
           cwd: 'src/',
           src: '*/*.js',
-          dest: 'tmp'
+          dest: 'tmp/babel'
         }]
       }
     },
     concat: {
       dist: {
-        src: 'tmp/**/*.js',
-        dest: 'dist/tempart.js'
+        src: 'tmp/babel/**/*.js',
+        dest: 'tmp/concat/tempart.js'
       }
     },
     uglify: {
@@ -45,19 +45,19 @@ module.exports = function(grunt) {
           'src/*',
           'src/*/*'
         ],
-        tasks: ['default']
+        tasks: ['babel', 'build']
       }
     },
     amdclean: {
       dist: {
-        src: 'dist/tempart.js',
-        dest: 'dist/tempart.js',
+        src: 'tmp/concat/tempart.js',
+        dest: 'tmp/concat/tempart.js',
       }
     },
     'string-replace': {
       dist: {
         files: [{
-          src: 'dist/tempart.js',
+          src: 'tmp/concat/tempart.js',
           dest: 'dist/tempart.js'
         }],
         options: {
@@ -78,7 +78,8 @@ module.exports = function(grunt) {
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');
-  grunt.registerTask('default', ['githooks', 'touch', 'babel', 'concat', 'amdclean', 'string-replace']);
+  grunt.registerTask('build', ['concat', 'amdclean', 'string-replace']);
+  grunt.registerTask('default', ['githooks', 'touch', 'babel', 'build']);
   grunt.registerTask('min', ['clean', 'default', 'uglify']);
 };
 
