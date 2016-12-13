@@ -40,12 +40,19 @@ module.exports = function(grunt) {
       src: ['dist/tempart.min.js']
     },
     watch: {
-      scripts: {
+      src: {
         files: [
           'src/*',
           'src/*/*'
         ],
         tasks: ['babel', 'build']
+      },
+      babel: {
+        files: [
+          'tmp/babel/*',
+          'tmp/babel/*/*',
+        ],
+        tasks: ['build']
       }
     },
     amdclean: {

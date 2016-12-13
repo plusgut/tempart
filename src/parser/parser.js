@@ -90,7 +90,7 @@ Precompiler.prototype = {
     }
 
     if (smallest === undefined) {
-      throw new SyntaxError('Tag is not ending ' + this._template.substring(position, this._template.length));
+      throw new SyntaxError('Tag is not ending: ' + this._template.substring(position, this._template.length));
     }
     return this._template.substring(position, smallest);
   },

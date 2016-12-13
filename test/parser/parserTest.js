@@ -32,7 +32,17 @@ describe('Tests the functionality of the parser', function() {
 
   it('throw error with missmatch', function() {
     expect(function() {
+        tempart.parser('<div>foo</span>');
+    }).toThrow(new SyntaxError('Missmatch of div and /span'));
+
+    expect(function() {
         tempart.parser('<div>foo<div>bar</span></span>');
     }).toThrow(new SyntaxError('Missmatch of div and /span'));
+  });
+
+  it('throw error with not ending node', function() {
+    expect(function() {
+        tempart.parser('<div');
+    }).toThrow(new SyntaxError('Tag is not ending: div'));
   });
 });
