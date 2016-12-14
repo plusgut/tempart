@@ -54,6 +54,25 @@ describe('Tests the functionality of the parser', function() {
     }]);
   });
 
+  // it('variable in domNode', function() {
+  //   expect(parser('<div>{{$variable}}</div>')).toEqual([{
+  //       type: 'domNode',
+  //       constants: ['div'],
+  //       parameters: [{
+  //         exec: 'constants',
+  //         value: 0
+  //       }],
+  //       children: [{
+  //           type: 'textNode',
+  //           variables: ['variable'],
+  //           parameters: [{
+  //             exec: 'variables',
+  //             value: 0
+  //           }],
+  //       }]
+  //   }]);
+  // });
+
   it('throw error with missmatch', function() {
     expect(function() {
         tempart.parser('<div>foo</span>');

@@ -15,8 +15,12 @@ Precompiler.prototype = {
 
   _handleBlocks(parentBlock) {
     let blocks = [];
+    let hasMustacheNode = false;
     while(this._index < this._template.length) {
-      if(this._isOpenTag(this._index)) {
+      if(this._isOpenMustache(this._index)) {
+        hasMustacheNode = true;
+        this._handleMustacheNode();
+      } else if(this._isOpenTag(this._index)) {
         this._handleOpenTag(blocks);
       } else if(this._isCloseTag(this._index)) {
         this._handleCloseTag(parentBlock);
@@ -26,12 +30,24 @@ Precompiler.prototype = {
       }
     }
 
+    this._compressBlocks(hasMustacheNode, blocks, parentBlock);
+
     return blocks;
+  },
+
+  _handleMustacheNode(blocks) {
+    const next = this._charsUntilNode(this._index);
+    let block = new BlockClass('variableNode');
+    block.pushParameter('variables', this._template.substring(this._index, this._index + next));
+    this._index = this._index + next;
+    blocks.push(block);
+
+    return this;
   },
 
   _handleOpenTag(blocks) {
     let block = new BlockClass('domNode');
-    block.addParameter('constants', this._getTagType(this._index + 1));
+    block.pushParameter('constants', this._getTagType(this._index + 1));
     blocks.push(block);
     this._index = this._template.indexOf(">", this._index) + 1;
     // @TODO add check if its an self-closing
@@ -52,9 +68,18 @@ Precompiler.prototype = {
   _handleTextNode(blocks) {
     const next = this._charsUntilNode(this._index);
     let block = new BlockClass('textNode');
-    block.addParameter('constants', this._template.substring(this._index, this._index + next));
+    block.pushParameter('constants', this._template.substring(this._index, this._index + next));
     this._index = this._index + next;
     blocks.push(block);
+
+    return this;
+  },
+
+  _compressBlocks(hasMustacheNode, blocks, parentBlock) {
+    if(hasMustacheNode === true && blocks.length === 1 && parentBlock.type === 'domNode') {
+      // parentBlock.unshiftParameter()
+      parentBlock.setType(variableNode);
+    }
 
     return this;
   },
@@ -70,17 +95,17 @@ Precompiler.prototype = {
   },
 
   _isOpen() {
-    return this.open;
+    return this._open;
   },
 
   _setOpen() {
-    this.open = true;
+    this._open = true;
 
     return this;
   },
 
   _setClose() {
-    this.open = false;
+    this._open = false;
 
     return this;
   },

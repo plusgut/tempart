@@ -1,5 +1,6 @@
 import util from '../helper/util';
 
+var types = ["constants", "variables", "children", "elseChildren"];
 function BlockClass(type) {
   this.setType(type);
 }
@@ -17,11 +18,21 @@ BlockClass.prototype = {
     return this;
   },
 
-  addParameter(type, value, name, parameters) {
-    const capitalizedType = util.capitalize(type);
-    if (capitalizedType === 'Parameter') {throw 'Are you trying to make an infinitive loop?';}
+  pushParameter(type, value, name, parameters) {
+    return this._addParameter('push', type, value, name, parameters);
+  },
 
-    const index = this['add' + capitalizedType](value);
+  unshiftParameter(type, value, name, parameters) {
+    return this._addParameter('unshift', type, value, name, parameters);
+  },
+
+  _addParameter(addType, type, value, name, parameters) {
+    if (type === 'parameter') {throw 'Are you trying to make an infinitive loop?';}
+    if(types.indexOf(type) === -1) {
+      throw 'I\'m sorry, but I don\'t know the type ' + type;
+    }
+
+    const index = this._add(addType, type, value);
     let parameter = {
       exec: type,
       value: index
@@ -35,32 +46,16 @@ BlockClass.prototype = {
       parameter.parameters = parameters;
     }
 
-    return this.add('parameters', parameter);
+    return this._add(addType, 'parameters', parameter);
   },
 
-  addVariables(value) {
-    return this.add('variables', value);
-  },
-
-  addConstants(value) {
-    return this.add('constants', value);
-  },
-
-  addContains(value) {
-    return this.add('contains', value);
-  },
-
-  addElseContains(value) {
-    return this.add('elseContains', value);
-  },
-
-  add(key, value) {
+  _add(addType, key, value) {
     if (!this[key]) {
       this[key] = [];
     }
 
-    return this[key].push(value) - 1; // index return, not the length
-  },
+    return this[key][addType](value) - 1; // index return, not the length
+  }
 };
 
 export default BlockClass;
