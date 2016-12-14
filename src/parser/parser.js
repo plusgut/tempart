@@ -66,7 +66,7 @@ Precompiler.prototype = {
     blocks.push(block);
     this._index = this._template.indexOf(">", this._index) + 1;
     // @TODO add check if its an self-closing
-    var children = this._setOpen()._handleBlocks(block);
+    let children = this._setOpen()._handleBlocks(block);
     if(children.length) {
       block.children = children;
     }
