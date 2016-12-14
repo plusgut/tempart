@@ -1,6 +1,5 @@
-import util from '../helper/util';
+const types = ["constants", "variables", "children", "elseChildren"];
 
-var types = ["constants", "variables", "children", "elseChildren"];
 function BlockClass(type) {
   this.setType(type);
 }
