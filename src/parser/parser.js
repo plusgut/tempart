@@ -53,7 +53,7 @@ Precompiler.prototype = {
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
     let block = new BlockClass('variableNode');
-    block.pushParameter('variables', this._template.substring(this._index + 3, end));
+    block.pushParameter('variables', this._template.substring(this._index + 3, end).split('.'));
     this._index = this._index + end + 3;
     blocks.push(block);
 
@@ -95,7 +95,7 @@ Precompiler.prototype = {
 
   _compressBlocks(hasMustacheNode, blocks, parentBlock) {
     if(hasMustacheNode === true && blocks.length === 1 && parentBlock && parentBlock.type === 'domNode') {
-      parentBlock.unshiftParameter('variables', blocks[0].variables); // @TODO improve, in cace its a callee or something like that
+      parentBlock.unshiftParameter('variables', blocks[0].variables[0]); // @TODO improve, in cace its a callee or something like that
       parentBlock.setType("variableNode");
       blocks.length = 0;
     }
