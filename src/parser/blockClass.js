@@ -17,15 +17,23 @@ BlockClass.prototype = {
     return this;
   },
 
-  addParameter(type, value) {
+  addParameter(type, value, name, parameters) {
     const capitalizedType = util.capitalize(type);
     if (capitalizedType === 'Parameter') {throw 'Are you trying to make an infinitive loop?';}
 
-    const length = this['add' + capitalizedType](value);
-    const parameter = {
+    const index = this['add' + capitalizedType](value);
+    let parameter = {
       exec: type,
-      value: length - 1,
+      value: index
     };
+
+    if(name !== undefined) {
+      parameter.name = name;
+    }
+
+    if(parameters !== undefined) {
+      parameter.parameters = parameters;
+    }
 
     return this.add('parameters', parameter);
   },
@@ -51,7 +59,7 @@ BlockClass.prototype = {
       this[key] = [];
     }
 
-    return this[key].push(value);
+    return this[key].push(value) - 1; // index return, not the length
   },
 };
 

@@ -7,7 +7,7 @@ api 0.3
 ---
 
 ```mustache
-{{variable}} when only a variable should be displayed
+{{$variable}} when only a variable should be displayed
 {{#if variable}} when an mustache helper gets called
 {{> "partial"}} an subtemplate can rendered too
 ```

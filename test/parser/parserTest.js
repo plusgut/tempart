@@ -5,9 +5,17 @@ describe('Tests the functionality of the parser', function() {
     expect(parser('<div>foo</div>')).toEqual([{
         type: 'domNode',
         constants: ['div'],
+        parameters: [{
+          exec: 'constants',
+          value: 0
+        }],
         children: [{
             type: 'textNode',
-            constants: ['foo']
+            constants: ['foo'],
+            parameters: [{
+              exec: 'constants',
+              value: 0
+            }],
         }]
     }]);
   });
@@ -16,15 +24,31 @@ describe('Tests the functionality of the parser', function() {
     expect(parser('<div>foo<div>bar</div></div>')).toEqual([{
         type: 'domNode',
         constants: ['div'],
+        parameters: [{
+          exec: 'constants',
+          value: 0
+        }],
         children: [{
             type: 'textNode',
-            constants: ['foo']
+            constants: ['foo'],
+            parameters: [{
+              exec: 'constants',
+              value: 0
+            }],
           }, {
             type: 'domNode',
             constants: ['div'],
+            parameters: [{
+              exec: 'constants',
+              value: 0
+            }],
             children: [{
                 type: 'textNode',
-                constants: ['bar']
+                constants: ['bar'],
+                parameters: [{
+                  exec: 'constants',
+                  value: 0
+                }],
             }]
         }]
     }]);

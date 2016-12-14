@@ -9,44 +9,54 @@ Precompiler.prototype = {
     this._positions = this._indexOfAll();
     this._index = 0;
     this.blocks = this._handleBlocks();
-    // console.log(JSON.stringify(this.blocks, null, 2));
+    console.log(JSON.stringify(this.blocks, null, 2));
     return this.blocks;
   },
 
   _handleBlocks(parentBlock) {
     let blocks = [];
     while(this._index < this._template.length) {
-      let block;
-      // else-closing
-        // this._setClose();
-      // closing
-        // this._setOpen()
-        //     .incrementIndex();
-        // break;
-      // openening
       if(this._isOpenTag(this._index)) {
-        block = new BlockClass('domNode');
-        block.addConstants(this._getTagType(this._index + 1));
-        blocks.push(block);
-        this._index = this._template.indexOf(">", this._index) + 1;
-        // @TODO add check if its an self-closing
-        block.children = this._setOpen()._handleBlocks(block);
+        this._handleOpenTag(blocks);
       } else if(this._isCloseTag(this._index)) {
-        let closeTag = this._getTagType(this._index + 2);
-        if(parentBlock !== undefined && closeTag !== parentBlock.constants[0]) {
-          throw new SyntaxError('Missmatch of ' + parentBlock.constants[0] + ' and /' + closeTag);
-        }
+        this._handleCloseTag(parentBlock);
         break;
       } else {
-        const next = this._charsUntilNode(this._index);
-        block = new BlockClass('textNode');
-        block.addConstants(this._template.substring(this._index, this._index + next));
-        this._index = this._index + next;
-        blocks.push(block);
+        this._handleTextNode(blocks);
       }
     }
 
     return blocks;
+  },
+
+  _handleOpenTag(blocks) {
+    let block = new BlockClass('domNode');
+    block.addParameter('constants', this._getTagType(this._index + 1));
+    blocks.push(block);
+    this._index = this._template.indexOf(">", this._index) + 1;
+    // @TODO add check if its an self-closing
+    block.children = this._setOpen()._handleBlocks(block);
+
+    return this;
+  },
+
+  _handleCloseTag(parentBlock) {
+    let closeTag = this._getTagType(this._index + 2);
+    if(parentBlock !== undefined && closeTag !== parentBlock.constants[0]) {
+      throw new SyntaxError('Missmatch of ' + parentBlock.constants[0] + ' and /' + closeTag);
+    }
+
+    return this;
+  },
+
+  _handleTextNode(blocks) {
+    const next = this._charsUntilNode(this._index);
+    let block = new BlockClass('textNode');
+    block.addParameter('constants', this._template.substring(this._index, this._index + next));
+    this._index = this._index + next;
+    blocks.push(block);
+
+    return this;
   },
 
   _indexOfAll() {
