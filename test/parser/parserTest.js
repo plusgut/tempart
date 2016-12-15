@@ -1,29 +1,46 @@
 /* global describe, it, expect, tempart */
 
+// jshint varstmt: false
+// jscs:disable requireTrailingComma
+
 var parser = tempart.parser;
 
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
     expect(parser('<div>foo</div>')).toEqual([{
-        type: 'domNode',
-        constants: ['div'],
+      type: 'domNode',
+      constants: ['div'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }],
+      children: [{
+        type: 'textNode',
+        constants: ['foo'],
         parameters: [{
           exec: 'constants',
           value: 0,
         }],
-        children: [{
-            type: 'textNode',
-            constants: ['foo'],
-            parameters: [{
-              exec: 'constants',
-              value: 0,
-            }],
-        }]
+      }]
     }]);
   });
 
   it('static test with tree', function () {
     expect(parser('<div>foo<div>bar</div></div>')).toEqual([{
+      type: 'domNode',
+      constants: ['div'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }],
+      children: [{
+        type: 'textNode',
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }, {
         type: 'domNode',
         constants: ['div'],
         parameters: [{
@@ -31,43 +48,29 @@ describe('Tests the functionality of the parser', function () {
           value: 0,
         }],
         children: [{
-            type: 'textNode',
-            constants: ['foo'],
-            parameters: [{
-              exec: 'constants',
-              value: 0,
-            }],
-          }, {
-            type: 'domNode',
-            constants: ['div'],
-            parameters: [{
-              exec: 'constants',
-              value: 0,
-            }],
-            children: [{
-                type: 'textNode',
-                constants: ['bar'],
-                parameters: [{
-                  exec: 'constants',
-                  value: 0,
-                }],
-            }]
+          type: 'textNode',
+          constants: ['bar'],
+          parameters: [{
+            exec: 'constants',
+            value: 0,
+          }],
         }]
+      }]
     }]);
   });
 
   it('variable in domNode', function () {
     expect(parser('<div>{{$variable}}</div>')).toEqual([{
-        type: 'variableNode',
-        constants: ['div'],
-        variables: [['variable']],
-        parameters: [{
-          exec: 'variables',
-          value: 0,
-        }, {
-          exec: 'constants',
-          value: 0,
-        }]
+      type: 'variableNode',
+      constants: ['div'],
+      variables: [['variable']],
+      parameters: [{
+        exec: 'variables',
+        value: 0,
+      }, {
+        exec: 'constants',
+        value: 0,
+      }]
     }]);
   });
 

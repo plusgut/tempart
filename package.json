@@ -4,7 +4,7 @@
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": "src/precompiler/precompiler.js",
   "scripts": {
-    "test": "jshint --show-non-errors src && jscs src && ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
+    "test": "jshint --show-non-errors src && jscs src && grunt default &&./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
   },
   "repository": {
     "type": "git",
