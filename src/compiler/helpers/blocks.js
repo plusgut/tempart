@@ -7,13 +7,13 @@ import typePartial from '../types/partial';
 import typeView from '../types/view';
 
 const types = {
-  'dom': typeDom,
-  'each': typeEach,
-  'echo': typeEcho,
-  'if': typeIf,
-  'log': typeLog,
-  'partial': typePartial,
-  'view': typeView,
+  dom: typeDom,
+  each: typeEach,
+  echo: typeEcho,
+  if: typeIf,
+  log: typeLog,
+  partial: typePartial,
+  view: typeView,
 };
 
 export function all() {

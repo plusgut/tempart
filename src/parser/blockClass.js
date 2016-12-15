@@ -1,4 +1,4 @@
-const types = ["constants", "variables", "children", "elseChildren"];
+const types = ['constants', 'variables', 'children', 'elseChildren'];
 
 function BlockClass(type) {
   this.setType(type);
@@ -27,21 +27,22 @@ BlockClass.prototype = {
 
   _addParameter(addType, type, value, name, parameters) {
     if (type === 'parameter') {throw 'Are you trying to make an infinitive loop?';}
-    if(types.indexOf(type) === -1) {
+
+    if (types.indexOf(type) === -1) {
       throw 'I\'m sorry, but I don\'t know the type ' + type;
     }
 
     const index = this._add(addType, type, value);
     let parameter = {
       exec: type,
-      value: index
+      value: index,
     };
 
-    if(name !== undefined) {
+    if (name !== undefined) {
       parameter.name = name;
     }
 
-    if(parameters !== undefined) {
+    if (parameters !== undefined) {
       parameter.parameters = parameters;
     }
 
@@ -54,7 +55,7 @@ BlockClass.prototype = {
     }
 
     return this[key][addType](value) - 1; // index return, not the length
-  }
+  },
 };
 
 export default BlockClass;

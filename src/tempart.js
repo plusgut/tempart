@@ -4,8 +4,8 @@
 // jscs:disable requireCamelCaseOrUpperCaseIdentifiers
 
 var result = {
-    parser: tempart_parser_parser.default,
-    factory: tempart_compiler_compiler.default
+  parser: tempart_parser_parser.default,
+  factory: tempart_compiler_compiler.default,
 };
 
 if (typeof module === 'object') {
