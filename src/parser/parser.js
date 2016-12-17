@@ -64,12 +64,11 @@ Precompiler.prototype = {
   _handleOpenTag(blocks) {
     let block = new BlockClass('domNode');
     block.pushParameter('constants', this._getTagType(this._index + 1));
-    this._parseProperties(block);
+    this._parseAttributes(block);
 
     // @TODO add validation check for block e.g. img has no alt-attribute
 
     blocks.push(block);
-    this._index = this._getTagEnd(this._index) + 1;
 
     // @TODO add check if its an self-closing
     let children = this._setOpen()._handleBlocks(block);
@@ -80,19 +79,65 @@ Precompiler.prototype = {
     return this;
   },
 
-  _parseProperties(block) {
+  _parseAttributes(block) {
+    // @TODO make this nicelooking
     const startAttributes = this._getTagStart(this._index);
     const endTag = this._getTagEnd(this._index);
     if (this._hasAttributes(startAttributes, endTag)) {
-      const attributes = this._template.substring(startAttributes, endTag).split(' ');
-      for (let i = 0; i < attributes.length; i++) {
-        const attributeString = attributes[i];
-        if (attributeString) {
-          if(attributeString.indexOf('')) {
+      this._index = startAttributes;
 
+      let currentAttributeName = '';
+      let currentAttributeValue = '';
+      while (this._index <= this._template.length) {
+        const currentChar = this._template[this._index];
+        if (currentChar  === '>') {
+          this._addAttribute(block, currentAttributeName, currentAttributeValue);
+          break;
+        } else if (currentChar === ' ') {
+          if (currentAttributeName) {
+            this._addAttribute(block, currentAttributeName, currentAttributeValue);
+            currentAttributeName = '';
+            currentAttributeValue = '';
+          }
+        } else if (currentChar === '=') {
+          this._index++;
+          if (this._template[this._index] === '"') {
+            this._index++;
+
+            // @TODO this needs to be fixed for variable handling
+          }
+
+          currentAttributeValue = this._template[this._index];
+        }else if (currentChar === '"') {
+          this._addAttribute(block, currentAttributeName, currentAttributeValue);
+          currentAttributeName = '';
+          currentAttributeValue = '';
+        } else {
+          if (currentAttributeValue) {
+            currentAttributeValue += currentChar;
+          } else {
+            currentAttributeName += currentChar;
           }
         }
+
+        this._index++;
       }
+
+    } else {
+      this._index = endTag;
+    }
+
+    this._index++;
+
+    return this;
+  },
+
+  _addAttribute(block, attributeName, attributeValue) {
+    // @TODO add variable-handling
+    if (attributeValue) {
+      block.pushParameter('constants', attributeValue, attributeName);
+    } else if (attributeName) {
+      block.pushParameter('constants', attributeName);
     }
 
     return this;
