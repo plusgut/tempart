@@ -6,7 +6,7 @@ function Precompiler(template) {
 
 Precompiler.prototype = {
   parse() {
-    this._positions = this._indexOfAll();
+    this._positions = this._indexOfAllNodes();
     this._index = 0;
     this.blocks = this._handleBlocks();
     console.log(JSON.stringify(this.blocks, null, 2));
@@ -64,13 +64,35 @@ Precompiler.prototype = {
   _handleOpenTag(blocks) {
     let block = new BlockClass('domNode');
     block.pushParameter('constants', this._getTagType(this._index + 1));
+    this._parseProperties(block);
+
+    // @TODO add validation check for block e.g. img has no alt-attribute
+
     blocks.push(block);
-    this._index = this._template.indexOf('>', this._index) + 1;
+    this._index = this._getTagEnd(this._index) + 1;
 
     // @TODO add check if its an self-closing
     let children = this._setOpen()._handleBlocks(block);
     if (children.length) {
       block.children = children;
+    }
+
+    return this;
+  },
+
+  _parseProperties(block) {
+    const startAttributes = this._getTagStart(this._index);
+    const endTag = this._getTagEnd(this._index);
+    if (this._hasAttributes(startAttributes, endTag)) {
+      const attributes = this._template.substring(startAttributes, endTag).split(' ');
+      for (let i = 0; i < attributes.length; i++) {
+        const attributeString = attributes[i];
+        if (attributeString) {
+          if(attributeString.indexOf('')) {
+
+          }
+        }
+      }
     }
 
     return this;
@@ -111,11 +133,18 @@ Precompiler.prototype = {
     return this;
   },
 
-  _indexOfAll() {
+  _indexOfAllNodes() {
+    return this._indexOfAll(this._template, /<|{{/g);
+  },
+
+  _indexOf(attributes) {
+    return this._indexOfAll(attributes, / /);
+  },
+
+  _indexOfAll(string, search) {
     let occurances = [];
-    let search = /<|{{/g;
     let result;
-    while ((result = search.exec(this._template))) {
+    while ((result = search.exec(string))) {
       occurances.push(result.index);
     }
 
@@ -145,6 +174,7 @@ Precompiler.prototype = {
       this._template.indexOf('/', position),
     ];
 
+    // @TODO move to a seperate function
     let smallest;
     for (let i = 0; i < entityPositions.length; i++) {
       const entityPosition = entityPositions[i];
@@ -163,6 +193,18 @@ Precompiler.prototype = {
     }
 
     return this._template.substring(position, smallest);
+  },
+
+  _getTagStart(position) {
+    return this._template.indexOf(' ', position);
+  },
+
+  _getTagEnd(position) {
+    return this._template.indexOf('>', position);
+  },
+
+  _hasAttributes(startAttributes, endTag) {
+    return startAttributes !== -1 && startAttributes < endTag;
   },
 
   _charsUntilNode(position) {

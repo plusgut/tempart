@@ -102,6 +102,36 @@ describe('Tests the functionality of the parser', function () {
     }]);
   });
 
+  it('static test for properties', function () {
+    expect(parser('<div class="classValue"checked id="idValue">foo</div>')).toEqual([{
+      type: 'domNode',
+      constants: ['div', 'classValue', 'checked', 'idValue'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }, {
+        name: 'class',
+        exec: 'constants',
+        value: 1,
+      }, {
+        exec: 'constants',
+        value: 2,
+      }, {
+        name: 'id',
+        exec: 'constants',
+        value: 3,
+      }],
+      children: [{
+        type: 'textNode',
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }]
+    }]);
+  });
+
   it('throw error with missmatch', function () {
     expect(function () {
       tempart.parser('<div>foo</span>');
