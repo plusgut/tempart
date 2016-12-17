@@ -2,6 +2,7 @@
 
 // jshint varstmt: false
 // jscs:disable requireTrailingComma
+// jscs:disable maximumLineLength
 
 var parser = tempart.parser;
 
@@ -120,6 +121,37 @@ describe('Tests the functionality of the parser', function () {
         name: 'id',
         exec: 'constants',
         value: 3,
+      }],
+      children: [{
+        type: 'textNode',
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }]
+    }]);
+  });
+
+  it('variable test for properties', function () {
+    expect(parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>')).toEqual([{
+      type: 'domNode',
+      constants: ['div'],
+      variables: ['classVariable', 'variable', 'idVariable'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }, {
+        name: 'class',
+        exec: 'variables',
+        value: 0,
+      }, {
+        exec: 'variables',
+        value: 1,
+      }, {
+        name: 'id',
+        exec: 'variables',
+        value: 2,
       }],
       children: [{
         type: 'textNode',

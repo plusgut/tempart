@@ -5,6 +5,7 @@ function Precompiler(template) {
 }
 
 Precompiler.prototype = {
+  _quotes: ['"', '\'', '”', '’'],
   parse() {
     this._positions = this._indexOfAllNodes();
     this._index = 0;
@@ -101,7 +102,7 @@ Precompiler.prototype = {
           }
         } else if (currentChar === '=') {
           this._index++;
-          if (this._template[this._index] === '"') {
+          if (this._quotes.indexOf(this._template[this._index]) !== -1) {
             this._index++;
 
             // @TODO this needs to be fixed for variable handling
@@ -109,6 +110,7 @@ Precompiler.prototype = {
 
           currentAttributeValue = this._template[this._index];
         }else if (currentChar === '"') {
+          // @TODO add all quote possibilities
           this._addAttribute(block, currentAttributeName, currentAttributeValue);
           currentAttributeName = '';
           currentAttributeValue = '';
@@ -134,10 +136,21 @@ Precompiler.prototype = {
 
   _addAttribute(block, attributeName, attributeValue) {
     // @TODO add variable-handling
+    let type = 'constants';
     if (attributeValue) {
-      block.pushParameter('constants', attributeValue, attributeName);
+      if (this._isMustache(attributeValue)) {
+        type = 'variables';
+        attributeValue = this._removeMustache(attributeValue);
+      }
+
+      block.pushParameter(type, attributeValue, attributeName);
     } else if (attributeName) {
-      block.pushParameter('constants', attributeName);
+      if (this._isMustache(attributeName)) {
+        type = 'variables';
+        attributeName = this._removeMustache(attributeName);
+      }
+
+      block.pushParameter(type, attributeName);
     }
 
     return this;
@@ -273,6 +286,10 @@ Precompiler.prototype = {
     return snippet === '</';
   },
 
+  _isMustache(snippet) {
+    return snippet[0] === '{' && snippet[1] === '{' && snippet[snippet.length - 2] === '}' && snippet[snippet.length - 1];
+  },
+
   _isOpenMustache(position) {
     let snippet = this._template.substring(position, position + 2);
     return snippet[0] === '{' && snippet[1] === '{';
@@ -287,6 +304,10 @@ Precompiler.prototype = {
     let elseString = '{{#else';
     let snippet = this._template.substring(position, elseString.length);
     return snippet === elseString;
+  },
+
+  _removeMustache(snippet) {
+    return snippet.substring(2, snippet.length - 2);
   },
 };
 
