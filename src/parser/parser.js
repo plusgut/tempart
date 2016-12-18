@@ -2,15 +2,15 @@ import BlockClass from './blockClass';
 
 function Precompiler(template) {
   this._template = template;
+  this._increment = 0;
 }
 
 Precompiler.prototype = {
-  _quotes: ['"', '\'', '”', '’'],
+  _quotes: ['"', '\'', '”', '’'], // @TODO check for completion
   parse() {
     this._positions = this._indexOfAllNodes();
     this._index = 0;
     this.blocks = this._handleBlocks();
-    console.log(JSON.stringify(this.blocks, null, 2));
     return this.blocks;
   },
 
@@ -54,7 +54,7 @@ Precompiler.prototype = {
 
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
-    let block = new BlockClass('variableNode');
+    let block = new BlockClass('variableNode', ++this._increment);
     block.pushParameter('variables', this._template.substring(this._index + 3, end).split('.'));
     this._index = this._index + end + 3;
     blocks.push(block);
@@ -63,7 +63,7 @@ Precompiler.prototype = {
   },
 
   _handleOpenTag(blocks) {
-    let block = new BlockClass('domNode');
+    let block = new BlockClass('domNode', ++this._increment);
     block.pushParameter('constants', this._getTagType(this._index + 1));
     this._parseAttributes(block);
 
@@ -109,7 +109,7 @@ Precompiler.prototype = {
           }
 
           currentAttributeValue = this._template[this._index];
-        }else if (currentChar === '"') {
+        } else if (currentChar === '"') {
           // @TODO add all quote possibilities
           this._addAttribute(block, currentAttributeName, currentAttributeValue);
           currentAttributeName = '';
@@ -167,7 +167,7 @@ Precompiler.prototype = {
 
   _handleTextNode(blocks) {
     const next = this._charsUntilNode(this._index);
-    let block = new BlockClass('textNode');
+    let block = new BlockClass('textNode', ++this._increment);
     block.pushParameter('constants', this._template.substring(this._index, this._index + next));
     this._index = this._index + next;
     blocks.push(block);
@@ -182,7 +182,7 @@ Precompiler.prototype = {
         parentBlock.type === 'domNode'
       ) {
 
-      // @TODO improve, in cace its a callee or something like that
+      // @TODO improve, in case its a callee or something like that
       parentBlock.unshiftParameter('variables', blocks[0].variables[0]);
       parentBlock.setType('variableNode');
       blocks.length = 0;

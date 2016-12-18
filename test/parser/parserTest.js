@@ -10,6 +10,7 @@ describe('Tests the functionality of the parser', function () {
   it('static test', function () {
     expect(parser('<div>foo</div>')).toEqual([{
       type: 'domNode',
+      id: 1,
       constants: ['div'],
       parameters: [{
         exec: 'constants',
@@ -17,6 +18,7 @@ describe('Tests the functionality of the parser', function () {
       }],
       children: [{
         type: 'textNode',
+        id: 2,
         constants: ['foo'],
         parameters: [{
           exec: 'constants',
@@ -29,6 +31,7 @@ describe('Tests the functionality of the parser', function () {
   it('static test with tree', function () {
     expect(parser('<div>foo<div>bar</div></div>')).toEqual([{
       type: 'domNode',
+      id: 1,
       constants: ['div'],
       parameters: [{
         exec: 'constants',
@@ -36,6 +39,7 @@ describe('Tests the functionality of the parser', function () {
       }],
       children: [{
         type: 'textNode',
+        id: 2,
         constants: ['foo'],
         parameters: [{
           exec: 'constants',
@@ -43,6 +47,7 @@ describe('Tests the functionality of the parser', function () {
         }],
       }, {
         type: 'domNode',
+        id: 3,
         constants: ['div'],
         parameters: [{
           exec: 'constants',
@@ -50,6 +55,7 @@ describe('Tests the functionality of the parser', function () {
         }],
         children: [{
           type: 'textNode',
+          id: 4,
           constants: ['bar'],
           parameters: [{
             exec: 'constants',
@@ -63,6 +69,7 @@ describe('Tests the functionality of the parser', function () {
   it('variable in domNode', function () {
     expect(parser('<div>{{$variable}}</div>')).toEqual([{
       type: 'variableNode',
+      id: 1,
       constants: ['div'],
       variables: [['variable']],
       parameters: [{
@@ -78,6 +85,7 @@ describe('Tests the functionality of the parser', function () {
   it('variable and text domNode', function () {
     expect(parser('<div>static{{$variable}}</div>')).toEqual([{
       type: 'domNode',
+      id: 1,
       constants: ['div'],
       parameters: [{
         exec: 'constants',
@@ -85,6 +93,7 @@ describe('Tests the functionality of the parser', function () {
       }],
       children: [{
         type: 'textNode',
+        id: 2,
         constants: ['static'],
         parameters: [{
           exec: 'constants',
@@ -92,6 +101,7 @@ describe('Tests the functionality of the parser', function () {
         }],
       }, {
         type: 'variableNode',
+        id: 3,
 
         // constants: ['span'],
         variables: [['variable']],
@@ -106,6 +116,7 @@ describe('Tests the functionality of the parser', function () {
   it('static test for properties', function () {
     expect(parser('<div class="classValue"checked id="idValue">foo</div>')).toEqual([{
       type: 'domNode',
+      id: 1,
       constants: ['div', 'classValue', 'checked', 'idValue'],
       parameters: [{
         exec: 'constants',
@@ -124,6 +135,7 @@ describe('Tests the functionality of the parser', function () {
       }],
       children: [{
         type: 'textNode',
+        id: 2,
         constants: ['foo'],
         parameters: [{
           exec: 'constants',
@@ -136,6 +148,7 @@ describe('Tests the functionality of the parser', function () {
   it('variable test for properties', function () {
     expect(parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>')).toEqual([{
       type: 'domNode',
+      id: 1,
       constants: ['div'],
       variables: ['classVariable', 'variable', 'idVariable'],
       parameters: [{
@@ -155,6 +168,7 @@ describe('Tests the functionality of the parser', function () {
       }],
       children: [{
         type: 'textNode',
+        id: 2,
         constants: ['foo'],
         parameters: [{
           exec: 'constants',

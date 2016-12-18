@@ -1,7 +1,8 @@
 const types = ['constants', 'variables', 'children', 'elseChildren'];
 
-function BlockClass(type) {
-  this.setType(type);
+function BlockClass(type, id) {
+  this.setType(type)
+      .setId(id);
 }
 
 BlockClass.prototype = {

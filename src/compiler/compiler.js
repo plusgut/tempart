@@ -2,8 +2,12 @@ import Class from './class';
 
 export default function factory(path, blocks) {
   let TempartTemplate = function (prefix) {
-    this._prefix = prefix;
-    this._currentValues = {};
+    if (this instanceof TempartTemplate) {
+      this._prefix = prefix;
+      this._currentValues = {};
+    } else {
+      throw new Error('Tempart has to be called with new');
+    }
   };
 
   TempartTemplate.prototype = new Class();
