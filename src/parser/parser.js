@@ -287,7 +287,10 @@ Precompiler.prototype = {
   },
 
   _isMustache(snippet) {
-    return snippet[0] === '{' && snippet[1] === '{' && snippet[snippet.length - 2] === '}' && snippet[snippet.length - 1];
+    return snippet[0] === '{' &&
+           snippet[1] === '{' &&
+           snippet[snippet.length - 2] === '}' &&
+           snippet[snippet.length - 1];
   },
 
   _isOpenMustache(position) {
