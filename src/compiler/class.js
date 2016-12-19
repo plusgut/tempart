@@ -4,6 +4,7 @@ Class.prototype = {
   clean(content) {
     this._local = {};
     this._content = content;
+    this.html = '';
 
     return this;
   },

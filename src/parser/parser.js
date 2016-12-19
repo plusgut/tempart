@@ -1,4 +1,5 @@
 import BlockClass from './blockClass';
+import version from '../version';
 
 function Precompiler(template) {
   this._template = template;
@@ -11,7 +12,15 @@ Precompiler.prototype = {
     this._positions = this._indexOfAllNodes();
     this._index = 0;
     this.blocks = this._handleBlocks();
-    return this.blocks;
+
+    if (this.blocks.length !== 1) {
+      throw 'Something really went wrong, on highest level it should never be more then one node';
+    }
+
+    return {
+      version: version,
+      template: this.blocks[0],
+    };
   },
 
   _handleBlocks(parentBlock) {

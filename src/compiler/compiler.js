@@ -1,6 +1,13 @@
 import Class from './class';
+import version from '../version';
 
-export default function factory(path, blocks) {
+export default function factory(path, template) {
+  if (template.version !== version) {
+    const errorMessage = 'The parsed tempart version is ' + template.version +
+    ', this is not compatible with compiler ' + version;
+    throw new Error(errorMessage);
+  }
+
   let TempartTemplate = function (prefix) {
     if (this instanceof TempartTemplate) {
       this._prefix = prefix;
@@ -12,7 +19,7 @@ export default function factory(path, blocks) {
 
   TempartTemplate.prototype = new Class();
   TempartTemplate.prototype._path = path;
-  TempartTemplate.prototype._blocks = blocks;
+  TempartTemplate.prototype._blocks = template.block;
 
   return TempartTemplate;
 }
