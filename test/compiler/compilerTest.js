@@ -4,8 +4,6 @@
 // jscs:disable requireTrailingComma
 // jscs:disable maximumLineLength
 
-var version = 0.3;
-
 function check(template, result, data) {
   var Template = tempart.factory('path', tempart.parser(template));
   var templateInstance = new Template('prefix-');
@@ -18,7 +16,7 @@ describe('Tests the functionality of the compiler', function () {
   });
 
   it('check if error gets thrown when not correctly called', function () {
-    var Template = tempart.factory('path', {version: version});
+    var Template = tempart.factory('path', { version: tempart.version });
     expect(function () {
       Template('foo');
     }).toThrow(new Error('Tempart has to be called with new'));

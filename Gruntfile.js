@@ -62,20 +62,21 @@ module.exports = function(grunt) {
       }
     },
     touch: {
-      src: ['dist/tempart.min.js']
+      src: ['dist/tempart.min.js'],
     },
     watch: {
       src: {
         files: [
           'src/*',
-          'src/**/*'
+          'src/**/*',
         ],
-        tasks: ['babel', 'build']
+        tasks: ['babel', 'build'],
       },
       babel: {
         files: [
           'tmp/babel/*.js',
           'tmp/babel/**/*.js',
+          'src/tempart.js',
         ],
         tasks: ['build']
       }
@@ -90,12 +91,12 @@ module.exports = function(grunt) {
       dist: {
         files: [{
           src: 'tmp/concat/tempart.js',
-          dest: 'dist/tempart.js'
+          dest: 'dist/tempart.js',
         }],
         options: {
           replacements: [{
             pattern: '}());',
-            replacement: grunt.file.read('src/tempart.js') + '}());'
+            replacement: grunt.file.read('src/tempart.js') + '}());',
           }]
         }
       }
@@ -103,7 +104,7 @@ module.exports = function(grunt) {
     githooks: {
       all: {
         'pre-commit': {
-          taskNames: 'min'
+          taskNames: 'min',
         }
       }
     }
