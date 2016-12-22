@@ -1,4 +1,6 @@
-module.exports = function(grunt) {
+// jscs:disable requireTrailingComma
+
+module.exports = function (grunt) {
   require('load-grunt-tasks')(grunt);
 
   grunt.initConfig({
@@ -14,32 +16,38 @@ module.exports = function(grunt) {
           cwd: 'src/',
           src: '**/*.js',
           dest: 'tmp/babel',
-        }]
-      }
+        }],
+      },
     },
     concat: {
       dist: {
         src: [
           'tmp/babel/version.js',
 
-          'tmp/babel/compiler/helpers/blocks.js',
-          'tmp/babel/compiler/helpers/configs.js',
-          'tmp/babel/compiler/helpers/dependency.js',
-          'tmp/babel/compiler/helpers/dom.js',
+          'tmp/babel/helpers/configs.js',
+          'tmp/babel/helpers/dependency.js',
+          'tmp/babel/helpers/dom.js',
+          'tmp/babel/helpers/values.js',
+          'tmp/babel/helpers/parameters.js',
 
+          'tmp/babel/types/dom.js',
+          'tmp/babel/types/each.js',
+          'tmp/babel/types/variable.js',
+          'tmp/babel/types/event.js',
+          'tmp/babel/types/if.js',
+          'tmp/babel/types/log.js',
+          'tmp/babel/types/partial.js',
+          'tmp/babel/types/text.js',
+          'tmp/babel/types/variable.js',
+          'tmp/babel/types/view.js',
+
+          'tmp/babel/helpers/blocks.js',
+
+          // @TODO these can be removed?
           'tmp/babel/compiler/public/controller.js',
           'tmp/babel/compiler/public/model.js',
           'tmp/babel/compiler/public/partial.js',
           'tmp/babel/compiler/public/view.js',
-
-          'tmp/babel/compiler/types/dom.js',
-          'tmp/babel/compiler/types/each.js',
-          'tmp/babel/compiler/types/echo.js',
-          'tmp/babel/compiler/types/event.js',
-          'tmp/babel/compiler/types/if.js',
-          'tmp/babel/compiler/types/log.js',
-          'tmp/babel/compiler/types/partial.js',
-          'tmp/babel/compiler/types/view.js',
 
           'tmp/babel/compiler/class.js',
           'tmp/babel/compiler/compiler.js',
@@ -54,12 +62,12 @@ module.exports = function(grunt) {
       dist: {
         src: 'dist/tempart.js',
         dest: 'dist/tempart.min.js',
-      }
+      },
     },
     clean: {
       dist: {
         src: ['tmp', 'dist']
-      }
+      },
     },
     touch: {
       src: ['dist/tempart.min.js'],
@@ -78,8 +86,8 @@ module.exports = function(grunt) {
           'tmp/babel/**/*.js',
           'src/tempart.js',
         ],
-        tasks: ['build']
-      }
+        tasks: ['build'],
+      },
     },
     amdclean: {
       dist: {
@@ -105,9 +113,9 @@ module.exports = function(grunt) {
       all: {
         'pre-commit': {
           taskNames: 'min',
-        }
-      }
-    }
+        },
+      },
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');

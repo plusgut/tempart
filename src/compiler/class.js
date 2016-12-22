@@ -1,3 +1,5 @@
+import blocks from '../helpers/blocks';
+
 function Class() {}
 
 Class.prototype = {
@@ -5,6 +7,7 @@ Class.prototype = {
     this._local = {};
     this._content = content;
     this.html = '';
+    this._handleCleanBlock(this._template);
 
     return this;
   },
@@ -16,6 +19,25 @@ Class.prototype = {
 
     return this;
   },
+
+  _handleCleanBlocks(blocks) {
+    for (let i = 0; i < blocks.length; i++) {
+      this._handleCleanBlock(blocks[i]);
+    }
+
+    return this;
+  },
+
+  _handleCleanBlock(block) {
+    blocks(block.type).clean(this, block);
+
+    return this;
+  },
+
+  _addHtml(string) {
+    this.html += string;
+  },
+
 };
 
 export default Class;

@@ -19,7 +19,7 @@ export default function factory(path, template) {
 
   TempartTemplate.prototype = new Class();
   TempartTemplate.prototype._path = path;
-  TempartTemplate.prototype._blocks = template.block;
+  TempartTemplate.prototype._template = template.template;
 
   return TempartTemplate;
 }

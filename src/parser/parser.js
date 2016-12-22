@@ -63,7 +63,7 @@ Precompiler.prototype = {
 
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
-    let block = new BlockClass('variableNode', ++this._increment);
+    let block = new BlockClass('variable', ++this._increment);
     block.pushParameter('variables', this._template.substring(this._index + 2, end).split('.'));
     this._index = this._index + end + 3;
     blocks.push(block);
@@ -72,7 +72,7 @@ Precompiler.prototype = {
   },
 
   _handleOpenTag(blocks) {
-    let block = new BlockClass('domNode', ++this._increment);
+    let block = new BlockClass('dom', ++this._increment);
     block.pushParameter('constants', this._getTagType(this._index + 1));
     this._parseAttributes(block);
 
@@ -176,7 +176,7 @@ Precompiler.prototype = {
 
   _handleTextNode(blocks) {
     const next = this._charsUntilNode(this._index);
-    let block = new BlockClass('textNode', ++this._increment);
+    let block = new BlockClass('text', ++this._increment);
     block.pushParameter('constants', this._template.substring(this._index, this._index + next));
     this._index = this._index + next;
     blocks.push(block);
@@ -188,12 +188,12 @@ Precompiler.prototype = {
     if (hasMustacheNode === true &&
         blocks.length === 1 &&
         parentBlock &&
-        parentBlock.type === 'domNode'
+        parentBlock.type === 'dom'
       ) {
 
       // @TODO improve, in case its a callee or something like that
       parentBlock.unshiftParameter('variables', blocks[0].variables[0]);
-      parentBlock.setType('variableNode');
+      parentBlock.setType('variable');
       blocks.length = 0;
     }
 

@@ -9,7 +9,7 @@ var parser = tempart.parser;
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
     expect(parser('<div>foo</div>').template).toEqual({
-      type: 'domNode',
+      type: 'dom',
       id: 1,
       constants: ['div'],
       parameters: [{
@@ -17,7 +17,7 @@ describe('Tests the functionality of the parser', function () {
         value: 0,
       }],
       children: [{
-        type: 'textNode',
+        type: 'text',
         id: 2,
         constants: ['foo'],
         parameters: [{
@@ -30,7 +30,7 @@ describe('Tests the functionality of the parser', function () {
 
   it('static test with tree', function () {
     expect(parser('<div>foo<div>bar</div></div>').template).toEqual({
-      type: 'domNode',
+      type: 'dom',
       id: 1,
       constants: ['div'],
       parameters: [{
@@ -38,7 +38,7 @@ describe('Tests the functionality of the parser', function () {
         value: 0,
       }],
       children: [{
-        type: 'textNode',
+        type: 'text',
         id: 2,
         constants: ['foo'],
         parameters: [{
@@ -46,7 +46,7 @@ describe('Tests the functionality of the parser', function () {
           value: 0,
         }],
       }, {
-        type: 'domNode',
+        type: 'dom',
         id: 3,
         constants: ['div'],
         parameters: [{
@@ -54,7 +54,7 @@ describe('Tests the functionality of the parser', function () {
           value: 0,
         }],
         children: [{
-          type: 'textNode',
+          type: 'text',
           id: 4,
           constants: ['bar'],
           parameters: [{
@@ -68,7 +68,7 @@ describe('Tests the functionality of the parser', function () {
 
   it('variable in domNode', function () {
     expect(parser('<div>{{variable}}</div>').template).toEqual({
-      type: 'variableNode',
+      type: 'variable',
       id: 1,
       constants: ['div'],
       variables: [['variable']],
@@ -84,7 +84,7 @@ describe('Tests the functionality of the parser', function () {
 
   it('variable and text domNode', function () {
     expect(parser('<div>static{{variable}}</div>').template).toEqual({
-      type: 'domNode',
+      type: 'dom',
       id: 1,
       constants: ['div'],
       parameters: [{
@@ -92,7 +92,7 @@ describe('Tests the functionality of the parser', function () {
         value: 0,
       }],
       children: [{
-        type: 'textNode',
+        type: 'text',
         id: 2,
         constants: ['static'],
         parameters: [{
@@ -100,7 +100,7 @@ describe('Tests the functionality of the parser', function () {
           value: 0,
         }],
       }, {
-        type: 'variableNode',
+        type: 'variable',
         id: 3,
 
         // constants: ['span'],
@@ -115,7 +115,7 @@ describe('Tests the functionality of the parser', function () {
 
   it('static test for properties', function () {
     expect(parser('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
-      type: 'domNode',
+      type: 'dom',
       id: 1,
       constants: ['div', 'classValue', 'checked', 'idValue'],
       parameters: [{
@@ -134,7 +134,7 @@ describe('Tests the functionality of the parser', function () {
         value: 3,
       }],
       children: [{
-        type: 'textNode',
+        type: 'text',
         id: 2,
         constants: ['foo'],
         parameters: [{
@@ -147,7 +147,7 @@ describe('Tests the functionality of the parser', function () {
 
   it('variable test for properties', function () {
     expect(parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
-      type: 'domNode',
+      type: 'dom',
       id: 1,
       constants: ['div'],
       variables: ['classVariable', 'variable', 'idVariable'],
@@ -167,7 +167,7 @@ describe('Tests the functionality of the parser', function () {
         value: 2,
       }],
       children: [{
-        type: 'textNode',
+        type: 'text',
         id: 2,
         constants: ['foo'],
         parameters: [{
