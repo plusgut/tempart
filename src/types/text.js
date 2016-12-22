@@ -6,6 +6,7 @@ export default {
 
     return this;
   },
+
   dirty() {
     throw new Error('Constant can\'t be updated');
   },
