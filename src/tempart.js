@@ -6,7 +6,7 @@
 var result = {
   parser: tempart_parser_parser.default,
   factory: tempart_compiler_compiler.default,
-  version: tempart_version.default,
+  version: tempart_version.default, // @TODO add buildprocess replace with package.json:version
 };
 
 if (typeof module === 'object') {

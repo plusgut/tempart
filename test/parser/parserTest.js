@@ -67,7 +67,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable in domNode', function () {
-    expect(parser('<div>{{$variable}}</div>').template).toEqual({
+    expect(parser('<div>{{variable}}</div>').template).toEqual({
       type: 'variableNode',
       id: 1,
       constants: ['div'],
@@ -83,7 +83,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable and text domNode', function () {
-    expect(parser('<div>static{{$variable}}</div>').template).toEqual({
+    expect(parser('<div>static{{variable}}</div>').template).toEqual({
       type: 'domNode',
       id: 1,
       constants: ['div'],

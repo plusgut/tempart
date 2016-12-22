@@ -50,9 +50,9 @@ Precompiler.prototype = {
 
   _handleMustacheNode(blocks, isOpenTag) {
     if (isOpenTag) {
-      // @TODO probably should be handled in _handleOpenTag
-      throw 'Variable inside an tag is currently not implemented';
-    } else if (this._template[this._index + 2] === '$') {
+      // This should theoreticly never be executed
+      throw 'This should already be handled by _handleOpenTag';
+    } else if (this._template[this._index + 2].search(/[a-z]/i) === 0) {
       this._handleVariableBlock(blocks);
     } else {
       throw 'Handling Mustache - blocks is currently not implemented';
@@ -64,7 +64,7 @@ Precompiler.prototype = {
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
     let block = new BlockClass('variableNode', ++this._increment);
-    block.pushParameter('variables', this._template.substring(this._index + 3, end).split('.'));
+    block.pushParameter('variables', this._template.substring(this._index + 2, end).split('.'));
     this._index = this._index + end + 3;
     blocks.push(block);
 
