@@ -150,7 +150,7 @@ describe('Tests the functionality of the parser', function () {
       type: 'dom',
       id: 1,
       constants: ['div'],
-      variables: ['classVariable', 'variable', 'idVariable'],
+      variables: [['classVariable'], ['variable'], ['idVariable']],
       parameters: [{
         exec: 'constants',
         value: 0,

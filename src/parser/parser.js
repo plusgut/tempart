@@ -149,14 +149,14 @@ Precompiler.prototype = {
     if (attributeValue) {
       if (this._isMustache(attributeValue)) {
         type = 'variables';
-        attributeValue = this._removeMustache(attributeValue);
+        attributeValue = this._removeMustache(attributeValue).split('.');
       }
 
       block.pushParameter(type, attributeValue, attributeName);
     } else if (attributeName) {
       if (this._isMustache(attributeName)) {
         type = 'variables';
-        attributeName = this._removeMustache(attributeName);
+        attributeName = this._removeMustache(attributeName).split('.');
       }
 
       block.pushParameter(type, attributeName);

@@ -8,7 +8,7 @@ export default {
       return handler._local[keyParts[0]];
     }
 
-    let result = this._content;
+    let result = handler._content;
     for (let i = 0; i < keyParts.length; i++) {
       if (!result[keyParts[i]]) {
         // @TODO add meaningful error

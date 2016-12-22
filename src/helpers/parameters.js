@@ -11,7 +11,7 @@ export default {
     if (parameter.exec === 'constants') {
       result = block.constants[parameter.value];
     } else if (parameter.exec === 'variables') {
-      result = values.get(handler, parameter.variables[parameter.name]);
+      result = values.get(handler, block.variables[parameter.value]);
     } else {
       throw new Error('The paramenter-type ' + parameter.exec + ' is not known to the engine');
     }
