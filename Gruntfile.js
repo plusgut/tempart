@@ -116,6 +116,14 @@ module.exports = function (grunt) {
         },
       },
     },
+    coveralls: {
+      options: {
+        force: false
+      },
+      coverage: {
+        src: 'test/coverage/*/lcov.info'
+      }
+    },
   });
 
   grunt.loadNpmTasks('grunt-contrib-watch');

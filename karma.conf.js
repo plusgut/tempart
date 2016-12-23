@@ -1,7 +1,7 @@
 // Karma configuration
 // Generated on Fri May 13 2016 20:43:12 GMT+0200 (CEST)
 
-module.exports = function(config) {
+module.exports = function (config) {
   config.set({
 
     // base path that will be used to resolve all patterns (eg. files, exclude)
@@ -16,7 +16,7 @@ module.exports = function(config) {
     // list of files / patterns to load in the browser
     files: [
       'dist/tempart.js',
-      'test/**/*Test.js'
+      'test/**/*Test.js',
     ],
 
 
@@ -28,7 +28,7 @@ module.exports = function(config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
-        'dist/precompiler.js': ['coverage']
+        'dist/tempart.js': ['coverage']
     },
 
 
@@ -69,7 +69,7 @@ module.exports = function(config) {
     concurrency: Infinity,
 
     coverageReporter: {
-      type : 'html',
+      type : 'lcov',
       dir : 'test/coverage/'
     }
   });

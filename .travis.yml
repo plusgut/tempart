@@ -19,6 +19,7 @@ before_install:
 install:
   - "npm install"
   - "grunt default"
+  - "grunt coveralls"
 
 notifications:
   email:
