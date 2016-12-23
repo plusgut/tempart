@@ -19,6 +19,23 @@ export default {
     return result;
   },
 
+  generateParameterString(handler, block, offset) {
+    let result = '<' + this.getValue(handler, block, offset) + ' ';
+
+    for (let i = offset + 1; i < block.parameters.length; i++) {
+      const key = this.getName(block, i);
+      const value = this.getValue(handler, block, i);
+      if (key) {
+        result += key + '=\"' + value + '\" ';
+      } else {
+        result += value + ' ';
+      }
+    }
+
+    result += this.generateId(handler, block) + '>';
+    return result;
+  },
+
   generateId(handler, block) {
     return 'data-snew-id=\"' + handler._prefix + block.id + '\"';
   },

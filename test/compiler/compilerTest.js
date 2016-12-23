@@ -23,9 +23,9 @@ describe('Tests the functionality of the compiler', function () {
     check('<div id="{{id}}">foo</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', { id: 'bar' });
   });
 
-  // it('variable test with text', function () {
-  //   check('<div id="bar">{{text}}</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', { text: 'foo' });
-  // });
+  it('variable test with text', function () {
+    check('<div id="bar">{{text}}</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', { text: 'foo' });
+  });
 
   it('check if error gets thrown when not correctly called', function () {
     var Template = tempart.factory('path', { version: tempart.version });

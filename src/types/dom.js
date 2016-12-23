@@ -1,29 +1,16 @@
 import parameters from '../helpers/parameters';
 
+const TAG_INDEX = 0;
+
 export default {
   clean(handler, block) {
-    const tag = parameters.getValue(handler, block, 0);
-    let result = '<' + tag + ' ';
-
-    for (let i = 1; i < block.parameters.length; i++) {
-      const key = parameters.getName(block, i);
-      const value = parameters.getValue(handler, block, i);
-      if (key) {
-        result += key + '=\"' + value + '\" ';
-      } else {
-        result += value + ' ';
-      }
-    }
-
-    result += parameters.generateId(handler, block) + '>';
-
-    handler._addHtml(result);
+    handler._addHtml(parameters.generateParameterString(handler, block, TAG_INDEX));
 
     if (block.children) {
       handler._handleCleanBlocks(block.children);
     }
 
-    handler._addHtml('</' + tag + '>');
+    handler._addHtml('</' + parameters.getValue(handler, block, TAG_INDEX) + '>');
   },
 
   dirty() {

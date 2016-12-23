@@ -36,6 +36,8 @@ Class.prototype = {
 
   _addHtml(string) {
     this.html += string;
+
+    return this;
   },
 
 };
