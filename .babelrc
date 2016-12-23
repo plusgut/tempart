@@ -6,5 +6,10 @@
     "moduleRoot": "tempart",
     "ignore": [
         "src/tempart.js"
-    ]
+    ],
+    "env": {
+        "test": {
+            "plugins": ["istanbul"]
+        }
+    }
 }
