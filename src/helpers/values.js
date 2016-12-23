@@ -10,10 +10,10 @@ export default {
 
     let result = handler._content;
     for (let i = 0; i < keyParts.length; i++) {
-      if (!result[keyParts[i]]) {
-        // @TODO add meaningful error
-        throw new Error('Content-key error without a great message');
-      }
+      // if (!result) {
+      //   // @TODO add meaningful error
+      //   throw new Error('Content-key error without a great message');
+      // }
 
       // If this throws errors, your key tries to get an value of an not existent parent
       result = result[keyParts[i]];
