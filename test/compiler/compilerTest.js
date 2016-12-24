@@ -37,4 +37,10 @@ describe('Tests the functionality of the compiler', function () {
       Template('foo');
     }).toThrow(new Error('Tempart has to be called with new'));
   });
+
+  it('check if error gets thrown when wrong version is given', function () {
+    expect(function () {
+      new tempart.factory('path', { version: '0.0.1' });
+    }).toThrow(new Error('The parsed tempart version is 0.0.1, this is not compatible with compiler ' + tempart.version));
+  });
 });

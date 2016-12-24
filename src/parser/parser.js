@@ -81,7 +81,7 @@ Precompiler.prototype = {
     blocks.push(block);
 
     // @TODO add check if its an self-closing
-    let children = this._setOpen()._handleBlocks(block);
+    let children = this._handleBlocks(block);
     if (children.length) {
       block.children = children;
     }
@@ -204,10 +204,6 @@ Precompiler.prototype = {
     return this._indexOfAll(this._template, /<|{{/g);
   },
 
-  _indexOf(attributes) {
-    return this._indexOfAll(attributes, / /);
-  },
-
   _indexOfAll(string, search) {
     let occurances = [];
     let result;
@@ -216,22 +212,6 @@ Precompiler.prototype = {
     }
 
     return occurances;
-  },
-
-  _isOpen() {
-    return this._open;
-  },
-
-  _setOpen() {
-    this._open = true;
-
-    return this;
-  },
-
-  _setClose() {
-    this._open = false;
-
-    return this;
   },
 
   _getTagType(position) {
@@ -307,16 +287,16 @@ Precompiler.prototype = {
     return snippet[0] === '{' && snippet[1] === '{';
   },
 
-  _isCloseMustache(position) {
-    let snippet = this._template.substring(position, position + 3);
-    return snippet[0] === '{' && snippet[1] === '{' && snippet[2] === '/';
-  },
+  // _isCloseMustache(position) {
+  //   let snippet = this._template.substring(position, position + 3);
+  //   return snippet[0] === '{' && snippet[1] === '{' && snippet[2] === '/';
+  // },
 
-  _isElseMustache(position) {
-    let elseString = '{{#else';
-    let snippet = this._template.substring(position, elseString.length);
-    return snippet === elseString;
-  },
+  // _isElseMustache(position) {
+  //   let elseString = '{{#else';
+  //   let snippet = this._template.substring(position, elseString.length);
+  //   return snippet === elseString;
+  // },
 
   _removeMustache(snippet) {
     return snippet.substring(2, snippet.length - 2);
