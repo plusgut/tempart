@@ -2,7 +2,7 @@
   "name": "tempart",
   "version": "0.3.0",
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
-  "main": "src/precompiler/precompiler.js",
+  "main": "dist/tempart.min.js",
   "scripts": {
     "test": "jshint --show-non-errors src && jscs src && grunt default &&./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
   },
@@ -15,7 +15,7 @@
     "recompile",
     "blocks"
   ],
-  "author": "Carlo jeske",
+  "author": "Carlo Jeske",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/plusgut/tempart/issues"
