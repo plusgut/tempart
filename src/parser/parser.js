@@ -19,10 +19,21 @@ Precompiler.prototype = {
       throw 'Something really went wrong, on highest level it should never be more then one node';
     }
 
+    this._addIds(this.blocks[0]);
+
     return {
       version: version,
       template: this.blocks[0],
     };
+  },
+
+  _addIds(block) {
+    block.setId(++this._increment);
+    if (block.children) {
+      block.children.forEach(this._addIds.bind(this));
+    }
+
+    return this;
   },
 
   _handleBlocks(parentBlock) {
@@ -67,7 +78,7 @@ Precompiler.prototype = {
   _handleRootBlock(blocks, parentBlock) {
     const firstBlock = blocks[0];
     if (parentBlock === undefined && firstBlock.type === 'text') {
-      let container = new BlockClass('dom', ++this._increment);
+      let container = new BlockClass('dom');
       container.pushParameter('constants', containerType);
       container.children = [firstBlock];
       blocks.pop();
@@ -79,7 +90,7 @@ Precompiler.prototype = {
 
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
-    let block = new BlockClass('variable', ++this._increment);
+    let block = new BlockClass('variable');
     block.pushParameter('variables', this._template.substring(this._index + 2, end).split('.'));
     block.pushParameter('constants', containerType);
     this._index = this._index + end + 3;
@@ -89,7 +100,7 @@ Precompiler.prototype = {
   },
 
   _handleOpenTag(blocks) {
-    let block = new BlockClass('dom', ++this._increment);
+    let block = new BlockClass('dom');
     block.pushParameter('constants', this._getTagType(this._index + 1));
     this._parseAttributes(block);
 
@@ -193,7 +204,7 @@ Precompiler.prototype = {
 
   _handleTextNode(blocks) {
     const next = this._charsUntilNode(this._index);
-    let block = new BlockClass('text', ++this._increment);
+    let block = new BlockClass('text');
     block.pushParameter('constants', this._template.substring(this._index, this._index + next));
     this._index = this._index + next;
     blocks.push(block);
