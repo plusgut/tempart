@@ -1,4 +1,4 @@
-/* global describe, it, expect, tempart */
+/* global describe, it, expect, tempart, jasmine */
 
 // jshint varstmt: false
 // jscs:disable requireTrailingComma
@@ -19,6 +19,27 @@ describe('Tests the functionality of the parser', function () {
       children: [{
         type: 'text',
         id: 2,
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }]
+    });
+  });
+
+  it('static text', function () {
+    expect(parser('foo').template).toEqual({
+      type: 'dom',
+      id: jasmine.any(Number),
+      constants: ['span'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }],
+      children: [{
+        type: 'text',
+        id: jasmine.any(Number),
         constants: ['foo'],
         parameters: [{
           exec: 'constants',
@@ -103,10 +124,13 @@ describe('Tests the functionality of the parser', function () {
         type: 'variable',
         id: 3,
 
-        // constants: ['span'],
+        constants: ['span'],
         variables: [['variable']],
         parameters: [{
           exec: 'variables',
+          value: 0,
+        }, {
+          exec: 'constants',
           value: 0,
         }]
       }]

@@ -15,6 +15,10 @@ describe('Tests the functionality of the compiler', function () {
     check('<div>foo</div>', '<div data-snew-id="prefix-1">foo</div>', {});
   });
 
+  it('static text', function () {
+    check('foo', '<span data-snew-id="prefix-2">foo</span>', {});
+  });
+
   it('static test with attributes', function () {
     check('<div id="bar">foo</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', {});
   });

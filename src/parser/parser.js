@@ -1,6 +1,8 @@
 import BlockClass from './blockClass';
 import version from '../version';
 
+const containerType = 'span';
+
 function Precompiler(template) {
   this._template = template;
   this._increment = 0;
@@ -43,7 +45,8 @@ Precompiler.prototype = {
       }
     }
 
-    this._compressBlocks(hasMustacheNode, blocks, parentBlock);
+    this._compressBlocks(hasMustacheNode, blocks, parentBlock)
+        ._handleRootBlock(blocks, parentBlock);
 
     return blocks;
   },
@@ -61,10 +64,24 @@ Precompiler.prototype = {
     return this;
   },
 
+  _handleRootBlock(blocks, parentBlock) {
+    const firstBlock = blocks[0];
+    if (parentBlock === undefined && firstBlock.type === 'text') {
+      let container = new BlockClass('dom', ++this._increment);
+      container.pushParameter('constants', containerType);
+      container.children = [firstBlock];
+      blocks.pop();
+      blocks.push(container);
+    }
+
+    return this;
+  },
+
   _handleVariableBlock(blocks) {
     const end = this._template.indexOf('}}', this._index);
     let block = new BlockClass('variable', ++this._increment);
     block.pushParameter('variables', this._template.substring(this._index + 2, end).split('.'));
+    block.pushParameter('constants', containerType);
     this._index = this._index + end + 3;
     blocks.push(block);
 
