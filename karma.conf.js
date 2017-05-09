@@ -1,3 +1,5 @@
+/* globals module */
+
 // Karma configuration
 // Generated on Fri May 13 2016 20:43:12 GMT+0200 (CEST)
 
@@ -9,11 +11,11 @@ module.exports = function (config) {
 
     // frameworks to use
     // available frameworks: https://npmjs.org/browse/keyword/karma-adapter
-    frameworks: ['jasmine'],
+    frameworks: ['jasmine', 'karma-typescript'],
 
     // list of files / patterns to load in the browser
     files: [
-      'dist/tempart.js',
+      { pattern: 'src/**/*.ts' },
       'test/**/*Test.js',
     ],
 
@@ -24,12 +26,13 @@ module.exports = function (config) {
     // preprocess matching files before serving them to the browser
     // available preprocessors: https://npmjs.org/browse/keyword/karma-preprocessor
     preprocessors: {
+      '**/*.ts': ['karma-typescript'],
     },
 
     // test results reporter to use
     // possible values: 'dots', 'progress'
     // available reporters: https://npmjs.org/browse/keyword/karma-reporter
-    reporters: ['progress', 'coverage'],
+    reporters: ['progress', 'karma-typescript'],
 
     // web server port
     port: 9876,
@@ -56,8 +59,15 @@ module.exports = function (config) {
     // how many browser should be started simultaneous
     concurrency: Infinity,
 
+    karmaTypescriptConfig: {
+      reports: {
+        lcovonly: {
+          directory: 'test/coverage/',
+          filename: 'lcov.info',
+        },
+      },
+    },
     coverageReporter: {
-      type: 'lcov',
       dir: 'test/coverage/',
       instrumenterOptions: {
         istanbul: { noCompact: true },
