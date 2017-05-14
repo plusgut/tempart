@@ -3,10 +3,6 @@ language: node_js
 node_js:
   - "5"
 
-cache:
-  directories:
-    - node_modules
-
 before_install:
   - "npm config set spin false"
   - "npm --version"
@@ -18,11 +14,10 @@ before_install:
 
 install:
   - "npm install"
-  - "export BABEL_ENV=test"
-  - "grunt default"
+  - "gulp default"
 
 after_success:
-  - "grunt coveralls"
+  - "gulp coveralls"
 
 notifications:
   email:
