@@ -1,4 +1,4 @@
-# tempart [![Build Status](https://travis-ci.org/plusgut/tempart.svg?branch=v0.3)](https://travis-ci.org/plusgut/tempart) [![Coverage Status](https://coveralls.io/repos/github/plusgut/tempart/badge.svg?branch=v0.3)](https://coveralls.io/github/plusgut/tempart?branch=v0.3)
+# tempart [![Build Status](https://travis-ci.org/plusgut/tempart.svg?branch=v0.4)](https://travis-ci.org/plusgut/tempart) [![Coverage Status](https://coveralls.io/repos/github/plusgut/tempart/badge.svg?branch=v0.4)](https://coveralls.io/github/plusgut/tempart?branch=v0.4)
 Its a mustache templating engine, which is optimized for recompiling.
 The precompiler returns a tree of blocks with there dependencies
 

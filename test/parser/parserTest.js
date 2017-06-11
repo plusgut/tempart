@@ -6,7 +6,6 @@
 
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
-    debugger
     expect(tempart.parser('<div>foo</div>').template).toEqual({
       type: 'dom',
       id: 1,

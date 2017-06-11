@@ -1,13 +1,16 @@
 import parser from './core/parser';
 
-debugger;
-
 const tempart =  {
+  parser(templateString: string) {
+    return {
+      template: parser(templateString),
+      version: this.version,
+    };
+  },
   version: 0.4,
-  parser: parser,
   factory() {
 
-  }
+  },
 };
 
 export default tempart;

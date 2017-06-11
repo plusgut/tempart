@@ -1,18 +1,27 @@
 import Block from '../types/Block';
+import Dom from '../types/Dom';
+
+function createRootElement(state: State): Dom {
+  const rootBlock = new Dom(state);
+  rootBlock.root = true;
+  return rootBlock;
+}
 
 class State {
-  allBlocks: Block[];
-  openBlocks: Block[];
-  templateString: string;
-  index: number;
+  public allBlocks: Block[];
+  public openBlocks: Block[];
+  public templateString: string;
+  public index: number;
+  public root: Block;
 
-  constructor(templateString: string, rootElement: Block) {
+  constructor(templateString: string) {
     this.index = 0;
     this.templateString = templateString;
-    this.openBlocks = [rootElement];
+    this.root = createRootElement(this);
+    this.openBlocks = [this.root];
   }
 
-  getLastBlock() {
+  public getLastBlock() {
     if (this.openBlocks.length === 0) {
       throw new Error('You are trying to close something, which is not existent');
     }
@@ -20,15 +29,15 @@ class State {
     return this.openBlocks[this.openBlocks.length - 1];
   }
 
-  getNextChars(length: number) {
+  public getNextChars(length: number) {
     return this.templateString.slice(this.index, this.index + length);
   }
 
-  getCurrentChar(): string {
+  public getCurrentChar(): string {
     return this.templateString[this.index];
   }
 
-  incrementIndex() {
+  public incrementIndex() {
     this.index += 1;
   }
 }
