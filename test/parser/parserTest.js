@@ -4,11 +4,10 @@
 // jscs:disable requireTrailingComma
 // jscs:disable maximumLineLength
 
-var parser = tempart.parser;
-
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
-    expect(parser('<div>foo</div>').template).toEqual({
+    debugger
+    expect(tempart.parser('<div>foo</div>').template).toEqual({
       type: 'dom',
       id: 1,
       constants: ['div'],
@@ -29,7 +28,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('static text', function () {
-    expect(parser('foo').template).toEqual({
+    expect(tempart.parser('foo').template).toEqual({
       type: 'dom',
       id: jasmine.any(Number),
       constants: ['span'],
@@ -50,7 +49,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('static test with tree', function () {
-    expect(parser('<div>foo<div>bar</div></div>').template).toEqual({
+    expect(tempart.parser('<div>foo<div>bar</div></div>').template).toEqual({
       type: 'dom',
       id: 1,
       constants: ['div'],
@@ -88,7 +87,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable in domNode', function () {
-    expect(parser('<div>{{variable}}</div>').template).toEqual({
+    expect(tempart.parser('<div>{{variable}}</div>').template).toEqual({
       type: 'variable',
       id: 1,
       constants: ['div'],
@@ -104,7 +103,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable and text domNode', function () {
-    expect(parser('<div>static{{variable}}</div>').template).toEqual({
+    expect(tempart.parser('<div>static{{variable}}</div>').template).toEqual({
       type: 'dom',
       id: 1,
       constants: ['div'],
@@ -138,7 +137,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('static test for properties', function () {
-    expect(parser('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
+    expect(tempart.parser('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
       type: 'dom',
       id: 1,
       constants: ['div', 'classValue', 'checked', 'idValue'],
@@ -170,7 +169,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable test for properties', function () {
-    expect(parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
+    expect(tempart.parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
       type: 'dom',
       id: 1,
       constants: ['div'],
@@ -204,17 +203,17 @@ describe('Tests the functionality of the parser', function () {
 
   it('throw error with missmatch', function () {
     expect(function () {
-      tempart.parser('<div>foo</span>');
+      tempart.tempart.parser('<div>foo</span>');
     }).toThrow(new SyntaxError('Missmatch of div and /span'));
 
     expect(function () {
-      tempart.parser('<div>foo<div>bar</span></span>');
+      tempart.tempart.parser('<div>foo<div>bar</span></span>');
     }).toThrow(new SyntaxError('Missmatch of div and /span'));
   });
 
   it('throw error with not ending node', function () {
     expect(function () {
-      tempart.parser('<div');
+      tempart.tempart.parser('<div');
     }).toThrow(new SyntaxError('Tag is not ending: div'));
   });
 });

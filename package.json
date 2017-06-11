@@ -1,6 +1,6 @@
 {
   "name": "tempart",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": "dist/tempart.min.js",
   "scripts": {
@@ -20,30 +20,19 @@
   "bugs": {
     "url": "https://github.com/plusgut/tempart/issues"
   },
-  "jshintConfig": {
-    "node": true,
-    "esversion": 6,
-    "loopfunc": true,
-    "unused": true,
-    "undef": true,
-    "curly": true,
-    "eqeqeq": true,
-    "forin": true,
-    "varstmt": true
-  },
   "devDependencies": {
     "browserify": "^14.3.0",
     "gulp": "^3.9.1",
     "gulp-coveralls": "^0.1.4",
     "gulp-util": "^3.0.8",
     "jasmine-core": "^2.4.1",
-    "karma": "^1.1.0",
-    "karma-chrome-launcher": "^1.0.1",
+    "karma": "^1.7.0",
+    "karma-chrome-launcher": "^2.1.1",
     "karma-coverage": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.0",
     "karma-typescript": "^3.0.1",
-    "load-grunt-tasks": "^3.5.0",
+    "tslint-config-airbnb": "^5.0.1",
     "tsify": "^3.0.1",
     "typescript": "^2.3.2",
     "vinyl-source-stream": "^1.1.0",

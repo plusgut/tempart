@@ -3,7 +3,7 @@ Its a mustache templating engine, which is optimized for recompiling.
 The precompiler returns a tree of blocks with there dependencies
 
 
-api 0.3
+api 0.4
 ---
 
 ```mustache

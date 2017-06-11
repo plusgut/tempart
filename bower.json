@@ -1,13 +1,13 @@
 {
   "name": "tempart",
-  "version": "0.2.3",
+  "version": "0.4.0",
   "homepage": "https://github.com/plusgut/tempart",
   "authors": [
     "plusgut <github@webentwickler2-0.de>"
   ],
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": [
-    "tempart.js"
+    "dist/tempart.min.js"
   ],
   "moduleType": [
     "globals",
