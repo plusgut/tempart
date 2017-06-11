@@ -16,5 +16,5 @@ export default {
 
   isVariable(state: State): boolean {
     return false;
-  }
+  },
 };

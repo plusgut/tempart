@@ -1,10 +1,11 @@
 import Block from '../types/Block';
 
 class State {
-  allBlocks: Array<Block>
-  openBlocks: Array<Block>
-  templateString: string
-  index: number
+  allBlocks: Block[];
+  openBlocks: Block[];
+  templateString: string;
+  index: number;
+
   constructor(templateString: string, rootElement: Block) {
     this.index = 0;
     this.templateString = templateString;
@@ -12,7 +13,7 @@ class State {
   }
 
   getLastBlock() {
-    if(this.openBlocks.length === 0) {
+    if (this.openBlocks.length === 0) {
       throw new Error('You are trying to close something, which is not existent');
     }
 
@@ -28,7 +29,7 @@ class State {
   }
 
   incrementIndex() {
-    this.index++;
+    this.index += 1;
   }
 }
 

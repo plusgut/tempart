@@ -1,7 +1,8 @@
 import Block from './Block';
 
 class Dom extends Block {
-  type: string
+  public type: string;
+
   constructor() {
     super();
 
