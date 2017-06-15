@@ -8,7 +8,7 @@ abstract class Block {
   public id: number;
   public constants: string[];
   public variables: string[];
-  public paramenters: Parameter[];
+  public parameters: Parameter[];
   public children: Block[];
   public elseChildren: Block[];
   public containerElement: boolean;
@@ -16,8 +16,9 @@ abstract class Block {
   constructor(state: State) {
     this.state = state;
     this.containerElement = false;
-    this.constants = [];
-    this.variables = [];
+    this.constants  = [];
+    this.variables  = [];
+    this.parameters = [];
   }
 
   public setId(id: number) {
@@ -40,12 +41,12 @@ abstract class Block {
 
   public addConstant(value: string) {
     const length = this.constants.push(value);
-    this.paramenters.push(new Parameter(value, length - 1));
+    this.parameters.push(new Parameter(value, length - 1));
   }
 
   public addVariable(value: string) {
     const length = this.variables.push(value);
-    this.paramenters.push(new Parameter(value, length - 1));
+    this.parameters.push(new Parameter(value, length - 1));
   }
 }
 

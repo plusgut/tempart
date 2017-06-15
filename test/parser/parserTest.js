@@ -16,7 +16,7 @@ describe('Tests the functionality of the parser', function () {
         value: 0,
       }],
       children: [{
-        type: 'text',
+        type: 'content',
         id: 2,
         constants: ['foo'],
         parameters: [{
@@ -37,7 +37,7 @@ describe('Tests the functionality of the parser', function () {
   //       value: 0,
   //     }],
   //     children: [{
-  //       type: 'text',
+  //       type: 'content',
   //       id: jasmine.any(Number),
   //       constants: ['foo'],
   //       parameters: [{
@@ -58,7 +58,7 @@ describe('Tests the functionality of the parser', function () {
   //       value: 0,
   //     }],
   //     children: [{
-  //       type: 'text',
+  //       type: 'content',
   //       id: 2,
   //       constants: ['foo'],
   //       parameters: [{
@@ -74,7 +74,7 @@ describe('Tests the functionality of the parser', function () {
   //         value: 0,
   //       }],
   //       children: [{
-  //         type: 'text',
+  //         type: 'content',
   //         id: 4,
   //         constants: ['bar'],
   //         parameters: [{
@@ -112,7 +112,7 @@ describe('Tests the functionality of the parser', function () {
   //       value: 0,
   //     }],
   //     children: [{
-  //       type: 'text',
+  //       type: 'content',
   //       id: 2,
   //       constants: ['static'],
   //       parameters: [{
@@ -157,7 +157,7 @@ describe('Tests the functionality of the parser', function () {
   //       value: 3,
   //     }],
   //     children: [{
-  //       type: 'text',
+  //       type: 'content',
   //       id: 2,
   //       constants: ['foo'],
   //       parameters: [{
@@ -190,7 +190,7 @@ describe('Tests the functionality of the parser', function () {
   //       value: 2,
   //     }],
   //     children: [{
-  //       type: 'text',
+  //       type: 'content',
   //       id: 2,
   //       constants: ['foo'],
   //       parameters: [{
@@ -220,5 +220,11 @@ describe('Tests the functionality of the parser', function () {
 
 function parse(templateString) {
   var template = tempart.parser(templateString).template;
-  return JSON.parse(JSON.stringify(template));
+  try {
+    return JSON.parse(JSON.stringify(template));
+  }  catch (err) {
+    console.log(template);
+    debugger;
+    throw err;
+  }
 }

@@ -1,7 +1,8 @@
-import Block from '../types/Block';
-import Dom   from '../types/Dom';
-import State from '../helper/State';
-import util  from '../helper/util';
+import Block   from '../types/Block';
+import Dom     from '../types/Dom';
+import Content from '../types/Content';
+import State   from '../helper/State';
+import util    from '../helper/util';
 
 export default function parser(templateString: string): Block {
   const state = new State(templateString);
@@ -27,8 +28,7 @@ export default function parser(templateString: string): Block {
 
         state.getCurrentBlock().constants.push(tagName);
       } else {
-        console.log('i probably need to do something', state.index);
-        state.incrementIndex();
+        state.getCurrentBlock().addChild(new Content(state));
       }
     } else {
       debugger;

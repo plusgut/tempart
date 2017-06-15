@@ -51,6 +51,9 @@ class State {
     if (block.containerElement === true && block.children.length === 1) {
       return this.treeShake(block.children[0]);
     } else {
+      for (let i = 0; block.children && i < block.children.length; i += 1) {
+        block.children[i] = this.treeShake(block.children[i]);
+      }
       return block;
     }
   }

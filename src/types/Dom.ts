@@ -13,7 +13,6 @@ class Dom extends Block {
   }
 
   public closeTag() {
-    // @TODO check if correct lastBlock is same as closing Tag
     let tagName = '';
     this.state.incrementIndex().incrementIndex(); // It needs to skip </
     while (this.state.getCurrentChar() !== '>') {
