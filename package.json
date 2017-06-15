@@ -4,7 +4,7 @@
   "description": "Its a mustache templating engine, which is optimized for recompiling. The parser returns a tree of blocks with each variable dependency",
   "main": "dist/tempart.min.js",
   "scripts": {
-    "test": "gulp default &&./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
+    "test": "tslint src/**/*.ts && ./node_modules/karma/bin/karma start karma.conf.js --no-auto-watch --single-run"
   },
   "repository": {
     "type": "git",

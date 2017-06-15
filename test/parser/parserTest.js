@@ -6,8 +6,9 @@
 
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
-    expect(tempart.parser('<div>foo</div>').template).toEqual({
+    expect(parse('<div>foo</div>')).toEqual({
       type: 'dom',
+      containerElement: false,
       id: 1,
       constants: ['div'],
       parameters: [{
@@ -216,3 +217,8 @@ describe('Tests the functionality of the parser', function () {
   //   }).toThrow(new SyntaxError('Tag is not ending: div'));
   // });
 });
+
+function parse(templateString) {
+  var template = tempart.parser(templateString).template;
+  return JSON.parse(JSON.stringify(template));
+}

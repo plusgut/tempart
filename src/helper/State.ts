@@ -1,11 +1,5 @@
 import Block from '../types/Block';
-import Dom from '../types/Dom';
-
-function createRootElement(state: State): Dom {
-  const rootBlock = new Dom(state);
-  rootBlock.root = true;
-  return rootBlock;
-}
+import Container from '../types/Container';
 
 class State {
   public allBlocks: Block[];
@@ -13,15 +7,25 @@ class State {
   public templateString: string;
   public index: number;
   public root: Block;
+  public openTag: boolean;
 
   constructor(templateString: string) {
     this.index = 0;
+    this.openTag = false;
     this.templateString = templateString;
-    this.root = createRootElement(this);
+    this.root = new Container(this);
     this.openBlocks = [this.root];
   }
 
-  public getLastBlock() {
+  public closeOpenBlock() {
+    if (this.openBlocks.length === 0) {
+      throw new Error('You are trying to close an not opened Block');
+    } else {
+      this.openBlocks.pop();
+    }
+  }
+
+  public getCurrentBlock() {
     if (this.openBlocks.length === 0) {
       throw new Error('You are trying to close something, which is not existent');
     }
@@ -39,6 +43,20 @@ class State {
 
   public incrementIndex() {
     this.index += 1;
+    return this;
+  }
+
+  public treeShake(block: Block): Block {
+    delete block.state;
+    if (block.containerElement === true && block.children.length === 1) {
+      return this.treeShake(block.children[0]);
+    } else {
+      return block;
+    }
+  }
+
+  public getContainerElement() {
+    return 'div';
   }
 }
 
