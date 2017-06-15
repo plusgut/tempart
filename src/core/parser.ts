@@ -26,7 +26,7 @@ export default function parser(templateString: string): Block {
           state.incrementIndex();
         }
 
-        state.getCurrentBlock().constants.push(tagName);
+        state.getCurrentBlock().addConstant(tagName);
       } else {
         state.getCurrentBlock().addChild(new Content(state));
       }
@@ -36,5 +36,7 @@ export default function parser(templateString: string): Block {
     }
   }
 
-  return state.treeShake(state.root);
+  return state.addIds(
+    state.treeShake(state.root),
+  );
 }

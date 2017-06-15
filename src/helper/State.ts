@@ -8,8 +8,10 @@ class State {
   public index: number;
   public root: Block;
   public openTag: boolean;
+  private idCount: number;
 
   constructor(templateString: string) {
+    this.idCount = 0;
     this.index = 0;
     this.openTag = false;
     this.templateString = templateString;
@@ -44,6 +46,21 @@ class State {
   public incrementIndex() {
     this.index += 1;
     return this;
+  }
+
+  private incrementId() {
+    this.idCount += 1;
+    return this;
+  }
+
+  public addIds(block: Block): Block {
+    this.incrementId();
+    block.id = this.idCount;
+    if (block.children !== undefined) {
+      block.children = <Block[]>block.children.map(this.addIds.bind(this));
+    }
+
+    return block;
   }
 
   public treeShake(block: Block): Block {

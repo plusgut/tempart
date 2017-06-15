@@ -15,10 +15,6 @@ abstract class Block {
 
   constructor(state: State) {
     this.state = state;
-    this.containerElement = false;
-    this.constants  = [];
-    this.variables  = [];
-    this.parameters = [];
   }
 
   public setId(id: number) {
@@ -40,13 +36,37 @@ abstract class Block {
   }
 
   public addConstant(value: string) {
+    this.ensureConstants().ensureParameters();
     const length = this.constants.push(value);
-    this.parameters.push(new Parameter(value, length - 1));
+    this.parameters.push(new Parameter('constants', length - 1));
   }
 
   public addVariable(value: string) {
+    this.ensureVariables().ensureParameters();
+
     const length = this.variables.push(value);
-    this.parameters.push(new Parameter(value, length - 1));
+    this.parameters.push(new Parameter('variables', length - 1));
+  }
+
+  private ensureConstants() {
+    if (this.constants === undefined) {
+      this.constants = [];
+    }
+    return this;
+  }
+
+  private ensureVariables() {
+    if (this.variables === undefined) {
+      this.variables = [];
+    }
+    return this;
+  }
+
+  private ensureParameters() {
+    if (this.parameters === undefined) {
+      this.parameters = [];
+    }
+    return this;
   }
 }
 
