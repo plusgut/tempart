@@ -23,7 +23,6 @@ class Dom extends Block {
       this.state.incrementIndex();
     }
     if (this.constants[0] !== tagName) { // @TODO add variable-possiblity via parameters[0]
-      debugger;
       throw new Error('Missmatch of tags!');
     }
     this.state.closeOpenBlock();

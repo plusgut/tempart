@@ -19,8 +19,7 @@ class Content extends Block {
   }
 
   public closeTag() {
-    this.state.closeOpenBlock();
-    this.state.getCurrentBlock().closeTag();
+    throw new Error('Closing a text is not possible');
   }
 
   public addChild() {

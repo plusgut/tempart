@@ -17,10 +17,6 @@ abstract class Block {
     this.state = state;
   }
 
-  public setId(id: number) {
-    this.id = id;
-  }
-
   public addChild(block: Block) {
     if (!this.children) {
       this.children = [];

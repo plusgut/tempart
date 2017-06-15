@@ -18,7 +18,7 @@ export default {
    * @param state
    */
   isNewDomCloseTag(state: State): boolean {
-    return state.getCurrentChar() === '<' && state.templateString[state.index + 1] === '/';
+    return state.getNextChars(2) === '</';
   },
 
   /**
