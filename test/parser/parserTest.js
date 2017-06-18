@@ -48,43 +48,43 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('static test with tree', function () {
-  //   expect(tempart.parser('<div>foo<div>bar</div></div>').template).toEqual({
-  //     type: 'dom',
-  //     id: 1,
-  //     constants: ['div'],
-  //     parameters: [{
-  //       exec: 'constants',
-  //       value: 0,
-  //     }],
-  //     children: [{
-  //       type: 'content',
-  //       id: 2,
-  //       constants: ['foo'],
-  //       parameters: [{
-  //         exec: 'constants',
-  //         value: 0,
-  //       }],
-  //     }, {
-  //       type: 'dom',
-  //       id: 3,
-  //       constants: ['div'],
-  //       parameters: [{
-  //         exec: 'constants',
-  //         value: 0,
-  //       }],
-  //       children: [{
-  //         type: 'content',
-  //         id: 4,
-  //         constants: ['bar'],
-  //         parameters: [{
-  //           exec: 'constants',
-  //           value: 0,
-  //         }],
-  //       }]
-  //     }]
-  //   });
-  // });
+  it('static test with tree', function () {
+    expect(parse('<div>foo<div>bar</div></div>')).toEqual({
+      type: 'dom',
+      id: 1,
+      constants: ['div'],
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }, {
+        type: 'dom',
+        id: 3,
+        constants: ['div'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+        children: [{
+          type: 'content',
+          id: 4,
+          constants: ['bar'],
+          parameters: [{
+            exec: 'constants',
+            value: 0,
+          }],
+        }]
+      }]
+    });
+  });
 
   // it('variable in domNode', function () {
   //   expect(tempart.parser('<div>{{variable}}</div>').template).toEqual({
