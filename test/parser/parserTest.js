@@ -86,24 +86,24 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('variable in domNode', function () {
-  //   expect(tempart.parser('<div>{{variable}}</div>').template).toEqual({
-  //     type: 'variable',
-  //     id: 1,
-  //     constants: ['div'],
-  //     variables: [['variable']],
-  //     parameters: [{
-  //       exec: 'variables',
-  //       value: 0,
-  //     }, {
-  //       exec: 'constants',
-  //       value: 0,
-  //     }]
-  //   });
-  // });
+  it('variable in domNode', function () {
+    expect(parse('<div>{{variable}}</div>').template).toEqual({
+      type: 'variable',
+      id: 1,
+      constants: ['div'],
+      variables: [['variable']],
+      parameters: [{
+        exec: 'variables',
+        value: 0,
+      }, {
+        exec: 'constants',
+        value: 0,
+      }]
+    });
+  });
 
   // it('variable and text domNode', function () {
-  //   expect(tempart.parser('<div>static{{variable}}</div>').template).toEqual({
+  //   expect(parse('<div>static{{variable}}</div>').template).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div'],
@@ -137,7 +137,7 @@ describe('Tests the functionality of the parser', function () {
   // });
 
   // it('static test for properties', function () {
-  //   expect(tempart.parser('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
+  //   expect(parse('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div', 'classValue', 'checked', 'idValue'],
@@ -169,7 +169,7 @@ describe('Tests the functionality of the parser', function () {
   // });
 
   // it('variable test for properties', function () {
-  //   expect(tempart.parser('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
+  //   expect(parse('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div'],
@@ -203,23 +203,23 @@ describe('Tests the functionality of the parser', function () {
 
   // it('throw error with missmatch', function () {
   //   expect(function () {
-  //     tempart.tempart.parser('<div>foo</span>');
+  //     parse('<div>foo</span>');
   //   }).toThrow(new SyntaxError('Missmatch of div and /span'));
 
   //   expect(function () {
-  //     tempart.tempart.parser('<div>foo<div>bar</span></span>');
+  //     parse('<div>foo<div>bar</span></span>');
   //   }).toThrow(new SyntaxError('Missmatch of div and /span'));
   // });
 
   // it('throw error with not ending node', function () {
   //   expect(function () {
-  //     tempart.tempart.parser('<div');
+  //     parse('<div');
   //   }).toThrow(new SyntaxError('Tag is not ending: div'));
   // });
 });
 
 function parse(templateString) {
-  var template = tempart.parser(templateString).template;
+  var template = tempart.parse(templateString).template;
   debugger;
   try {
     return JSON.parse(JSON.stringify(template));

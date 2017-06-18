@@ -1,7 +1,7 @@
 import parser from './core/parser';
 
 const tempart =  {
-  parser(templateString: string) {
+  parse(templateString: string) {
     return {
       template: parser(templateString),
       version: this.version,
