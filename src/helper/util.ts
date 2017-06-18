@@ -41,4 +41,14 @@ export default {
   isVariable(state: State): boolean {
     return false;
   },
+
+  pipe(...funcs: {(value: any): any}[]) {
+    return (value: any) => {
+      let result = value;
+      for (let i = 0; i < funcs.length; i += 1) {
+        result = funcs[i](result);
+      }
+      return result;
+    };
+  },
 };

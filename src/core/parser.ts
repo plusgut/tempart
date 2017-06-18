@@ -36,7 +36,5 @@ export default function parser(templateString: string): Block {
     }
   }
 
-  return state.addIds(
-    state.treeShake(state.root),
-  );
+  return state.compress(state.root);
 }

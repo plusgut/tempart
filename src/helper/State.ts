@@ -1,5 +1,6 @@
 import Block from '../types/Block';
 import Container from '../types/Container';
+import util from './util';
 
 class State {
   public allBlocks: Block[];
@@ -8,6 +9,7 @@ class State {
   public index: number;
   public root: Block;
   public openTag: boolean;
+  private compressPipe: (block: Block) => Block;
   private idCount: number;
 
   constructor(templateString: string) {
@@ -17,6 +19,12 @@ class State {
     this.templateString = templateString;
     this.root = new Container(this);
     this.openBlocks = [this.root];
+
+    this.compressPipe = util.pipe(
+      this.treeShake.bind(this),
+      this.addIds.bind(this),
+      this.deleteCircular.bind(this),
+    );
   }
 
   public closeOpenBlock() {
@@ -53,26 +61,35 @@ class State {
     return this;
   }
 
+  public compress(block: Block) {
+    let result = block;
+    result = this.compressPipe(block);
+
+    if (result.children) {
+      result.children = <Block[]>result.children.map(this.compress.bind(this));
+    }
+
+    return result;
+  }
+
   public addIds(block: Block): Block {
     this.incrementId();
     block.id = this.idCount;
-    if (block.children !== undefined) {
-      block.children = <Block[]>block.children.map(this.addIds.bind(this));
-    }
 
     return block;
   }
 
   public treeShake(block: Block): Block {
-    delete block.state;
     if (this.shouldDeleteContainer(block) === true) {
-      return this.treeShake(block.children[0]);
+      return block.children[0];
     } else {
-      for (let i = 0; block.children && i < block.children.length; i += 1) {
-        block.children[i] = this.treeShake(block.children[i]);
-      }
       return block;
     }
+  }
+
+  private deleteCircular (block: Block): Block {
+    delete block.state;
+    return block;
   }
 
   public getContainerElement() {
