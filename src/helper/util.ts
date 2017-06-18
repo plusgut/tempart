@@ -34,7 +34,8 @@ export default {
    */
   isText(state: State): boolean {
     // should check for < > and { }
-    return /[A-z]/.test(state.getCurrentChar());
+    return state.getCurrentChar() !== '<' && state.getCurrentChar() !== '>';
+    // && state.getNextChars(2) !== '{{';
   },
 
   isVariable(state: State): boolean {
