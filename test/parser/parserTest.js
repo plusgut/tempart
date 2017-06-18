@@ -26,26 +26,27 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('static text', function () {
-  //   expect(tempart.parser('foo').template).toEqual({
-  //     type: 'dom',
-  //     id: jasmine.any(Number),
-  //     constants: ['span'],
-  //     parameters: [{
-  //       exec: 'constants',
-  //       value: 0,
-  //     }],
-  //     children: [{
-  //       type: 'content',
-  //       id: jasmine.any(Number),
-  //       constants: ['foo'],
-  //       parameters: [{
-  //         exec: 'constants',
-  //         value: 0,
-  //       }],
-  //     }]
-  //   });
-  // });
+  it('static text', function () {
+    expect(parse('foo')).toEqual({
+      type: 'dom',
+      id: 1,
+      constants: ['span'],
+      containerElement: true,
+      parameters: [{
+        exec: 'constants',
+        value: 0,
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        constants: ['foo'],
+        parameters: [{
+          exec: 'constants',
+          value: 0,
+        }],
+      }]
+    });
+  });
 
   // it('static test with tree', function () {
   //   expect(tempart.parser('<div>foo<div>bar</div></div>').template).toEqual({

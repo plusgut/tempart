@@ -11,7 +11,7 @@ class Content extends Block {
 
     this.type = 'content';
     let content = '';
-    while (util.isText(state)) {
+    while (util.isText(state) && state.index < state.templateString.length) {
       content += state.getCurrentChar();
       state.incrementIndex();
     }

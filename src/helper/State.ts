@@ -65,7 +65,7 @@ class State {
 
   public treeShake(block: Block): Block {
     delete block.state;
-    if (block.containerElement === true && block.children.length === 1) {
+    if (this.shouldDeleteContainer(block) === true) {
       return this.treeShake(block.children[0]);
     } else {
       for (let i = 0; block.children && i < block.children.length; i += 1) {
@@ -76,7 +76,13 @@ class State {
   }
 
   public getContainerElement() {
-    return 'div';
+    return 'span';
+  }
+
+  private shouldDeleteContainer(block: Block) {
+    return (block.containerElement === true && block.children.length === 1) &&
+// When a block is consistent of an text element, the wrapping container should not be deleted
+      !(block === this.root && block.children[0].type === 'content');
   }
 }
 
