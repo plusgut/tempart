@@ -6,8 +6,6 @@ abstract class Block {
   public abstract closeTag(): void;
   public state: State;
   public id: number;
-  public constants: string[];
-  public variables: string[];
   public parameters: Parameter[];
   public children: Block[];
   public elseChildren: Block[];
@@ -32,30 +30,19 @@ abstract class Block {
   }
 
   public addConstant(value: string) {
-    this.ensureConstants().ensureParameters();
-    const length = this.constants.push(value);
-    this.parameters.push(new Parameter('constants', length - 1));
+    this.ensureParameters();
+    this.parameters.push(new Parameter('constant', [value]));
   }
 
-  public addVariable(value: string) {
-    this.ensureVariables().ensureParameters();
-
-    const length = this.variables.push(value);
-    this.parameters.push(new Parameter('variables', length - 1));
+  public addAttribute(value: string[]) {
+    this.ensureParameters();
+    this.parameters.push(new Parameter('attribute', value));
   }
 
-  private ensureConstants() {
-    if (this.constants === undefined) {
-      this.constants = [];
-    }
-    return this;
-  }
+  public addState(value: string[]) {
+    this.ensureParameters();
 
-  private ensureVariables() {
-    if (this.variables === undefined) {
-      this.variables = [];
-    }
-    return this;
+    this.parameters.push(new Parameter('states', value));
   }
 
   private ensureParameters() {

@@ -22,6 +22,7 @@ class State {
 
     this.compressPipe = util.pipe(
       this.treeShake.bind(this),
+      this.compressVariables.bind(this),
       this.addIds.bind(this),
       this.deleteCircular.bind(this),
     );
@@ -37,7 +38,8 @@ class State {
 
   public getCurrentBlock() {
     if (this.openBlocks.length === 0) {
-      throw new Error('You are trying to close something, which is not existent');
+      debugger;
+      throw new Error('You are trying to do something, on an not existing block');
     }
 
     return this.openBlocks[this.openBlocks.length - 1];
@@ -85,6 +87,20 @@ class State {
     } else {
       return block;
     }
+  }
+
+  public compressVariables(block: Block) {
+    // if (block.type === 'dom' &&
+    //     block.children.length === 1 &&
+    //     block.children[0].type === 'variable') {
+    //   const parameter = block.children[0].parameters.pop();
+    //   let variable;
+
+
+    //   delete block.children;
+    // }
+
+    return block;
   }
 
   private deleteCircular (block: Block): Block {

@@ -1,7 +1,7 @@
 class Parameter {
   public exec: string;
-  public value: any;
-  constructor(type: string, value: number) {
+  public value: string[];
+  constructor(type: string, value: string[]) {
     this.exec = type;
     this.value = value;
   }

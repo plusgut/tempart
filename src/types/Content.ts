@@ -23,6 +23,7 @@ class Content extends Block {
   }
 
   public addChild() {
+    // Please make an github issue and tell me how you got here
     throw new Error('Textcontent should not have children');
   }
 }

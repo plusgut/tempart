@@ -29,17 +29,29 @@ export default {
     return state.getCurrentChar() === '>';
   },
 
+  isAttribute(state: State): boolean {
+    return state.getNextChars(3) === '{{@';
+  },
+
+  isState(state: State): boolean {
+    return state.getNextChars(3) === '{{$';
+  },
+
+  isClosingMustache(state: State): boolean {
+    return state.getNextChars(2) === '}}';
+  },
+
   /**
    * checks for special chars
    */
   isText(state: State): boolean {
-    // should check for < > and { }
-    return state.getCurrentChar() !== '<' && state.getCurrentChar() !== '>';
-    // && state.getNextChars(2) !== '{{';
-  },
-
-  isVariable(state: State): boolean {
-    return false;
+    return this.isPartial(state)         === false &&
+           this.isNewDomTag(state)       === false &&
+           this.isNewDomCloseTag(state)  === false &&
+           this.isEndTag(state)          === false &&
+           this.isAttribute(state)       === false &&
+           this.isState(state)           === false &&
+           this.isClosingMustache(state) === false;
   },
 
   pipe(...funcs: {(value: any): any}[]) {

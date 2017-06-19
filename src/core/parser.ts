@@ -1,8 +1,9 @@
-import Block   from '../types/Block';
-import Dom     from '../types/Dom';
-import Content from '../types/Content';
-import State   from '../helper/State';
-import util    from '../helper/util';
+import Block    from '../types/Block';
+import Dom      from '../types/Dom';
+import Content  from '../types/Content';
+import Variable from '../types/Variable';
+import State    from '../helper/State';
+import util     from '../helper/util';
 
 export default function parser(templateString: string): Block {
   const state = new State(templateString);
@@ -18,6 +19,8 @@ export default function parser(templateString: string): Block {
       state.incrementIndex();
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
+    } else if (util.isAttribute(state) === true) {  
+      state.getCurrentBlock().addChild(new Variable(state, 'attribute'));
     } else if (util.isText(state) === true) {
       if (state.openTag === true) {
         let tagName = '';
@@ -31,8 +34,8 @@ export default function parser(templateString: string): Block {
         state.getCurrentBlock().addChild(new Content(state));
       }
     } else {
-      debugger;
-      throw new Error('What am I?');
+      // Please make an github issue and tell me how you got here
+      throw new Error('Couldn\'t dicide how to parse ');
     }
   }
 

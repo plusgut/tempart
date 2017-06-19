@@ -9,18 +9,16 @@ describe('Tests the functionality of the parser', function () {
     expect(parse('<div>foo</div>')).toEqual({
       type: 'dom',
       id: 1,
-      constants: ['div'],
       parameters: [{
-        exec: 'constants',
-        value: 0,
+        exec: 'constant',
+        value: ['div'],
       }],
       children: [{
         type: 'content',
         id: 2,
-        constants: ['foo'],
         parameters: [{
-          exec: 'constants',
-          value: 0,
+          exec: 'constant',
+          value: ['foo'],
         }],
       }]
     });
@@ -30,19 +28,17 @@ describe('Tests the functionality of the parser', function () {
     expect(parse('foo')).toEqual({
       type: 'dom',
       id: 1,
-      constants: ['span'],
       containerElement: true,
       parameters: [{
-        exec: 'constants',
-        value: 0,
+        exec: 'constant',
+        value: ['span'],
       }],
       children: [{
         type: 'content',
         id: 2,
-        constants: ['foo'],
         parameters: [{
-          exec: 'constants',
-          value: 0,
+          exec: 'constant',
+          value: ['foo'],
         }],
       }]
     });
@@ -52,34 +48,30 @@ describe('Tests the functionality of the parser', function () {
     expect(parse('<div>foo<div>bar</div></div>')).toEqual({
       type: 'dom',
       id: 1,
-      constants: ['div'],
       parameters: [{
-        exec: 'constants',
-        value: 0,
+        exec: 'constant',
+        value: ['div'],
       }],
       children: [{
         type: 'content',
         id: 2,
-        constants: ['foo'],
         parameters: [{
-          exec: 'constants',
-          value: 0,
+          exec: 'constant',
+          value: ['foo'],
         }],
       }, {
         type: 'dom',
         id: 3,
-        constants: ['div'],
         parameters: [{
-          exec: 'constants',
-          value: 0,
+          exec: 'constant',
+          value: ['div'],
         }],
         children: [{
           type: 'content',
           id: 4,
-          constants: ['bar'],
           parameters: [{
-            exec: 'constants',
-            value: 0,
+            exec: 'constant',
+            value: ['bar'],
           }],
         }]
       }]
@@ -87,28 +79,71 @@ describe('Tests the functionality of the parser', function () {
   });
 
   // it('variable in domNode', function () {
-  //   expect(parse('<div>{{variable}}</div>').template).toEqual({
+  //   expect(parse('<div>{{@variable}}</div>')).toEqual({
+  //     type: 'variable',
+  //     id: 1,
+  //     parameters: [{
+  //       exec: 'attribute',
+  //       value: ['variable'],
+  //     }, {
+  //       exec: 'constant',
+  //       value: ['div'],
+  //     }]
+  //   });
+  // });
+
+  it('variable and text domNode', function () {
+    expect(parse('<div>static{{@variable}}</div>')).toEqual({
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        parameters: [{
+          exec: 'constant',
+          value: ['static'],
+        }],
+      }, {
+        type: 'variable',
+        id: 3,
+        parameters: [{
+          exec: 'attribute',
+          value: ['variable'],
+        }, {
+          exec: 'constant',
+          value: ['span'],
+        }]
+      }]
+    });
+  });
+
+  // it('variable in domNode', function () {
+  //   expect(parse('<div>{{@attribute}}</div>')).toEqual({
   //     type: 'variable',
   //     id: 1,
   //     constants: ['div'],
-  //     variables: [['variable']],
+  //     attributes: [['attribute']],
   //     parameters: [{
-  //       exec: 'variables',
+  //       exec: 'attribute',
   //       value: 0,
   //     }, {
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 0,
   //     }]
   //   });
   // });
 
   // it('variable and text domNode', function () {
-  //   expect(parse('<div>static{{variable}}</div>').template).toEqual({
+  //   expect(parse('<div>static{{$variable}}</div>')).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div'],
   //     parameters: [{
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 0,
   //     }],
   //     children: [{
@@ -116,20 +151,19 @@ describe('Tests the functionality of the parser', function () {
   //       id: 2,
   //       constants: ['static'],
   //       parameters: [{
-  //         exec: 'constants',
+  //         exec: 'constant',
   //         value: 0,
   //       }],
   //     }, {
   //       type: 'variable',
   //       id: 3,
-
   //       constants: ['span'],
-  //       variables: [['variable']],
+  //       states: [['variable']],
   //       parameters: [{
-  //         exec: 'variables',
+  //         exec: 'states',
   //         value: 0,
   //       }, {
-  //         exec: 'constants',
+  //         exec: 'constant',
   //         value: 0,
   //       }]
   //     }]
@@ -137,23 +171,23 @@ describe('Tests the functionality of the parser', function () {
   // });
 
   // it('static test for properties', function () {
-  //   expect(parse('<div class="classValue"checked id="idValue">foo</div>').template).toEqual({
+  //   expect(parse('<div class="classValue"checked id="idValue">foo</div>')).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div', 'classValue', 'checked', 'idValue'],
   //     parameters: [{
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 0,
   //     }, {
   //       name: 'class',
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 1,
   //     }, {
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 2,
   //     }, {
   //       name: 'id',
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 3,
   //     }],
   //     children: [{
@@ -161,7 +195,7 @@ describe('Tests the functionality of the parser', function () {
   //       id: 2,
   //       constants: ['foo'],
   //       parameters: [{
-  //         exec: 'constants',
+  //         exec: 'constant',
   //         value: 0,
   //       }],
   //     }]
@@ -169,13 +203,13 @@ describe('Tests the functionality of the parser', function () {
   // });
 
   // it('variable test for properties', function () {
-  //   expect(parse('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>').template).toEqual({
+  //   expect(parse('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>')).toEqual({
   //     type: 'dom',
   //     id: 1,
   //     constants: ['div'],
   //     variables: [['classVariable'], ['variable'], ['idVariable']],
   //     parameters: [{
-  //       exec: 'constants',
+  //       exec: 'constant',
   //       value: 0,
   //     }, {
   //       name: 'class',
@@ -194,7 +228,7 @@ describe('Tests the functionality of the parser', function () {
   //       id: 2,
   //       constants: ['foo'],
   //       parameters: [{
-  //         exec: 'constants',
+  //         exec: 'constant',
   //         value: 0,
   //       }],
   //     }]
