@@ -42,7 +42,7 @@ abstract class Block {
   public addState(value: string[]) {
     this.ensureParameters();
 
-    this.parameters.push(new Parameter('states', value));
+    this.parameters.push(new Parameter('state', value));
   }
 
   private ensureParameters() {

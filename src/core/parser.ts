@@ -19,7 +19,9 @@ export default function parser(templateString: string): Block {
       state.incrementIndex();
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
-    } else if (util.isAttribute(state) === true) {  
+    } else if (util.isState(state) === true) {
+      state.getCurrentBlock().addChild(new Variable(state, 'state'));
+    } else if (util.isAttribute(state) === true) {
       state.getCurrentBlock().addChild(new Variable(state, 'attribute'));
     } else if (util.isText(state) === true) {
       if (state.openTag === true) {
@@ -35,7 +37,7 @@ export default function parser(templateString: string): Block {
       }
     } else {
       // Please make an github issue and tell me how you got here
-      throw new Error('Couldn\'t dicide how to parse ');
+      throw new Error('Couldn\'t decide how to parse ');
     }
   }
 
