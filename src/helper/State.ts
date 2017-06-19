@@ -90,15 +90,15 @@ class State {
   }
 
   public compressVariables(block: Block) {
-    // if (block.type === 'dom' &&
-    //     block.children.length === 1 &&
-    //     block.children[0].type === 'variable') {
-    //   const parameter = block.children[0].parameters.pop();
-    //   let variable;
+    if (block.type === 'dom' &&
+        block.children.length === 1 &&
+        block.children[0].type === 'variable') {
+      const parameter = block.children[0].parameters.shift();
+      block.parameters.unshift(parameter);
+      block.type = 'variable';
 
-
-    //   delete block.children;
-    // }
+      delete block.children;
+    }
 
     return block;
   }

@@ -78,19 +78,19 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('variable in domNode', function () {
-  //   expect(parse('<div>{{@variable}}</div>')).toEqual({
-  //     type: 'variable',
-  //     id: 1,
-  //     parameters: [{
-  //       exec: 'attribute',
-  //       value: ['variable'],
-  //     }, {
-  //       exec: 'constant',
-  //       value: ['div'],
-  //     }]
-  //   });
-  // });
+  it('variable in domNode', function () {
+    expect(parse('<div>{{@variable}}</div>')).toEqual({
+      type: 'variable',
+      id: 1,
+      parameters: [{
+        exec: 'attribute',
+        value: ['variable'],
+      }, {
+        exec: 'constant',
+        value: ['div'],
+      }]
+    });
+  });
 
   it('variable and text domNode', function () {
     expect(parse('<div>static{{@variable}}</div>')).toEqual({
