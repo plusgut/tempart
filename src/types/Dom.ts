@@ -54,12 +54,22 @@ class Dom extends Block {
   }
 
   private addValueToParameter(current: string, name: string) {
-    const parameter = new Parameter('constant', [current]);
+    let parameter;
+    if (this.isVariable(current)) {
+      parameter = new Parameter('variable', current.slice(2, current.length - 2).split('.'));
+    } else {
+      parameter = new Parameter('constant', [current]);
+    }
+
     if (name !== '') {
       parameter.name = name;
     }
 
     this.parameters.push(parameter);
+  }
+
+  private isVariable(value: string) { // @TODO this code shouldnt be here, but probably in util
+    return value.slice(0, 2) === '{{' && value.slice(value.length - 2, value.length) === '}}';
   }
 
   public closeTag() {

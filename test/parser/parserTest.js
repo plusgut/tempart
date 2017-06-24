@@ -222,38 +222,35 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('variable test for properties', function () {
-  //   expect(parse('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>')).toEqual({
-  //     type: 'dom',
-  //     id: 1,
-  //     constants: ['div'],
-  //     variables: [['classVariable'], ['variable'], ['idVariable']],
-  //     parameters: [{
-  //       exec: 'constant',
-  //       value: 0,
-  //     }, {
-  //       name: 'class',
-  //       exec: 'variables',
-  //       value: 0,
-  //     }, {
-  //       exec: 'variables',
-  //       value: 1,
-  //     }, {
-  //       name: 'id',
-  //       exec: 'variables',
-  //       value: 2,
-  //     }],
-  //     children: [{
-  //       type: 'content',
-  //       id: 2,
-  //       constants: ['foo'],
-  //       parameters: [{
-  //         exec: 'constant',
-  //         value: 0,
-  //       }],
-  //     }]
-  //   });
-  // });
+  it('variable test for properties', function () {
+    expect(parse('<div class="{{classVariable}}"{{variable}} id="{{id.variable}}">foo</div>')).toEqual({
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }, {
+        name: 'class',
+        exec: 'variable',
+        value: ['classVariable'],
+      }, {
+        exec: 'variable',
+        value: ['variable'],
+      }, {
+        name: 'id',
+        exec: 'variable',
+        value: ['id', 'variable'],
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        parameters: [{
+          exec: 'constant',
+          value: ['foo'],
+        }],
+      }]
+    });
+  });
 
   // it('throw error with missmatch', function () {
   //   expect(function () {
