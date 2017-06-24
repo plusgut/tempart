@@ -47,7 +47,7 @@ export default {
 
   isSpace(state: State) {
     return state.getCurrentChar() === ' ';
-  }
+  },
 
   /**
    * checks for special chars
