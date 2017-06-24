@@ -8,14 +8,12 @@ class State {
   public templateString: string;
   public index: number;
   public root: Block;
-  public openTag: boolean;
   private compressPipe: (block: Block) => Block;
   private idCount: number;
 
   constructor(templateString: string) {
     this.idCount = 0;
     this.index = 0;
-    this.openTag = false;
     this.templateString = templateString;
     this.root = new Container(this);
     this.openBlocks = [this.root];
@@ -38,7 +36,6 @@ class State {
 
   public getCurrentBlock() {
     if (this.openBlocks.length === 0) {
-      debugger;
       throw new Error('You are trying to do something, on an not existing block');
     }
 

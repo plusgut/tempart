@@ -192,37 +192,35 @@ describe('Tests the functionality of the parser', function () {
     });
   });
 
-  // it('static test for properties', function () {
-  //   expect(parse('<div class="classValue"checked id="idValue">foo</div>')).toEqual({
-  //     type: 'dom',
-  //     id: 1,
-  //     constants: ['div', 'classValue', 'checked', 'idValue'],
-  //     parameters: [{
-  //       exec: 'constant',
-  //       value: 0,
-  //     }, {
-  //       name: 'class',
-  //       exec: 'constant',
-  //       value: 1,
-  //     }, {
-  //       exec: 'constant',
-  //       value: 2,
-  //     }, {
-  //       name: 'id',
-  //       exec: 'constant',
-  //       value: 3,
-  //     }],
-  //     children: [{
-  //       type: 'content',
-  //       id: 2,
-  //       constants: ['foo'],
-  //       parameters: [{
-  //         exec: 'constant',
-  //         value: 0,
-  //       }],
-  //     }]
-  //   });
-  // });
+  it('static test for properties', function () {
+    expect(parse('<div class="classValue"checked id="idValue">foo</div>')).toEqual({
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }, {
+        name: 'class',
+        exec: 'constant',
+        value: ['classValue'],
+      }, {
+        exec: 'constant',
+        value: ['checked'],
+      }, {
+        name: 'id',
+        exec: 'constant',
+        value: ['idValue']
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        parameters: [{
+          exec: 'constant',
+          value: ['foo'],
+        }],
+      }]
+    });
+  });
 
   // it('variable test for properties', function () {
   //   expect(parse('<div class="{{classVariable}}"{{variable}} id="{{idVariable}}">foo</div>')).toEqual({

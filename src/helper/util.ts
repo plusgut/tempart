@@ -41,6 +41,14 @@ export default {
     return state.getNextChars(2) === '}}';
   },
 
+  isQuote(state: State) {
+    return ['"', '\'', '`'].indexOf(state.getCurrentChar()) !== -1;
+  },
+
+  isSpace(state: State) {
+    return state.getCurrentChar() === ' ';
+  }
+
   /**
    * checks for special chars
    */
@@ -54,6 +62,9 @@ export default {
            this.isClosingMustache(state) === false;
   },
 
+  /**
+   * queues functions to call them and return the new data
+   */
   pipe(...funcs: {(value: any): any}[]) {
     return (value: any) => {
       let result = value;

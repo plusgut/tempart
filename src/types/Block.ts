@@ -16,14 +16,14 @@ abstract class Block {
   }
 
   public addChild(block: Block) {
-    if (!this.children) {
+    if (this.children === undefined) {
       this.children = [];
     }
     this.children.push(block);
   }
 
   public addElseChild(block: Block) {
-    if (!this.elseChildren) {
+    if (this.elseChildren === undefined) {
       this.elseChildren = [];
     }
     this.elseChildren.push(block);
@@ -45,7 +45,7 @@ abstract class Block {
     this.parameters.push(new Parameter('state', value));
   }
 
-  private ensureParameters() {
+  public ensureParameters() {
     if (this.parameters === undefined) {
       this.parameters = [];
     }

@@ -10,13 +10,9 @@ export default function parser(templateString: string): Block {
 
   while (state.index < state.templateString.length) {
     if (util.isPartial(state) === true) {
-
+      throw new Error('Partials are not implemented yet');
     } else if (util.isNewDomTag(state) === true) {
       state.getCurrentBlock().addChild(new Dom(state));
-      state.incrementIndex();
-    } else if (util.isEndTag(state) === true) {
-      state.openTag = false;
-      state.incrementIndex();
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
     } else if (util.isState(state) === true) {
@@ -24,17 +20,7 @@ export default function parser(templateString: string): Block {
     } else if (util.isAttribute(state) === true) {
       state.getCurrentBlock().addChild(new Variable(state, 'attribute'));
     } else if (util.isText(state) === true) {
-      if (state.openTag === true) {
-        let tagName = '';
-        while (util.isText(state) === true) {
-          tagName += state.getCurrentChar();
-          state.incrementIndex();
-        }
-
-        state.getCurrentBlock().addConstant(tagName);
-      } else {
-        state.getCurrentBlock().addChild(new Content(state));
-      }
+      state.getCurrentBlock().addChild(new Content(state));
     } else {
       // Please make an github issue and tell me how you got here
       throw new Error('Couldn\'t decide how to parse ');
