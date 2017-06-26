@@ -223,7 +223,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('variable test for properties', function () {
-    expect(parse('<div class="{{classVariable}}"{{variable}} id="{{id.variable}}">foo</div>')).toEqual({
+    expect(parse('<div class={{$class.variable}} id={{@id.variable}}>foo</div>')).toEqual({
       type: 'dom',
       id: 1,
       parameters: [{
@@ -231,14 +231,14 @@ describe('Tests the functionality of the parser', function () {
         value: ['div'],
       }, {
         name: 'class',
-        exec: 'variable',
-        value: ['classVariable'],
+        exec: 'state',
+        value: ['class.variable'],
       }, {
-        exec: 'variable',
-        value: ['variable'],
+        exec: 'attribute',
+        value: ['vari', 'able'],
       }, {
         name: 'id',
-        exec: 'variable',
+        exec: 'attribute',
         value: ['id', 'variable'],
       }],
       children: [{

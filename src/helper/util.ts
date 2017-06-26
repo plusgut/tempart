@@ -1,4 +1,6 @@
 import State from './State';
+import Parameter from './Parameter';
+import constants from '../helper/constants';
 
 export default {
   isPartial(state: State): boolean {
@@ -60,6 +62,38 @@ export default {
            this.isAttribute(state)       === false &&
            this.isState(state)           === false &&
            this.isClosingMustache(state) === false;
+  },
+
+  getParameter(state: State): Parameter {
+    let type = '';
+    if (this.isState(state)) {
+      type = 'state';
+    } else if (this.isAttribute(state)) {
+      type = 'attribute';
+    } else {
+      throw 'Unknown Parameter type';
+    }
+
+    state.incrementIndex().incrementIndex().incrementIndex();
+
+    let variableName = '';
+
+    while (this.isClosingMustache(state) === false) {
+      if (state.index >= state.templateString.length) {
+        throw new Error('No end of variable found');
+      }
+
+      variableName += state.getCurrentChar();
+      state.incrementIndex();
+    }
+
+
+    // Skipping }}
+    state.incrementIndex().incrementIndex();
+
+    const parameter = new Parameter(type, variableName.split(constants.VARIABLE_DELIMITER));
+
+    return parameter;
   },
 
   /**

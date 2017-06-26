@@ -15,10 +15,8 @@ export default function parser(templateString: string): Block {
       state.getCurrentBlock().addChild(new Dom(state));
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
-    } else if (util.isState(state) === true) {
-      state.getCurrentBlock().addChild(new Variable(state, 'state'));
-    } else if (util.isAttribute(state) === true) {
-      state.getCurrentBlock().addChild(new Variable(state, 'attribute'));
+    } else if (util.isState(state) === true || util.isAttribute(state) === true) {
+      state.getCurrentBlock().addChild(new Variable(state));
     } else if (util.isText(state) === true) {
       state.getCurrentBlock().addChild(new Content(state));
     } else {

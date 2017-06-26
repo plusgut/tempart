@@ -75,7 +75,7 @@ class Dom extends Block {
   public closeTag() {
     let tagName = '';
     this.state.incrementIndex().incrementIndex(); // It needs to skip </
-    while (this.state.getCurrentChar() !== '>') {
+    while (util.isEndTag(this.state) === false) {
       if (this.state.index >= this.state.templateString.length) {
         throw new Error('No end of tag found');
       }
