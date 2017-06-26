@@ -28,7 +28,6 @@ class Dom extends Block {
   
         if (util.isState(state) === true || util.isAttribute(state) === true) {
           const parameter = util.getParameter(state);
-          debugger;
           parameter.name = name;
           this.parameters.push(parameter);
           name = '';
@@ -54,7 +53,6 @@ class Dom extends Block {
 
     state.incrementIndex(); // Skipping >
 
-    debugger;
     state.openBlocks.push(this);
     this.type = 'dom';
   }
