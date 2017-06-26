@@ -55,6 +55,11 @@ class State {
     return this;
   }
 
+  public decrementIndex() {
+    this.index -= 1;
+    return this;
+  }
+
   private incrementId() {
     this.idCount += 1;
     return this;
@@ -88,6 +93,7 @@ class State {
 
   public compressVariables(block: Block) {
     if (block.type === 'dom' &&
+        block.children &&
         block.children.length === 1 &&
         block.children[0].type === 'variable') {
       const parameter = block.children[0].parameters.shift();

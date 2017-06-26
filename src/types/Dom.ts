@@ -21,19 +21,24 @@ class Dom extends Block {
       } else if (util.isSpace(state) && isOpenQuote === false) {
         this.addValueToParameter(current, name);
         current = '';
+      } else if (this.state.getCurrentChar() === '=') {
+        name = current;
+        current = '';
+        this.state.incrementIndex();
+  
+        if (util.isState(state) === true || util.isAttribute(state) === true) {
+          const parameter = util.getParameter(state);
+          debugger;
+          parameter.name = name;
+          this.parameters.push(parameter);
+          name = '';
+        }
+        this.state.decrementIndex();
       } else if (util.isQuote(state)) {
         if (isOpenQuote) {
           this.addValueToParameter(current, name);
-          current = '';
           name = '';
-        } else {
-          if (current[current.length - 1] === '=') {
-            name = current.slice(0, current.length - 1);
-            current = '';
-          } else {
-            throw new Error('Your attribute in the dom has no =');
-          }
-
+          current = '';
         }
         isOpenQuote = !isOpenQuote;
       } else {
@@ -49,27 +54,19 @@ class Dom extends Block {
 
     state.incrementIndex(); // Skipping >
 
+    debugger;
     state.openBlocks.push(this);
     this.type = 'dom';
   }
 
   private addValueToParameter(current: string, name: string) {
-    let parameter;
-    if (this.isVariable(current)) {
-      parameter = new Parameter('variable', current.slice(2, current.length - 2).split('.'));
-    } else {
-      parameter = new Parameter('constant', [current]);
+    if (current) {
+      const parameter = new Parameter('constant', [current]);
+      if (name) {
+        parameter.name = name;
+      }
+      this.parameters.push(parameter);
     }
-
-    if (name !== '') {
-      parameter.name = name;
-    }
-
-    this.parameters.push(parameter);
-  }
-
-  private isVariable(value: string) { // @TODO this code shouldnt be here, but probably in util
-    return value.slice(0, 2) === '{{' && value.slice(value.length - 2, value.length) === '}}';
   }
 
   public closeTag() {

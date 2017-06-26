@@ -1,4 +1,4 @@
-/* global describe, it, expect, tempart, jasmine */
+/* global describe, it, expect, tempart */
 
 // jshint varstmt: false
 // jscs:disable requireTrailingComma
@@ -232,10 +232,7 @@ describe('Tests the functionality of the parser', function () {
       }, {
         name: 'class',
         exec: 'state',
-        value: ['class.variable'],
-      }, {
-        exec: 'attribute',
-        value: ['vari', 'able'],
+        value: ['class', 'variable'],
       }, {
         name: 'id',
         exec: 'attribute',
