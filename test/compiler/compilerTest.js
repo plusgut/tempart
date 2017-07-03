@@ -12,7 +12,7 @@ function check(template, result, data) {
 
 describe('Tests the functionality of the compiler', function () {
   it('static test', function () {
-    check('<div>foo</div>', '<div data-snew-id="prefix-1">foo</div>', {});
+    check('<div>foo</div>', '<div>foo</div>', {});
   });
 
 //   it('static text', function () {

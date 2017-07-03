@@ -1,4 +1,4 @@
-class Element{
+class Element {
   tagName: string;
   className: string;
   id: string;
