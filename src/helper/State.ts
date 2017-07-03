@@ -1,14 +1,14 @@
-import Block from '../types/Block';
-import Container from '../types/Container';
-import util from './util';
+import ParserBlock from '../parserTypes/ParserBlock';
+import Container   from '../parserTypes/Container';
+import util        from './util';
 
 class State {
-  public allBlocks: Block[];
-  public openBlocks: Block[];
+  public allBlocks: ParserBlock[];
+  public openBlocks: ParserBlock[];
   public templateString: string;
   public index: number;
-  public root: Block;
-  private compressPipe: (block: Block) => Block;
+  public root: ParserBlock;
+  private compressPipe: (block: ParserBlock) => ParserBlock;
   private idCount: number;
 
   constructor(templateString: string) {
@@ -65,25 +65,25 @@ class State {
     return this;
   }
 
-  public compress(block: Block) {
+  public compress(block: ParserBlock) {
     let result = block;
     result = this.compressPipe(block);
 
     if (result.children) {
-      result.children = <Block[]>result.children.map(this.compress.bind(this));
+      result.children = <ParserBlock[]>result.children.map(this.compress.bind(this));
     }
 
     return result;
   }
 
-  public addIds(block: Block): Block {
+  public addIds(block: ParserBlock): ParserBlock {
     this.incrementId();
     block.id = this.idCount;
 
     return block;
   }
 
-  public treeShake(block: Block): Block {
+  public treeShake(block: ParserBlock): ParserBlock {
     if (this.shouldDeleteContainer(block) === true) {
       return block.children[0];
     } else {
@@ -91,7 +91,7 @@ class State {
     }
   }
 
-  public compressVariables(block: Block) {
+  public compressVariables(block: ParserBlock) {
     if (block.type === 'dom' &&
         block.children &&
         block.children.length === 1 &&
@@ -106,7 +106,7 @@ class State {
     return block;
   }
 
-  private deleteCircular (block: Block): Block {
+  private deleteCircular (block: ParserBlock): ParserBlock {
     delete block.state;
     return block;
   }
@@ -115,7 +115,7 @@ class State {
     return 'span';
   }
 
-  private shouldDeleteContainer(block: Block) {
+  private shouldDeleteContainer(block: ParserBlock) {
     return (block.containerElement === true && block.children.length === 1) &&
 // When a block is consistent of an text element, the wrapping container should not be deleted
       !(block === this.root && block.children[0].type === 'content');

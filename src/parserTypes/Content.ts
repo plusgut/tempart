@@ -1,9 +1,9 @@
 import State from '../helper/State';
 import util  from '../helper/util';
-import Block from './Block';
+import ParserBlock from './ParserBlock';
 
 
-class Content extends Block {
+class Content extends ParserBlock {
   type: string;
 
   constructor(state: State) {

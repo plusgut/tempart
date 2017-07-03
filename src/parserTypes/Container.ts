@@ -1,7 +1,7 @@
 import State from '../helper/State';
-import Block from './Block';
+import ParserBlock from './ParserBlock';
 
-class Container extends Block {
+class Container extends ParserBlock {
   type: string;
 
   constructor(state: State) {

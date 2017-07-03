@@ -1,9 +1,9 @@
-import Block     from './Block';
+import ParserBlock     from './ParserBlock';
 import State     from '../helper/State';
 import util      from '../helper/util';
 import Parameter from '../helper/Parameter';
 
-class Dom extends Block {
+class Dom extends ParserBlock {
   public type: string;
 
   constructor(state: State) {

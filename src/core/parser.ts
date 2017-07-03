@@ -1,11 +1,11 @@
-import Block    from '../types/Block';
-import Dom      from '../types/Dom';
-import Content  from '../types/Content';
-import Variable from '../types/Variable';
-import State    from '../helper/State';
-import util     from '../helper/util';
+import ParserBlock from '../parserTypes/ParserBlock';
+import Dom         from '../parserTypes/Dom';
+import Content     from '../parserTypes/Content';
+import Variable    from '../parserTypes/Variable';
+import State       from '../helper/State';
+import util        from '../helper/util';
 
-export default function parser(templateString: string): Block {
+export default function parser(templateString: string): ParserBlock {
   const state = new State(templateString);
 
   while (state.index < state.templateString.length) {

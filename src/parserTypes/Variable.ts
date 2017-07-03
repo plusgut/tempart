@@ -1,9 +1,9 @@
-import Block     from './Block';
-import State     from '../helper/State';
-import util      from '../helper/util';
-import constants from '../helper/constants';
+import ParserBlock from './ParserBlock';
+import State       from '../helper/State';
+import util        from '../helper/util';
+import constants   from '../helper/constants';
 
-class Variable extends Block {
+class Variable extends ParserBlock {
   public type: string;
 
   constructor(state: State) {
