@@ -20,7 +20,6 @@ class State {
 
     this.compressPipe = util.pipe(
       this.treeShake.bind(this),
-      this.compressVariables.bind(this),
       this.addIds.bind(this),
       this.deleteCircular.bind(this),
     );
@@ -70,7 +69,7 @@ class State {
     result = this.compressPipe(block);
 
     if (result.children) {
-      result.children = <ParserBlock[]>result.children.map(this.compress.bind(this));
+      result.children = result.children.map(this.compress.bind(this));
     }
 
     return result;
@@ -85,29 +84,15 @@ class State {
 
   public treeShake(block: ParserBlock): ParserBlock {
     if (this.shouldDeleteContainer(block) === true) {
-      return block.children[0];
+      return this.treeShake(block.children[0]);
     } else {
       return block;
     }
   }
 
-  public compressVariables(block: ParserBlock) {
-    if (block.type === 'dom' &&
-        block.children &&
-        block.children.length === 1 &&
-        block.children[0].type === 'variable') {
-      const parameter = block.children[0].parameters.shift();
-      block.parameters.unshift(parameter);
-      block.type = 'variable';
-
-      delete block.children;
-    }
-
-    return block;
-  }
-
   private deleteCircular (block: ParserBlock): ParserBlock {
     delete block.state;
+    delete block.parent;
     return block;
   }
 
@@ -116,9 +101,9 @@ class State {
   }
 
   private shouldDeleteContainer(block: ParserBlock) {
-    return (block.containerElement === true && block.children.length === 1) &&
-// When a block is consistent of an text element, the wrapping container should not be deleted
-      !(block === this.root && block.children[0].type === 'content');
+    return block.parent !== this.root &&
+           block.containerElement === true &&
+           block.parent.children.length === 1;
   }
 }
 

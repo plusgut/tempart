@@ -22,7 +22,7 @@ api 0.4
 ```js
 // This is the generated JSON which got generated, by the upper mustache template
 // This JSON will get used by the compiler for generating html dynamicly
-{
+[{
 	// calls tempartCompiler.types.if
 	type: 'if',
 
@@ -90,5 +90,5 @@ api 0.4
 			]
 		}],
 	}]
-}
+}]
 ```

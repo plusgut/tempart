@@ -3,7 +3,7 @@ import factory from './core/factory';
 import ParserBlock from './parserTypes/ParserBlock';
 
 interface template {
-  template: ParserBlock;
+  template: ParserBlock[];
   version: number;
 }
 

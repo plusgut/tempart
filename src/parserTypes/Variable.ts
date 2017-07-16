@@ -1,7 +1,6 @@
 import ParserBlock from './ParserBlock';
 import State       from '../helper/State';
 import util        from '../helper/util';
-import constants   from '../helper/constants';
 
 class Variable extends ParserBlock {
   public type: string;
@@ -13,8 +12,6 @@ class Variable extends ParserBlock {
 
     this.ensureParameters();
     this.parameters.push(util.getParameter(state));
-    
-    this.addConstant(this.state.getContainerElement());
   }
 
   public closeTag() {

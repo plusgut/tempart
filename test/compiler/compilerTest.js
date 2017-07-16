@@ -19,6 +19,10 @@ describe('Tests the functionality of the compiler', function () {
     check('foo', '<span>foo</span>', {});
   });
 
+  // it('variable test with text', function () {
+  //   check('<div>{{$text}}</div>', '<div>foo</div>', { text: 'foo' });
+  // });
+
 //   it('static test with attributes', function () {
 //     check('<div id="bar">foo</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', {});
 //   });

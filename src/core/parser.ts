@@ -1,11 +1,12 @@
 import ParserBlock from '../parserTypes/ParserBlock';
 import Dom         from '../parserTypes/Dom';
 import Content     from '../parserTypes/Content';
+import Container   from '../parserTypes/Container';
 import Variable    from '../parserTypes/Variable';
 import State       from '../helper/State';
 import util        from '../helper/util';
 
-export default function parser(templateString: string): ParserBlock {
+export default function parser(templateString: string): ParserBlock[] {
   const state = new State(templateString);
 
   while (state.index < state.templateString.length) {
@@ -16,14 +17,24 @@ export default function parser(templateString: string): ParserBlock {
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
     } else if (util.isState(state) === true || util.isAttribute(state) === true) {
-      state.getCurrentBlock().addChild(new Variable(state));
+      const container = new Container(state);
+      container.addChild(new Variable(state));
+      state.getCurrentBlock().addChild(container);
     } else if (util.isText(state) === true) {
-      state.getCurrentBlock().addChild(new Content(state));
+      const currentBlock = state.getCurrentBlock();
+      if (state.root === currentBlock) {
+        const container = new Container(state);
+        container.addChild(new Content(state));
+        currentBlock.addChild(container);
+      } else {
+        currentBlock.addChild(new Content(state));
+      }
+      
     } else {
       // Please make an github issue and tell me how you got here
       throw new Error('Couldn\'t decide how to parse ');
     }
   }
 
-  return state.compress(state.root);
+  return state.root.children.map(state.compress.bind(state));
 }

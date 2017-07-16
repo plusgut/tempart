@@ -8,11 +8,16 @@ abstract class Block {
   public id: number;
   public parameters: Parameter[];
   public children: Block[];
+  public parent: Block;
   public elseChildren: Block[];
   public containerElement: boolean;
 
   constructor(state: State) {
     this.state = state;
+     // Needed because root elements have no parents
+    if (state.openBlocks && state.openBlocks.length) {
+      this.parent = state.getCurrentBlock();
+    }
   }
 
   public addChild(block: Block) {

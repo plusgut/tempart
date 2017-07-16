@@ -6,7 +6,7 @@
 
 describe('Tests the functionality of the parser', function () {
   it('static test', function () {
-    expect(parse('<div>foo</div>')).toEqual({
+    expect(parse('<div>foo</div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -21,11 +21,11 @@ describe('Tests the functionality of the parser', function () {
           value: ['foo'],
         }],
       }]
-    });
+    }]);
   });
 
   it('static text', function () {
-    expect(parse('foo')).toEqual({
+    expect(parse('foo')).toEqual([{
       type: 'dom',
       id: 1,
       containerElement: true,
@@ -41,11 +41,11 @@ describe('Tests the functionality of the parser', function () {
           value: ['foo'],
         }],
       }]
-    });
+    }]);
   });
 
   it('static test with tree', function () {
-    expect(parse('<div>foo<div>bar</div></div>')).toEqual({
+    expect(parse('<div>foo<div>bar</div></div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -75,39 +75,11 @@ describe('Tests the functionality of the parser', function () {
           }],
         }]
       }]
-    });
+    }]);
   });
 
   it('variable in domNode', function () {
-    expect(parse('<div>{{@variable}}</div>')).toEqual({
-      type: 'variable',
-      id: 1,
-      parameters: [{
-        exec: 'attribute',
-        value: ['variable'],
-      }, {
-        exec: 'constant',
-        value: ['div'],
-      }]
-    });
-  });
-
-  it('variable in domNode', function () {
-    expect(parse('<div>{{@vari.able}}</div>')).toEqual({
-      type: 'variable',
-      id: 1,
-      parameters: [{
-        exec: 'attribute',
-        value: ['vari', 'able'],
-      }, {
-        exec: 'constant',
-        value: ['div'],
-      }]
-    });
-  });
-
-  it('variable and text domNode', function () {
-    expect(parse('<div>static{{@variable}}</div>')).toEqual({
+    expect(parse('<div>{{@variable}}</div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -115,56 +87,37 @@ describe('Tests the functionality of the parser', function () {
         value: ['div'],
       }],
       children: [{
-        type: 'content',
-        id: 2,
-        parameters: [{
-          exec: 'constant',
-          value: ['static'],
-        }],
-      }, {
         type: 'variable',
-        id: 3,
+        id: 2,
         parameters: [{
           exec: 'attribute',
           value: ['variable'],
-        }, {
-          exec: 'constant',
-          value: ['span'],
         }]
       }]
-    });
+    }]);
   });
 
-  it('state in domNode', function () {
-    expect(parse('<div>{{$variable}}</div>')).toEqual({
-      type: 'variable',
+  it('nested variable in domNode', function () {
+    expect(parse('<div>{{@vari.able}}</div>')).toEqual([{
+      type: 'dom',
       id: 1,
       parameters: [{
-        exec: 'state',
-        value: ['variable'],
-      }, {
         exec: 'constant',
         value: ['div'],
+      }],
+      children: [{
+        type: 'variable',
+        id: 2,
+        parameters: [{
+          exec: 'attribute',
+          value: ['vari', 'able'],
+        }]
       }]
-    });
+    }]);
   });
 
-  it('nested state in domNode', function () {
-    expect(parse('<div>{{$vari.able}}</div>')).toEqual({
-      type: 'variable',
-      id: 1,
-      parameters: [{
-        exec: 'state',
-        value: ['vari', 'able'],
-      }, {
-        exec: 'constant',
-        value: ['div'],
-      }]
-    });
-  });
-
-  it('state and text domNode', function () {
-    expect(parse('<div>static{{$variable}}</div>')).toEqual({
+  it('variable and text domNode', function () {
+    expect(parse('<div>static{{@variable}}</div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -179,21 +132,100 @@ describe('Tests the functionality of the parser', function () {
           value: ['static'],
         }],
       }, {
-        type: 'variable',
+        type: 'dom',
         id: 3,
+        containerElement: true,
+        parameters: [{
+          exec: 'constant',
+          value: ['span'],
+        }],
+        children: [{
+          type: 'variable',
+          id: 4,
+          parameters: [{
+            exec: 'attribute',
+            value: ['variable'],
+          }]
+        }]
+      }]
+    }]);
+  });
+
+  it('state in domNode', function () {
+    expect(parse('<div>{{$variable}}</div>')).toEqual([{
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }],
+      children: [{
+        type: 'variable',
+        id: 2,
         parameters: [{
           exec: 'state',
           value: ['variable'],
-        }, {
-          exec: 'constant',
-          value: ['span'],
         }]
       }]
-    });
+    }]);
+  });
+
+  it('nested state in domNode', function () {
+    expect(parse('<div>{{$vari.able}}</div>')).toEqual([{
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }],
+      children: [{
+        type: 'variable',
+        id: 2,
+        parameters: [{
+          exec: 'state',
+          value: ['vari', 'able'],
+        }]
+      }]
+    }]);
+  });
+
+  it('state and text domNode', function () {
+    expect(parse('<div>static{{$variable}}</div>')).toEqual([{
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['div'],
+      }],
+      children: [{
+        type: 'content',
+        id: 2,
+        parameters: [{
+          exec: 'constant',
+          value: ['static'],
+        }],
+      }, {
+        type: 'dom',
+        id: 3,
+        containerElement: true,
+        parameters: [{
+          exec: 'constant',
+          value: ['span'],
+        }],
+        children: [{
+          type: 'variable',
+          id: 4,
+          parameters: [{
+            exec: 'state',
+            value: ['variable'],
+          }]
+        }]
+      }]
+    }]);
   });
 
   it('static test for properties', function () {
-    expect(parse('<div class="classValue"checked id="idValue">foo</div>')).toEqual({
+    expect(parse('<div class="classValue"checked id="idValue">foo</div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -219,11 +251,11 @@ describe('Tests the functionality of the parser', function () {
           value: ['foo'],
         }],
       }]
-    });
+    }]);
   });
 
   it('variable test for properties', function () {
-    expect(parse('<div class={{$class.variable}} id={{@id.variable}}>foo</div>')).toEqual({
+    expect(parse('<div class={{$class.variable}} id={{@id.variable}}>foo</div>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
@@ -246,7 +278,7 @@ describe('Tests the functionality of the parser', function () {
           value: ['foo'],
         }],
       }]
-    });
+    }]);
   });
 
   // it('throw error with missmatch', function () {
@@ -268,7 +300,7 @@ describe('Tests the functionality of the parser', function () {
 
 function parse(templateString) {
   var template = tempart.parse(templateString).template;
-  debugger;
+  if(window.foo) debugger;
   try {
     return JSON.parse(JSON.stringify(template));
   }  catch (err) {

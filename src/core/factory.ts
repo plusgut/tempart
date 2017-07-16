@@ -3,11 +3,11 @@ import CompilerBlock from '../compilerTypes/CompilerBlock';
 import document from '../helper/document';
 import compiler from '../helper/compiler';
 
-export default function (prefix: string, block: ParserBlock) {
+export default function (prefix: string, blocks: ParserBlock[]) {
 
   class Template {
-    templateBlock: ParserBlock;
-    root: CompilerBlock;
+    templateBlocks: ParserBlock[];
+    roots: CompilerBlock[];
     prefix: string;
 
     constructor(prefix: string) {
@@ -15,14 +15,17 @@ export default function (prefix: string, block: ParserBlock) {
     }
 
     compile() {
-      this.root = compiler(this.templateBlock);
+      this.roots = this.templateBlocks.map(compiler);
+      console.log(this.roots);
       return {
-        html: document.getOuterHTML(this.root.element),
+        html: this.roots.map((block: CompilerBlock) => {
+          return document.getOuterHTML(block.element);
+        }).join(''),
       };      
     }
   }
 
-  Template.prototype.templateBlock = block;
+  Template.prototype.templateBlocks = blocks;
 
   return Template;
 }
