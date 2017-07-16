@@ -1,7 +1,7 @@
 import ParserBlock from '../parserTypes/ParserBlock';
 import CompilerBlock from '../compilerTypes/CompilerBlock';
 import document from '../helper/document';
-import compiler from '../helper/compiler';
+import Environment from '../helper/Environment';
 
 export default function (prefix: string, blocks: ParserBlock[]) {
 
@@ -14,9 +14,9 @@ export default function (prefix: string, blocks: ParserBlock[]) {
       this.prefix = prefix;
     }
 
-    compile() {
-      this.roots = this.templateBlocks.map(compiler);
-      console.log(this.roots);
+    compile(state: any) {
+      const environment = new Environment(state, {});
+      this.roots = this.templateBlocks.map(environment.compiler.create.bind(environment.compiler));
       return {
         html: this.roots.map((block: CompilerBlock) => {
           return document.getOuterHTML(block.element);

@@ -1,13 +1,17 @@
 import ParserBlock from '../parserTypes/ParserBlock';
 import Element from  '../helper/Element';
+import Parameter from  '../helper/Parameter';
+import Environment from  '../helper/Environment';
 
 class CompilerBlock {
   public block: ParserBlock;
   public children: CompilerBlock[];
   public element: Element | HTMLElement | Text;
+  public environment: Environment;
 
-  constructor(block: ParserBlock) {
+  constructor(block: ParserBlock, environment: Environment) {
     this.block = block;
+    this.environment = environment;
   }
 
   public getElement() {
@@ -18,9 +22,16 @@ class CompilerBlock {
     return this.block.parameters.length;
   }
 
-  public getParameterValue(index: number) {
+  public getParameterValue(index: number): string {
     const parameter = this.getParameter(index);
-    return parameter.value;
+    switch (parameter.exec) {
+      case 'constant': {
+        return parameter.value[0];
+      }
+      case 'state': {
+        return this.environment.getValue(parameter);
+      }
+    }
   }
 
   public getParameter(index: number) {
@@ -31,7 +42,7 @@ class CompilerBlock {
     if (this.block.children) {
       this.ensureChildren();
       for (let i = 0; i < this.block.children.length; i += 1) {
-        const compilerBlock = compiler(this.block.children[i]);
+        const compilerBlock = this.environment.compiler.create(this.block.children[i]);
         this.children.push(compilerBlock);
 
         // These checks are only needed for typesafety
@@ -54,5 +65,3 @@ class CompilerBlock {
 }
 
 export default CompilerBlock;
-
-import compiler from '../helper/compiler';
