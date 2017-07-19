@@ -6,8 +6,8 @@
 
 function check(template, result, data) {
   var Template = tempart.factory('path', tempart.parse(template));
-  var templateInstance = new Template('prefix-');
-  expect(templateInstance.compile(data).html).toEqual(result);
+  var templateInstance = new Template('prefix-', data, {});
+  expect(templateInstance.getHtml()).toEqual(result);
 }
 
 describe('Tests the functionality of the compiler', function () {
