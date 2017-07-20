@@ -36,7 +36,7 @@ class Environment {
         current = current[parameter.value[i]];
       }
       i += 1;
-    } while(i < parameter.value.length - 1)
+    } while (i < parameter.value.length - 1);
     return current;
   }
 }
