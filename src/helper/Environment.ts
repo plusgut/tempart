@@ -25,6 +25,20 @@ class Environment {
     }
     return current;
   }
+
+  public subscribe(parameter: Parameter, callback: () => void) {
+    let current = this.state;
+    let i = 0;
+    do {
+      console.log(current.__stateLog__);
+      if (current.__stateLog__) {
+        current.__stateLog__.on('set.' + parameter.value[i], callback);
+        current = current[parameter.value[i]];
+      }
+      i += 1;
+    } while(i < parameter.value.length - 1)
+    return current;
+  }
 }
 
 export default Environment;

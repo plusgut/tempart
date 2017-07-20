@@ -34,6 +34,16 @@ class CompilerBlock {
     }
   }
 
+  public subscribe(index: number, callback: () => void) {
+    const parameter = this.getParameter(index);
+
+    switch (parameter.exec) {
+      case 'state': {
+        return this.environment.subscribe(parameter, callback);
+      }
+    }
+  }
+
   public getParameter(index: number) {
     return this.block.parameters[index];
   }
