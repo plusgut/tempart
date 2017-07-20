@@ -33,8 +33,8 @@ class Environment {
     do {
       if (current.__stateLog__) {
         current.__stateLog__.on('set.' + parameter.value[i], callback);
-        current = current[parameter.value[i]];
       }
+      current = current[parameter.value[i]];
       i += 1;
     } while (i < parameter.value.length);
 
