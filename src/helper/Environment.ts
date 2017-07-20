@@ -23,6 +23,7 @@ class Environment {
     for (let i = 0; i < parameter.value.length - 1; i += 1) {
       current = current[parameter.value[i]];
     }
+
     return current;
   }
 
@@ -30,13 +31,13 @@ class Environment {
     let current = this.state;
     let i = 0;
     do {
-      console.log(current.__stateLog__);
       if (current.__stateLog__) {
         current.__stateLog__.on('set.' + parameter.value[i], callback);
         current = current[parameter.value[i]];
       }
       i += 1;
-    } while (i < parameter.value.length - 1);
+    } while (i < parameter.value.length);
+
     return current;
   }
 }
