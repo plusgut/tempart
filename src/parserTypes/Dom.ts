@@ -80,7 +80,7 @@ class Dom extends ParserBlock {
 
     // @TODO add variable-possiblity via parameters[0]
     if (this.parameters[0].value[0] !== tagName) {
-      throw new Error('Missmatch of tags!');
+      throw new Error('Missmatch of tags!' + tagName + '|' + this.parameters[0].value[0]);
     }
     this.state.closeOpenBlock();
     this.state.incrementIndex();

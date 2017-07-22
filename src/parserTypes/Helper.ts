@@ -50,6 +50,20 @@ class Helper extends ParserBlock {
 
   public closeTag() {
     if (this.hasChildren === true) {
+      this.state.incrementIndex().incrementIndex().incrementIndex();
+      let buffer = '';
+      while (util.isClosingMustache(this.state) === false) {
+        if (this.state.index > this.state.templateString.length) {
+          throw new Error('The mustache helper ' + this.type + 'got not closed');
+        }
+        buffer += this.state.getCurrentChar();
+        this.state.incrementIndex();
+      }
+      if (buffer !== this.type) {
+        // @TODO improve errorhandling
+        throw new Error('The mustache helper ' + this.type + 'got not closed');
+      }
+      this.state.incrementIndex().incrementIndex(); // needed for closing mustache }}
       this.state.openBlocks.pop();
     } else {
       throw new Error('You can\'t close a selfclosing block');

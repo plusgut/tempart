@@ -282,9 +282,7 @@ describe('Tests the functionality of the parser', function () {
   });
 
   it('each parsing', function () {
-    // @TODO fix this wrong test, doesnt work correctly with closing right now
-    // expect(parse('<ul>{{#each $todos as ~todo}}<li>{{~todo}}</li></ul>')).toEqual([{
-    expect(parse('<ul>{{#each $todos as ~todo}}<li>{{~todo}}</li></ul>')).toEqual([{
+    expect(parse('<ul>{{#each $todos as ~todo}}<li>{{~todo}}</li>{{/each}}</ul>')).toEqual([{
       type: 'dom',
       id: 1,
       parameters: [{
