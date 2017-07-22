@@ -16,7 +16,7 @@ export default function (prefix: string, blocks: ParserBlock[]) {
       this.roots = this.templateBlocks.map(environment.compiler.create.bind(environment.compiler));
     }
 
-    getHtml() {
+    public getHtml() {
       return this.roots.map((block: CompilerBlock) => {
         return document.getOuterHTML(block.element);
       }).join('');

@@ -281,6 +281,49 @@ describe('Tests the functionality of the parser', function () {
     }]);
   });
 
+  it('each parsing', function () {
+    // @TODO fix this wrong test, doesnt work correctly with closing right now
+    // expect(parse('<ul>{{#each $todos as ~todo}}<li>{{~todo}}</li></ul>')).toEqual([{
+    expect(parse('<ul>{{#each $todos as ~todo}}<li>{{~todo}}</li></ul>')).toEqual([{
+      type: 'dom',
+      id: 1,
+      parameters: [{
+        exec: 'constant',
+        value: ['ul'],
+      }],
+      children: [{
+        type: 'each',
+        id: 2,
+        parameters: [{
+          exec: 'state',
+          value: ['todos']
+        }, {
+          exec: 'constant',
+          value: ['as']
+        }, {
+          exec: 'local',
+          value: ['todo']
+        }],
+        children: [{
+          type: 'dom',
+          id: 3,
+          parameters: [{
+            exec: 'constant',
+            value: ['li'],
+          }],
+          children: [{
+            type: 'variable',
+            id: 4,
+            parameters: [{
+              exec: 'local',
+              value: ['todo'],
+            }],
+          }]
+        }],
+      }],
+    }]);
+  });
+
   // it('throw error with missmatch', function () {
   //   expect(function () {
   //     parse('<div>foo</span>');
@@ -301,6 +344,7 @@ describe('Tests the functionality of the parser', function () {
 function parse(templateString) {
   var template = tempart.parse(templateString).template;
   if(window.foo) debugger;
+
   try {
     return JSON.parse(JSON.stringify(template));
   }  catch (err) {

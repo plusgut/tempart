@@ -21,7 +21,7 @@ class State {
     this.compressPipe = util.pipe(
       this.treeShake.bind(this),
       this.addIds.bind(this),
-      this.deleteCircular.bind(this),
+      this.deleteUnneededProps.bind(this),
     );
   }
 
@@ -90,9 +90,11 @@ class State {
     }
   }
 
-  private deleteCircular (block: ParserBlock): ParserBlock {
+
+  private deleteUnneededProps (block: ParserBlock): ParserBlock {
     delete block.state;
     delete block.parent;
+    delete block.hasChildren;
     return block;
   }
 

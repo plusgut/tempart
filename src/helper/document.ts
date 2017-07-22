@@ -1,14 +1,13 @@
 import Element from './Element';
 
-export default {
-
+class Document {
   createElement(tagName: string): Element | HTMLElement {
     if (typeof document === 'undefined') {
       return new Element(tagName);
     } else {
       return document.createElement(tagName);
     }
-  },
+  }
 
   createText(content: string): Text {
     if (typeof document === 'undefined') {
@@ -17,7 +16,7 @@ export default {
     } else {
       return document.createTextNode(content);
     }
-  },
+  }
 
   getOuterHTML(element: Element | HTMLElement | Text) {
     if (element instanceof Element) {
@@ -27,5 +26,7 @@ export default {
     } else {
       return element.outerHTML;
     }
-  },
-};
+  }
+}
+
+export default new Document();

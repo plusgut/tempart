@@ -8,6 +8,7 @@ abstract class Block {
   public id: number;
   public parameters: Parameter[];
   public children: Block[];
+  public hasChildren: boolean;
   public parent: Block;
   public elseChildren: Block[];
   public containerElement: boolean;

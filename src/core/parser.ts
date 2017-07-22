@@ -3,6 +3,7 @@ import Dom         from '../parserTypes/Dom';
 import Content     from '../parserTypes/Content';
 import Container   from '../parserTypes/Container';
 import Variable    from '../parserTypes/Variable';
+import Helper      from '../parserTypes/Helper';
 import State       from '../helper/State';
 import util        from '../helper/util';
 
@@ -16,11 +17,15 @@ export default function parser(templateString: string): ParserBlock[] {
       state.getCurrentBlock().addChild(new Dom(state));
     } else if (util.isNewDomCloseTag(state) === true) {
       state.getCurrentBlock().closeTag();
-    } else if (util.isState(state) === true || util.isAttribute(state) === true) {
+    } else if (util.isVariable(state)) {
       const container = new Container(state);
       container.addChild(new Variable(state));
       state.getCurrentBlock().addChild(container);
-    } else if (util.isText(state) === true) {
+    } else if (util.isMustacheHelperClose(state) === true) {
+      state.getCurrentBlock().closeTag();
+    } else if (util.isMustacheHelper(state) === true) {
+      state.getCurrentBlock().addChild(new Helper(state));
+    } else {
       const currentBlock = state.getCurrentBlock();
       if (state.root === currentBlock) {
         const container = new Container(state);
@@ -30,10 +35,11 @@ export default function parser(templateString: string): ParserBlock[] {
         currentBlock.addChild(new Content(state));
       }
       
-    } else {
-      // Please make an github issue and tell me how you got here
-      throw new Error('Couldn\'t decide how to parse ');
     }
+
+    // if (state.openBlocks.length !== 1) {
+    //   throw new Error('An block got not closed');
+    // }
   }
 
   return state.root.children.map(state.compress.bind(state));

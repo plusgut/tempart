@@ -53,7 +53,7 @@ class Dom extends ParserBlock {
 
     state.incrementIndex(); // Skipping >
 
-    state.openBlocks.push(this);
+    state.openBlocks.push(this); // @TODO add selfclosing
     this.type = 'dom';
   }
 
