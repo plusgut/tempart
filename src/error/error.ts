@@ -6,7 +6,6 @@ class ErrorHandler {
     const error = new Error('PrefixMissing');
     error.message = 'No Template was given to the factory';
     throw error;
-
   }
 
   public throwTemplateMissing() {
@@ -30,14 +29,6 @@ class ErrorHandler {
     const error = new Error('VersionMissmatch');
     error.message = 'The parsed tempart version is ' + parseVersion + ', this is not compatible with compiler ' + compileVersion;
     throw error;
-  }
-
-  public throwErrorDomElementsMissmatch(state: State, from: Position, to: Position) {
-
-  }
-
-  private generateHighlightedHtml(state: State, from: Position, to?: Position) {
-
   }
 }
 

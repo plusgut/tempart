@@ -40,17 +40,6 @@ abstract class Block {
     this.parameters.push(new Parameter('constant', [value]));
   }
 
-  public addAttribute(value: string[]) {
-    this.ensureParameters();
-    this.parameters.push(new Parameter('attribute', value));
-  }
-
-  public addState(value: string[]) {
-    this.ensureParameters();
-
-    this.parameters.push(new Parameter('state', value));
-  }
-
   public ensureParameters() {
     if (this.parameters === undefined) {
       this.parameters = [];
