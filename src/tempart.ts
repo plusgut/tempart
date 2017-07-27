@@ -1,25 +1,27 @@
 import parser from './core/parser';
 import factory from './core/factory';
 import ParserBlock from './parserTypes/ParserBlock';
+import error from './error/error';
+import constants from './helper/constants';
 
 interface template {
   template: ParserBlock[];
-  version: number;
+  version: string;
 }
 
 const tempart =  {
-  version: 0.4, // @TODO should be coming out of package.json
+  version: constants.VERSION,
   parse(templateString: string): template {
     return {
       template: parser(templateString),
-      version: this.version,
+      version: constants.VERSION,
     };
   },
   factory(prefix: string, template: template) {
     if (!template.version) {
       throw new Error('No template version given');
     } else if (template.version !== this.version) {
-      throw new Error('Version ' + template.version + ' is not compatible with ' + this.version);
+      throw error.throwVersionMissmatch(template.version, constants.VERSION);
     } else {
       return factory(prefix, template.template);
     }

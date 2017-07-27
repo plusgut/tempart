@@ -39,16 +39,20 @@ describe('Tests the functionality of the compiler', function () {
 //     check('<div id="bar">{{foo.bar}}</div>', '<div id="bar" data-snew-id="prefix-1">foobar</div>', { foo: { bar: 'foobar' } });
 //   });
 
-//   it('check if error gets thrown when not correctly called', function () {
-//     var Template = tempart.factory('path', { version: tempart.version });
-//     expect(function () {
-//       Template('foo');
-//     }).toThrow(new Error('Tempart has to be called with new'));
-//   });
+  it('check if error gets thrown when not correctly called', function () {
+    var error = new Error('CallError');
+    error.message = 'Tempart has to be called with new';
+    var Template = tempart.factory('path', { version: tempart.version });
+    expect(function () {
+      Template('foo');
+    }).toThrow(error);
+  });
 
-//   it('check if error gets thrown when wrong version is given', function () {
-//     expect(function () {
-//       new tempart.factory('path', { version: '0.0.1' });
-//     }).toThrow(new Error('The parsed tempart version is 0.0.1, this is not compatible with compiler ' + tempart.version));
-//   });
+  it('check if error gets thrown when wrong version is given', function () {
+    var error = new Error('VersionMissmatch');
+    error.message = 'The parsed tempart version is 0.0.1, this is not compatible with compiler ' + tempart.version;
+    expect(function () {
+      new tempart.factory('path', { version: '0.0.1' });
+    }).toThrow(error);
+  });
 });

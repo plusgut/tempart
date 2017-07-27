@@ -2,6 +2,7 @@ import ParserBlock from '../parserTypes/ParserBlock';
 import CompilerBlock from '../compilerTypes/CompilerBlock';
 import document from '../helper/document';
 import Environment from '../helper/Environment';
+import error from '../error/error';
 
 export default function (prefix: string, blocks: ParserBlock[]) {
   class Template {
@@ -10,10 +11,14 @@ export default function (prefix: string, blocks: ParserBlock[]) {
     prefix: string;
 
     constructor(prefix: string, state: any, props: any) {
-      this.prefix = prefix;
+      if (this instanceof Template) {
+        this.prefix = prefix;
 
-      const environment = new Environment(state, props);
-      this.roots = this.templateBlocks.map(environment.compiler.create.bind(environment.compiler));
+        const environment = new Environment(state, props);
+        this.roots = this.templateBlocks.map(environment.compiler.create.bind(environment.compiler));
+      } else {
+        error.throwCallError();
+      }
     }
 
     public getHtml() {
