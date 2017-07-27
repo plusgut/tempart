@@ -1,3 +1,3 @@
 import tempart from './src/tempart';
 
-export default tempart
+export default tempart;

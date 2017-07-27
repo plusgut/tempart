@@ -48,6 +48,30 @@ describe('Tests the functionality of the compiler', function () {
     }).toThrow(error);
   });
 
+  it('check if error gets thrown when no template object is given', function () {
+    var error = new Error('TemplateMissing');
+    error.message = 'No Template was given to the factory';
+    expect(function () {
+      new tempart.factory();
+    }).toThrow(error);
+  });
+
+  it('check if error gets thrown when no template object is given', function () {
+    var error = new Error('TemplateMissing');
+    error.message = 'No Template was given to the factory';
+    expect(function () {
+      new tempart.factory('path');
+    }).toThrow(error);
+  });
+
+  it('check if error gets thrown when no version is given', function () {
+    var error = new Error('VersionMissing');
+    error.message = 'No version was given';
+    expect(function () {
+      new tempart.factory('path', {});
+    }).toThrow(error);
+  });
+
   it('check if error gets thrown when wrong version is given', function () {
     var error = new Error('VersionMissmatch');
     error.message = 'The parsed tempart version is 0.0.1, this is not compatible with compiler ' + tempart.version;

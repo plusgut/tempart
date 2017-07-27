@@ -9,7 +9,7 @@ interface template {
   version: string;
 }
 
-const tempart =  {
+const tempart = {
   version: constants.VERSION,
   parse(templateString: string): template {
     return {
@@ -18,8 +18,12 @@ const tempart =  {
     };
   },
   factory(prefix: string, template: template) {
-    if (!template.version) {
-      throw new Error('No template version given');
+    if (!prefix) {
+      error.throwPrefixMissing();
+    } else if (!template) {
+      error.throwTemplateMissing();
+    } else if (!template.version) {
+      throw error.throwVersionMissing();
     } else if (template.version !== this.version) {
       throw error.throwVersionMissmatch(template.version, constants.VERSION);
     } else {
