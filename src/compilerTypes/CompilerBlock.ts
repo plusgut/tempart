@@ -18,10 +18,6 @@ class CompilerBlock {
     // @TODO check if cache exists else get it from dom
   }
 
-  public getParameterLength() {
-    return this.block.parameters.length;
-  }
-
   public getParameterValue(index: number): string {
     const parameter = this.getParameter(index);
     switch (parameter.exec) {
