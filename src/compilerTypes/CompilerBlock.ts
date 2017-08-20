@@ -1,24 +1,26 @@
 import ParserBlock from '../parserTypes/ParserBlock';
-import Element from  '../helper/Element';
 import Parameter from  '../helper/Parameter';
 import Environment from  '../helper/Environment';
 
 class CompilerBlock {
   public block: ParserBlock;
   public children: CompilerBlock[];
-  public element: Element | HTMLElement | Text;
+  public element?: Element | Text;
+  public parentBlock?: CompilerBlock;
   public environment: Environment;
 
-  constructor(block: ParserBlock, environment: Environment) {
+  constructor(block: ParserBlock, environment: Environment, parentBlock?: CompilerBlock) {
     this.block = block;
     this.environment = environment;
+    this.parentBlock = parentBlock;
   }
 
   public getElement() {
     // @TODO check if cache exists else get it from dom
+    return this.element;
   }
 
-  public getParameterValue(index: number): string {
+  public getParameterValue(index: number): any {
     const parameter = this.getParameter(index);
     switch (parameter.exec) {
       case 'constant': {
@@ -26,6 +28,19 @@ class CompilerBlock {
       }
       case 'state': {
         return this.environment.getValue(parameter);
+      }
+      case 'local': {
+        if(this.environment.local[parameter.value[0]]) {
+          const key = this.environment.local[parameter.value[0]];
+          const stateParameter = new Parameter('state', key);
+          return this.environment.getValue(stateParameter);
+        } else {
+          throw new Error('Environment has no local ' + parameter.value[0]);
+        }
+
+      }
+      default: {
+        throw new Error('Don\'t know the type ' + parameter.exec);
       }
     }
   }
@@ -48,24 +63,24 @@ class CompilerBlock {
     if (this.block.children) {
       this.ensureChildren();
       for (let i = 0; i < this.block.children.length; i += 1) {
-        const compilerBlock = this.environment.compiler.create(this.block.children[i]);
+        const compilerBlock = this.environment.compiler.create(this.block.children[i], this);
         this.children.push(compilerBlock);
-
-        // These checks are only needed for typesafety
-        if (this.element instanceof HTMLElement && (
-            compilerBlock.element instanceof HTMLElement ||
-            compilerBlock.element instanceof Text)) {
-          this.element.appendChild(compilerBlock.element);
-        } else if (this.element instanceof Element && compilerBlock.element instanceof Element) {
-          this.element.appendChild(compilerBlock.element);
-        }
       }
     }
   }
 
-  private ensureChildren() {
+  public ensureChildren() {
     if (this.children === undefined) {
       this.children = [];
+    }
+  }
+
+  public appendToParent(element: Element | Text) {
+    if(this.parentBlock) {
+      const parentElement = this.parentBlock.getElement();
+      if(parentElement instanceof Element) {
+        parentElement.appendChild(element);
+      }
     }
   }
 }

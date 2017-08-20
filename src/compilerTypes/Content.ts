@@ -7,9 +7,10 @@ const CONTENT_INDEX = 0;
 
 class Dom extends CompilerBlock {
 
-  constructor(block: ParserBlock, environment: Environment) {
-    super(block, environment);
+  constructor(block: ParserBlock, environment: Environment, parentBlock?: CompilerBlock) {
+    super(block, environment, parentBlock);
     this.element = document.createText(this.getParameterValue(CONTENT_INDEX));
+    this.appendToParent(this.element);
   }
 }
 

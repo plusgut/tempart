@@ -23,9 +23,9 @@ describe('Tests the functionality of the compiler', function () {
     check('<div>{{$text}}</div>', '<div>foo</div>', { text: 'foo' });
   });
 
-  // it('loop test', function () {
-  //   check('<ul>{{#each arr as ~entity}}<li>{{$entity}}</li>{{/each}}</ul>', '<ul><li>foo</li><li>bar</li></ul>', { arr: ['foo', 'bar'] });
-  // });
+  it('loop test', function () {
+    check('<ul>{{#each $arr as ~entity}}<li>{{~entity}}</li>{{/each}}</ul>', '<ul><li>foo</li><li>bar</li></ul>', { arr: ['foo', 'bar'] });
+  });
 
 //   it('static test with attributes', function () {
 //     check('<div id="bar">foo</div>', '<div id="bar" data-snew-id="prefix-1">foo</div>', {});

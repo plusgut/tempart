@@ -1,12 +1,10 @@
-import Element from './Element';
-
 class Document {
   createElement(tagName: string): Element | HTMLElement {
-    if (typeof document === 'undefined') {
-      return new Element(tagName);
-    } else {
+    // if (typeof document === 'undefined') {
+    //   return new Element(tagName);
+    // } else {
       return document.createElement(tagName);
-    }
+    // }
   }
 
   createText(content: string): Text {
@@ -20,11 +18,9 @@ class Document {
 
   getOuterHTML(element: Element | HTMLElement | Text) {
     if (element instanceof Element) {
-      throw new Error('not yet implemented');
+      return element.outerHTML;
     } else if (element instanceof Text) {
       return element.textContent;
-    } else {
-      return element.outerHTML;
     }
   }
 }

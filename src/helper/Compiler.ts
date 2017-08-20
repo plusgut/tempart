@@ -23,9 +23,9 @@ class Compiler {
     };
   }
 
-  public create(block: ParserBlock): CompilerBlock {
+  public create(block: ParserBlock, parentBlock?: CompilerBlock): CompilerBlock {
     if (this.types[block.type] !== undefined) {
-      return new this.types[block.type](block, this.environment);
+      return new this.types[block.type](block, this.environment, parentBlock);
     } else {
       throw new Error('Unknown type ' + block.type);
     }
