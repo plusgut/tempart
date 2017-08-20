@@ -8,7 +8,7 @@ import Environment   from './Environment';
 
 class Compiler {
   private types: {
-    [key: string]: typeof CompilerBlock
+    [key: string]: typeof CompilerBlock,
   };
 
   private environment: Environment;
@@ -20,11 +20,11 @@ class Compiler {
       content: Content,
       variable: Variable,
       each: Each,
-    }
+    };
   }
 
   public create(block: ParserBlock): CompilerBlock {
-    if(this.types[block.type] !== undefined) {
+    if (this.types[block.type] !== undefined) {
       return new this.types[block.type](block, this.environment);
     } else {
       throw new Error('Unknown type ' + block.type);
