@@ -3,7 +3,7 @@ class Document {
     // if (typeof document === 'undefined') {
     //   return new Element(tagName);
     // } else {
-      return document.createElement(tagName);
+    return document.createElement(tagName);
     // }
   }
 

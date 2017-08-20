@@ -30,7 +30,7 @@ class CompilerBlock {
         return this.environment.getValue(parameter);
       }
       case 'local': {
-        if(this.environment.local[parameter.value[0]]) {
+        if (this.environment.local[parameter.value[0]]) {
           const key = this.environment.local[parameter.value[0]];
           const stateParameter = new Parameter('state', key);
           return this.environment.getValue(stateParameter);
@@ -76,9 +76,9 @@ class CompilerBlock {
   }
 
   public appendToParent(element: Element | Text) {
-    if(this.parentBlock) {
+    if (this.parentBlock) {
       const parentElement = this.parentBlock.getElement();
-      if(parentElement instanceof Element) {
+      if (parentElement instanceof Element) {
         parentElement.appendChild(element);
       }
     }

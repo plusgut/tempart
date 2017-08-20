@@ -34,7 +34,7 @@ class Each extends CompilerBlock{
 
     for (let i = 0; i < iterate.length; i += 1) {
       const keyParts = this.getParameter(KEY_INDEX).value;
-      if(keyParts.length > 1) {
+      if (keyParts.length > 1) {
         throw new Error('Local values can\t be nested');
       } else {
         if (typeof keyParts[0] === 'string') {
