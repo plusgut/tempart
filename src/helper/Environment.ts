@@ -3,7 +3,9 @@ import Compiler  from './Compiler';
 
 class Environment {
   public  compiler: Compiler;
-  private local: {};
+  public local: {
+    [keyof: string]: string[],
+  };
   private state: any;
   private props: any;
 
@@ -16,6 +18,10 @@ class Environment {
 
   public getValue(parameter: Parameter): any {
     return this.getReference(parameter)[parameter.value[parameter.value.length - 1]];
+  }
+
+  public setLocal(key: string, value: string[]) {
+    this.local[key] = value;
   }
 
   public getReference(parameter: Parameter): any {

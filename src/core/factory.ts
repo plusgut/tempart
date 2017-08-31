@@ -17,7 +17,9 @@ export default function (path: string, blocks: ParserBlock[]): typeof ITemplate 
         this.prefix = prefix;
 
         const environment = new Environment(state, props);
-        this.roots = this.templateBlocks.map(environment.compiler.create.bind(environment.compiler));
+        this.roots = this.templateBlocks.map((parserBlock) => {
+          return environment.compiler.create(parserBlock);
+        });
       } else {
         error.throwCallError();
       }
