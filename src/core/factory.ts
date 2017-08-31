@@ -3,12 +3,14 @@ import CompilerBlock from '../compilerTypes/CompilerBlock';
 import document from '../helper/document';
 import Environment from '../helper/Environment';
 import error from '../error/error';
+import ITemplate from './ITemplate';
 
-export default function (prefix: string, blocks: ParserBlock[]) {
-  class Template {
+export default function (path: string, blocks: ParserBlock[]): typeof ITemplate {
+  class Template implements ITemplate {
     templateBlocks: ParserBlock[];
     roots: CompilerBlock[];
     prefix: string;
+    path: string;
 
     constructor(prefix: string, state: any, props: any) {
       if (this instanceof Template) {
@@ -29,6 +31,7 @@ export default function (prefix: string, blocks: ParserBlock[]) {
   }
 
   Template.prototype.templateBlocks = blocks;
+  Template.prototype.path = path;
 
   return Template;
 }

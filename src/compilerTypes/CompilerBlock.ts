@@ -1,6 +1,5 @@
 import ParserBlock from '../parserTypes/ParserBlock';
 import Element from  '../helper/Element';
-import Parameter from  '../helper/Parameter';
 import Environment from  '../helper/Environment';
 
 class CompilerBlock {
@@ -26,6 +25,9 @@ class CompilerBlock {
       }
       case 'state': {
         return this.environment.getValue(parameter);
+      }
+      default: {
+        throw new Error('The given parameter type is unknown');
       }
     }
   }

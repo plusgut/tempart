@@ -4,20 +4,15 @@ import ParserBlock from './parserTypes/ParserBlock';
 import error from './error/error';
 import constants from './helper/constants';
 
-interface template {
-  template: ParserBlock[];
-  version: string;
-}
-
 const tempart = {
   version: constants.VERSION,
-  parse(templateString: string): template {
+  parse(templateString: string): templateAst {
     return {
       template: parser(templateString),
       version: constants.VERSION,
     };
   },
-  factory(prefix: string, template: template) {
+  factory(prefix: string, template: templateAst) {
     if (!prefix) {
       error.throwPrefixMissing();
     } else if (!template) {
@@ -25,12 +20,17 @@ const tempart = {
     } else if (!template.version) {
       throw error.throwVersionMissing();
     } else if (template.version !== this.version) {
-      throw error.throwVersionMissmatch(template.version, constants.VERSION);
-    } else {
-      return factory(prefix, template.template);
+      error.throwVersionMissmatch(template.version, constants.VERSION);
     }
+
+    return factory(prefix, template.template);
   },
 };
+
+export interface templateAst {
+  template: ParserBlock[];
+  version: string;
+}
 
 export default tempart;
 (<any>window).tempart = tempart;
